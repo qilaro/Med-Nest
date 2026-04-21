@@ -1,80 +1,116 @@
 
-# PRD — MedQ (MVP)
+# PRD — MedQ (MVP, aligned to Project Spec)
 
-## 1. Product Summary
-MedQ is a lightweight, SEO-first medicine information platform for search-driven growth in healthcare information.
+## 1. Objective
+Build a lightweight, SEO-first medicine information platform to:
+1. Enter the healthcare domain
+2. Acquire initial organic traffic
+3. Validate search-driven distribution
 
-**Motto:** Learn more. Live better.
+**Success signal:** traction through users, search queries, and indexed pages.
 
-## 2. Problem
-Users need a trustworthy, readable place to search and compare medicine information, check interactions, and understand safety signals quickly.
+## 2. Scope (MVP)
 
-## 3. Goals
-1. Launch an indexable, search-first medicine experience.
-2. Validate organic acquisition through medicine-intent queries.
-3. Build a clean base architecture for rapid feature expansion.
+### A) Medicine Search (Drugs A–Z)
+- Search by brand
+- Search by class
+- Search by generic name
+- Search by company
+- Full-text search
+- Close-spell matching
+- Entry to bookmarked drugs list
 
-## 4. MVP Scope
-### In Scope
-- Drug directory/search (A-Z, brand, generic, class, company, full-text)
-- Drug detail page (core fields + warnings + side effects + alternatives)
-- Interaction checker
-- Drug comparison
-- AI chatbot (medicine guidance with disclaimer)
-- News/blog
-- Favorites/bookmarks
-- Admin panel (basic medicine/review management)
-- Site-wide emergency disclaimer banner
+### B) Medicine Detail Page
+- Generic name, class name, price
+- High-resolution photo of box/strip
+- User reviews and ratings (patient/pharmacist)
+- Pharmacist-written detailed review
+- Interaction check entry point
+- Pharmacist-written FAQ (including what interacts with drug X)
+- Indications (uses)
+- Warnings (before taking)
+- Dosage FAQ
+- Side effects
+- Alternative drugs
+- Compare-with-alternatives entry point
+- Disclaimer
 
-### Out of Scope (MVP)
-- Full patient account ecosystem
-- Appointment marketplace
-- Large-scale condition/symptom platform
+### C) Drug Interaction Checker
+- Check interaction with other drugs
+- FAQ written by pharmacist
 
-## 5. Users
-- General users seeking medicine information
-- Patients comparing options
-- Pharmacist/admin operator managing content quality
+### D) Compare Drugs
+- Compare drugs within class
 
-## 6. Functional Requirements (MVP)
-1. Search returns relevant medicine results quickly and supports close spellings.
-2. Drug detail pages expose core info and safety-focused sections.
-3. Users can check interactions between selected drugs.
-4. Users can compare up to multiple alternatives in-class.
-5. AI chatbot includes clear medical disclaimer in responses/workflow.
-6. Users can save/remove favorites.
-7. Admin can create/update medicine records and review entries.
+### E) AI Chatbot
+- Drug finder
+- Possible cause guidance
+- Clear disclaimer
 
-## 7. Non-Functional Requirements
-- SEO-first route/content structure
-- Fast page rendering and mobile readability
-- Accessibility-conscious UI (clear hierarchy, contrast, keyboard support)
-- Explicit medical disclaimers where clinical misinterpretation risk exists
+### F) News, Blogs, and Research
 
-## 8. Data & Content
-- Initial curated dataset: 50–100 medicines
-- Expansion target: 300–500 after MVP validation
-- Canonical medicine fields: brand, generic, class, company, price, indications, dosage, warnings, side effects, alternatives
+### G) Favorites / Bookmarks
+- List of marked drugs
 
-## 9. Target Stack
-- Frontend: Next.js + TypeScript + Tailwind + shadcn/ui
+### H) Emergency Disclaimer Banner
+- Site-wide safety warning
+
+### I) Admin Panel
+- Add medicine
+- Update medicine
+- Review FAQ answers written by pharmacist
+
+## 3. Data Strategy
+- Initial dataset: 50–100 medicines (manual curation)
+- Gradual expansion: 300–500 medicines post-launch
+
+## 4. Tech Stack
+- Frontend: Next.js + TypeScript
+- Styling: Tailwind CSS + shadcn/ui
 - Backend: FastAPI + Python
-- Database: PostgreSQL + SQLAlchemy
-- AI: Gemini
+- Optional backend edge calls: Next.js Server Actions / API Routes (for simple auth/calls)
+- Database: PostgreSQL (optional pgvector for AI search/embeddings)
+- ORM: SQLAlchemy
+- Authentication: Clerk (frontend auth), JWT/session validation in FastAPI
+- File storage: Cloudflare R2
+- Hosting: Vercel (frontend) + Railway (backend)
+- Analytics: Google Analytics + PostHog
+- AI: Google Gemini API (primary), RAG over curated PostgreSQL dataset
+- Search: PostgreSQL full-text first, optional Meilisearch later
 
-## 10. Success Metrics
-- Organic search clicks and indexed page growth
-- Search usage and top medicine queries
-- Returning users
-- Interaction checker adoption
+## 5. SEO Strategy
+TBD (primary distribution channel remains SEO).
 
-## 11. Information Architecture (Target)
+## 6. Metrics (Traction-Focused)
+- Search click rate
+- Returning users (retention)
+- Interaction checker usage
+- Search queries
+- Page views
+- Bounce rate
+- Top medicines searched
+
+## 7. Future Leverage (Post-Traction)
+- Expand dataset to 1k+ medicines
+- Search by condition
+- Condition detail pages
+- Symptom checker
+- Possible causes with disclaimer
+- Primary treatment guidance (doctor-reviewed)
+- Doctor appointment redirect to healthcare platform
+- Expanded user auth/profile and AI-personalized learning from prescriptions
+
+## 8. Information Architecture (Target)
 ```text
 mednest/
-  frontend/
-  backend/
-  shared/
+  frontend/   # Next.js (UI + SEO)
+  backend/    # FastAPI (AI + logic + APIs)
+  shared/     # shared types/schemas (optional)
+  docker/     # deployment configs (optional)
+  .env
+  docker-compose.yml
+  README.md
 ```
 
-## 12. Acceptance Baseline
-MVP is acceptable when core in-scope flows are reachable, medically cautioned, and indexable with stable frontend/backend boundaries.
+## 9. Acceptance Baseline
+MVP is acceptable when in-scope core flows are reachable, medically cautioned, and indexable, with stable frontend/backend boundaries aligned to the target structure.
