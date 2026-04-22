@@ -1533,7 +1533,7 @@ header, main, footer, #emergencyBanner {
 }
 
 .hero-panel-content {
-  padding: 8rem 1.5rem 2.75rem;
+  padding: 7.5rem 1.5rem 2.75rem;
 }
 
 @media (min-width: 640px) {
@@ -1544,7 +1544,7 @@ header, main, footer, #emergencyBanner {
   }
 
   .hero-panel-content {
-    padding: 6rem 2rem 3rem;
+    padding: 5.5rem 2rem 3rem;
   }
 }
 
@@ -1556,7 +1556,7 @@ header, main, footer, #emergencyBanner {
   }
 
   .hero-panel-content {
-    padding: 8rem 1.5rem 2.75rem;
+    padding: 7.5rem 1.5rem 2.75rem;
   }
 }
 
