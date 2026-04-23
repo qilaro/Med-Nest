@@ -1508,7 +1508,8 @@ body::before {
   background: linear-gradient(135deg, #C7E2E6 0%, #E4F1F0 100%);
   z-index: 0;
   border-radius: 2rem;
-  border: 2px solid var(--primary);
+  border-left: 3px dashed var(--primary);
+  border-right: 3px dashed var(--primary);
   pointer-events: none;
 }
 
