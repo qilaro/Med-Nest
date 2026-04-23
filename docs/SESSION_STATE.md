@@ -29,7 +29,7 @@ Every small change will follow: **Implement -> Build/Lint -> Visual Check -> Upd
 
 ## Current Status
 - **Phase**: Initialization & Planning
-- **Last Action**: Refined Hero Stats section with a custom "side-vibrant, center-faded" gradient separator design.
+- **Last Action**: Refined AI Chatbox container with matching double-layer soft shadows and large border-radius.
 - **Next Action**: Initialize the Next.js frontend project (Step 1.1).
 
 ---
@@ -58,3 +58,5 @@ Every small change will follow: **Implement -> Build/Lint -> Visual Check -> Upd
 - [2026-04-23] Initialized `SESSION_STATE.md`. Verified project structure and design reference. Added detailed Methodology & Approach.
 - [2026-04-23] Refined `reference/index.html` design: Added large rounded 90rem outer container with mint-blue background (#E4F1F0) and double-layer soft shadows to match user vision.
 - [2026-04-24] Applied "side-strong, center-fade" gradient separators to the Hero Stats section to contrast with the "center-strong" gradients used in other containers.
+- [2026-04-24] Refined AI Chatbox container with matching double-layer soft shadows and 3rem border-radius.
+- [2026-04-24] Added a "center-strong, side-fade" gradient line to the top edge of the footer for visual consistency.
