@@ -29,7 +29,7 @@ Every small change will follow: **Implement -> Build/Lint -> Visual Check -> Upd
 
 ## Current Status
 - **Phase**: Initialization & Planning
-- **Last Action**: Created `SESSION_STATE.md` and documented the detailed Methodology.
+- **Last Action**: Refined Hero Stats section with a custom "side-vibrant, center-faded" gradient separator design.
 - **Next Action**: Initialize the Next.js frontend project (Step 1.1).
 
 ---
@@ -57,3 +57,4 @@ Every small change will follow: **Implement -> Build/Lint -> Visual Check -> Upd
 ## Task Log
 - [2026-04-23] Initialized `SESSION_STATE.md`. Verified project structure and design reference. Added detailed Methodology & Approach.
 - [2026-04-23] Refined `reference/index.html` design: Added large rounded 90rem outer container with mint-blue background (#E4F1F0) and double-layer soft shadows to match user vision.
+- [2026-04-24] Applied "side-strong, center-fade" gradient separators to the Hero Stats section to contrast with the "center-strong" gradients used in other containers.
