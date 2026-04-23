@@ -64,6 +64,10 @@
       <section class="py-12 text-gray-900">
         <div class="container-medq py-16 relative overflow-hidden" style="background-color: #D5E9E7; border-radius: 3rem; max-width: 90rem; box-shadow: 0 50px 80px -20px rgba(0, 0, 0, 0.2), 0 30px 50px -15px rgba(0, 0, 0, 0.12)">
           <div style="position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent 0%, #3b82f6 50%, transparent 100%);"></div>
+          <svg class="absolute top-0 left-0 w-full h-full pointer-events-none" viewBox="0 0 1000 300" preserveAspectRatio="none">
+            <path d="M100,50 Q200,0 300,50 T500,50 T700,50 T900,50" fill="none" stroke="#57B8A6" stroke-width="2" stroke-dasharray="10 10" />
+            <path d="M50,0 Q0,150 50,300" fill="none" stroke="#57B8A6" stroke-width="2" stroke-dasharray="10 10" />
+          </svg>
           <div
             class="hero-panel relative overflow-hidden mx-auto"
             style="background-image: url('../temp/Photos/Updated_Background.png'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat; max-width: 80rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)"
@@ -216,33 +220,32 @@
       </section>
 
       <section class="py-16">
-        <div class="container-medq">
-          <div class="text-center text-gray-900 px-4 py-16" style="background-color: #efdcf2; border-radius: 2rem">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-12 w-12 mx-auto mb-4 opacity-90" aria-hidden="true">
-              <path d="M12 8V4H8"></path>
-              <rect width="16" height="12" x="4" y="8" rx="2"></rect>
-              <path d="M2 14h2"></path>
-              <path d="M20 14h2"></path>
-              <path d="M15 13v2"></path>
-              <path d="M9 13v2"></path>
+        <div class="container-medq py-16 px-4 text-center text-gray-900" style="background-color: #efdcf2; border-radius: 3rem; box-shadow: 0 40px 60px -15px rgba(0, 0, 0, 0.15), 0 20px 30px -10px rgba(0, 0, 0, 0.1)">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-12 w-12 mx-auto mb-4 opacity-90" aria-hidden="true">
+            <path d="M12 8V4H8"></path>
+            <rect width="16" height="12" x="4" y="8" rx="2"></rect>
+            <path d="M2 14h2"></path>
+            <path d="M20 14h2"></path>
+            <path d="M15 13v2"></path>
+            <path d="M9 13v2"></path>
+          </svg>
+          <h2 class="text-3xl font-bold mb-4">Have a question about your medication?</h2>
+          <p class="text-gray-700 mb-8 max-w-xl mx-auto">
+            Our AI assistant, powered by Google Gemini, can help answer your medication questions 24/7.
+          </p>
+          <a href="#" class="inline-flex items-center gap-2 bg-white font-semibold px-8 py-4 rounded-xl transition-opacity hover:opacity-90 text-lg" style="color: var(--primary)">
+            Chat with Med-Nest AI
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5" aria-hidden="true">
+              <path d="M5 12h14"></path>
+              <path d="m12 5 7 7-7 7"></path>
             </svg>
-            <h2 class="text-3xl font-bold mb-4">Have a question about your medication?</h2>
-            <p class="text-gray-700 mb-8 max-w-xl mx-auto">
-              Our AI assistant, powered by Google Gemini, can help answer your medication questions 24/7.
-            </p>
-            <a href="#" class="inline-flex items-center gap-2 bg-white font-semibold px-8 py-4 rounded-xl transition-opacity hover:opacity-90 text-lg" style="color: var(--primary)">
-              Chat with Med-Nest AI
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5" aria-hidden="true">
-                <path d="M5 12h14"></path>
-                <path d="m12 5 7 7-7 7"></path>
-              </svg>
-            </a>
-          </div>
+          </a>
         </div>
       </section>
     </main>
 
-    <footer class="py-12" style="background-color: #f6f9f8; color: #527a6d; font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif">
+    <footer class="py-12 relative" style="background-color: #f6f9f8; color: #527a6d; font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif">
+      <div style="position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent 0%, #3b82f6 50%, transparent 100%);"></div>
       <div class="container-medq">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
