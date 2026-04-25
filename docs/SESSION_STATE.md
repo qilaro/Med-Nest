@@ -1,7 +1,12 @@
 # Session Log - April 26, 2026
 
 ## Status
-- [x] Fixed invalid SVG DOM properties in `Footer.tsx` (camelCase migration).
+- [x] Fixed invalid SVG DOM properties in `Footer.tsx` and `Header.tsx`.
+- [x] Resolved Vercel 404 error by configuring monorepo deployment:
+    - Added root `package.json` with workspace build scripts.
+    - Created `vercel.json` to define build command and output directory.
+    - Created `.vercelignore` to exclude irrelevant directories from deployment.
+    - Standardized `pnpm` workspace with a single root `pnpm-lock.yaml`.
 - [ ] Final audit of the entire landing page against `reference/index.html` for pixel-perfect fidelity.
 - [ ] Begin migration of the Drug Directory (A-Z search) page.
 - [ ] Implement responsive mobile menu for the Header.
