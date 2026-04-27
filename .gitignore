@@ -27,3 +27,8 @@ yarn-error.log*
 # project specific
 temp/
 docs/tasks.md
+
+# Turbo & Build Artifacts
+.turbo/
+frontend/.turbo/
+frontend/.next/
