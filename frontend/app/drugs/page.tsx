@@ -3,23 +3,23 @@
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Search, Filter, Pill, Loader2 } from "lucide-react";
-import { drugService, DrugsResponse } from "@/lib/services/drugService";
+import { drugService } from "@/lib/services/drugService";
 import { DrugClass, DrugSummary } from "@/types/drug";
 import DrugCard from "@/components/drugs/DrugCard";
+import AZBrowse from "@/components/drugs/AZBrowse";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 /**
  * The core content of the Drugs page.
- * Wrapped in Suspense to handle URL search parameters correctly in Next.js.
  */
 function DrugsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   
-  // Get current filters from URL
   const searchQ = searchParams.get("search") || "";
   const drugClassFilter = searchParams.get("drug_class") || "";
+  const letterFilter = searchParams.get("letter") || "";
 
   const [drugs, setDrugs] = useState<DrugSummary[]>([]);
   const [classes, setClasses] = useState<DrugClass[]>([]);
@@ -34,7 +34,8 @@ function DrugsContent() {
       try {
         const [drugsData, classesData] = await Promise.all([
           drugService.getDrugs({ 
-            drug_class: drugClassFilter || undefined 
+            drug_class: drugClassFilter || undefined,
+            letter: letterFilter || undefined
           }),
           drugService.getDrugClasses()
         ]);
@@ -60,7 +61,7 @@ function DrugsContent() {
     }
 
     fetchData();
-  }, [searchQ, drugClassFilter]);
+  }, [searchQ, drugClassFilter, letterFilter]);
 
   // Update URL when search form is submitted
   const handleSearch = (e: React.FormEvent) => {
@@ -80,7 +81,7 @@ function DrugsContent() {
         </p>
       </header>
 
-      {/* Search & Filter Bar */}
+      {/* Search & Filter Bar - Now Above A-Z */}
       <form onSubmit={handleSearch} className="flex flex-wrap gap-4 mb-10 items-end">
         <div className="flex-1 min-w-[280px] space-y-2">
           <label className="text-sm font-semibold text-navy ml-1">Search Medication</label>
@@ -116,7 +117,7 @@ function DrugsContent() {
           Find Medicine
         </Button>
 
-        {(searchQ || drugClassFilter) && (
+        {(searchQ || drugClassFilter || letterFilter) && (
           <Button 
             variant="ghost" 
             onClick={() => {
@@ -131,6 +132,9 @@ function DrugsContent() {
         )}
       </form>
 
+      {/* A-Z Browse Navigation - Now Below Search */}
+      <AZBrowse />
+
       {/* Results Grid */}
       {loading ? (
         <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
@@ -141,7 +145,7 @@ function DrugsContent() {
         <>
           <div className="flex items-center justify-between mb-6">
             <p className="text-sm font-medium text-muted-foreground">
-              Showing <span className="text-navy">{drugs.length}</span> results
+              Showing <span className="text-navy">{drugs.length}</span> {letterFilter ? `starting with ${letterFilter}` : "results"}
             </p>
           </div>
 
