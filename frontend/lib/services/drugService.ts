@@ -37,11 +37,12 @@ export const drugService = {
   /**
    * Get a list of drugs with optional filtering
    */
-  getDrugs: async (params?: { page?: number; limit?: number; drug_class?: string }) => {
+  getDrugs: async (params?: { page?: number; limit?: number; drug_class?: string; letter?: string }) => {
     const q = new URLSearchParams();
     if (params?.page) q.set("page", String(params.page));
     if (params?.limit) q.set("limit", String(params.limit));
     if (params?.drug_class) q.set("drug_class", params.drug_class);
+    if (params?.letter) q.set("letter", params.letter);
     
     try {
       const data = await apiFetch<DrugsResponse>(`/drugs?${q}`);
@@ -58,6 +59,13 @@ export const drugService = {
       let drugs = data.drugs;
       if (params?.drug_class) {
         drugs = drugs.filter((d: any) => d.drugClass === params.drug_class);
+      }
+      if (params?.letter) {
+        if (params.letter === "0-9") {
+          drugs = drugs.filter((d: any) => /^[0-9]/.test(d.brandName));
+        } else {
+          drugs = drugs.filter((d: any) => d.brandName.toUpperCase().startsWith(params.letter!.toUpperCase()));
+        }
       }
       
       return {
