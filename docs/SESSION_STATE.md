@@ -1,4 +1,4 @@
-# Session Log - April 26, 2026
+# Session Log - April 27, 2026
 
 ## Status
 - [x] **Monorepo & Deployment**: Configured `turbo.json` and root `package.json`.
@@ -8,6 +8,7 @@
 - [x] **UI Components**: Built `StarRating.tsx` and shadcn-based `DrugCard.tsx`.
 - [x] **Directory Page**: Launched `/drugs` with search, filter, and responsive grid.
 - [x] **Navigation**: Connected Header "Drugs A-Z" link to `/drugs`.
+- [x] **Build Reliability**: Resolved TypeScript implicit type errors and optimized Turbo caching strategy (`turbo.json` + `ignore`).
 
 ## Next Steps (Target: drugs.com Parity)
 1.  **A-Z Navigation Bar**: Implement a persistent alphabetical filter bar on the `/drugs` page to match the `drugs.com` browsing experience.
@@ -19,6 +20,3 @@
 ## Foundational Directives
 *   **Reference Standard**: Every new page layout must be verified against `drugs.com` for structural and UX parity.
 *   **Gold Standard**: Maintain strict separation between UI "frames" and feature "pictures."
-
-# Session Log - April 25, 2026
-...
