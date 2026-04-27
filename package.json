@@ -4,7 +4,8 @@
   "packageManager": "pnpm@10.33.0",
   "scripts": {
     "build": "turbo run build",
-    "dev": "turbo run dev"
+    "dev": "turbo run dev",
+    "check": "turbo run type-check --filter=frontend"
   },
   "devDependencies": {
     "turbo": "latest"

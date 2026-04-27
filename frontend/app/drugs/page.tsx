@@ -44,7 +44,7 @@ function DrugsContent() {
         // Local filtering for search (Standard for MVP)
         if (searchQ) {
           filteredDrugs = filteredDrugs.filter(
-            (dr) =>
+            (dr: DrugSummary) =>
               dr.brandName.toLowerCase().includes(searchQ.toLowerCase()) ||
               dr.genericName.toLowerCase().includes(searchQ.toLowerCase())
           );
