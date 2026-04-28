@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Search, Filter, Pill, Loader2 } from "lucide-react";
 import { drugService } from "@/lib/services/drugService";
@@ -9,6 +9,7 @@ import DrugCard from "@/components/drugs/DrugCard";
 import AZBrowse from "@/components/drugs/AZBrowse";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { SearchSuggestions } from "@/components/drugs/SearchSuggestions";
 
 /**
  * The core content of the Drugs page.
@@ -26,6 +27,22 @@ function DrugsContent() {
   const [query, setQuery] = useState(searchQ);
   const [selectedClass, setSelectedClass] = useState(drugClassFilter);
   const [loading, setLoading] = useState(true);
+  
+  // Suggestion state
+  const [suggestions, setSuggestions] = useState<DrugSummary[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchRef = useRef<HTMLFormElement>(null);
+
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // Fetch data when filters change
   useEffect(() => {
@@ -62,6 +79,21 @@ function DrugsContent() {
 
     fetchData();
   }, [searchQ, drugClassFilter, letterFilter]);
+  // Handle suggestion filtering
+  useEffect(() => {
+    if (query.trim().length >= 1) {
+      const filtered = drugs.filter(
+        (d: DrugSummary) =>
+          d.brandName.toLowerCase().includes(query.toLowerCase()) ||
+          d.genericName.toLowerCase().includes(query.toLowerCase())
+      ).slice(0, 10);
+      setSuggestions(filtered);
+      setShowSuggestions(true);
+    } else {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
+  }, [query, drugs]);
 
   // Update URL when search form is submitted
   const handleSearch = (e: React.FormEvent) => {
@@ -70,6 +102,13 @@ function DrugsContent() {
     if (query) params.set("search", query);
     if (selectedClass) params.set("drug_class", selectedClass);
     router.push(`/drugs?${params.toString()}`);
+    setShowSuggestions(false);
+  };
+
+  const handleSuggestionSelect = (drug: DrugSummary) => {
+    setQuery(drug.brandName);
+    setShowSuggestions(false);
+    router.push(`/drugs/${drug.slug}`);
   };
 
   return (
@@ -82,8 +121,8 @@ function DrugsContent() {
       </header>
 
       {/* Search & Filter Bar - Now Above A-Z */}
-      <form onSubmit={handleSearch} className="flex flex-wrap gap-4 mb-10 items-end">
-        <div className="flex-1 min-w-[280px] space-y-2">
+      <form ref={searchRef} onSubmit={handleSearch} className="flex flex-wrap gap-4 mb-10 items-end">
+        <div className="flex-1 min-w-[280px] space-y-2 relative">
           <label className="text-sm font-semibold text-navy ml-1">Search Medication</label>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -91,18 +130,24 @@ function DrugsContent() {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
+              onFocus={() => query.trim().length >= 1 && setShowSuggestions(true)}
               placeholder="e.g. Paracetamol, Nexium..."
               className="pl-10 h-12"
             />
           </div>
+          <SearchSuggestions 
+            suggestions={suggestions} 
+            isVisible={showSuggestions} 
+            onSelect={handleSuggestionSelect} 
+          />
         </div>
 
-        <div className="min-w-[200px] space-y-2">
+        <div className="w-[180px] space-y-2">
           <label className="text-sm font-semibold text-navy ml-1">Drug Class</label>
           <select
             value={selectedClass}
             onChange={(e) => setSelectedClass(e.target.value)}
-            className="w-full h-12 rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full h-12 rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer"
           >
             <option value="">All Classes</option>
             {classes.map((c) => (
@@ -113,7 +158,7 @@ function DrugsContent() {
           </select>
         </div>
 
-        <Button type="submit" className="h-12 px-8 bg-primary hover:bg-primary-dark">
+        <Button type="submit" className="h-12 px-5 bg-primary hover:bg-primary-dark cursor-pointer font-bold uppercase tracking-wide">
           Find Medicine
         </Button>
 

@@ -3,6 +3,8 @@ export interface DrugSummary {
   slug: string;
   brandName: string;
   genericName: string;
+  dosageForm: string;
+  strength: string;
   drugClass: string;
   company?: string;
   price?: string;

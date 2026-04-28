@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
 
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
@@ -10,7 +11,7 @@ const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
  * AZBrowse Component
  * Refined A-Z navigation with a solid, high-contrast professional aesthetic.
  */
-export default function AZBrowse() {
+function AZBrowseContent() {
   const searchParams = useSearchParams();
   const currentLetter = searchParams.get("letter");
 
@@ -48,5 +49,13 @@ export default function AZBrowse() {
         </Button>
       </div>
     </div>
+  );
+}
+
+export default function AZBrowse() {
+  return (
+    <Suspense fallback={<div className="h-40 w-full animate-pulse bg-gray-100 rounded-2xl" />}>
+      <AZBrowseContent />
+    </Suspense>
   );
 }
