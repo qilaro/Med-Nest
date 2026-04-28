@@ -39,7 +39,7 @@ export default function Home() {
         try {
           const { drugs } = await drugService.getDrugs();
           const filtered = drugs.filter(
-            (d) =>
+            (d: DrugSummary) =>
               d.brandName.toLowerCase().includes(query.toLowerCase()) ||
               d.genericName.toLowerCase().includes(query.toLowerCase())
           ).slice(0, 10);
