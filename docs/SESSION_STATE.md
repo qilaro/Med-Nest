@@ -3,7 +3,7 @@
 ## Status
 - [x] **Hero Redesign**: Finalized glassmorphism design with mint-colored container, symmetric padding, and premium edge effects.
 - [x] **Navigation/UI**: Integrated persistent A-Z navigation and refined search bar UI.
-- [x] **Build Integrity**: Resolved `useSearchParams` Suspense boundary error and passed production build.
+- [x] **Build Integrity**: Resolved `useSearchParams` Suspense boundary error and optional property (`company`) Type errors; passed production build.
 - [x] **Deployment**: Pushed all finalized hero/UI changes to `feature/az-navigation`.
 
 ## Next Steps (Target: #1 Drug Search Website in Bangladesh)

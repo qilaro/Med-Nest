@@ -22,15 +22,15 @@
   --popover-foreground: #0D261E;
   --primary-foreground: #ffffff;
   --secondary: #f4f4f5;
-  --secondary-foreground: #57B8A6;
+  --secondary-foreground: var(--primary);
   --muted: #f4f4f5;
   --muted-foreground: #71717a;
   --accent: #f4f4f5;
-  --accent-foreground: #57B8A6;
+  --accent-foreground: var(--primary);
   --destructive: #ef4444;
   --border: #e4e4e7;
   --input: #e4e4e7;
-  --ring: #57B8A6;
+  --ring: var(--primary);
   --radius: 0.625rem;
 }
 

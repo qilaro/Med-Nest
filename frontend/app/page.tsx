@@ -34,23 +34,26 @@ export default function Home() {
 
   // Handle search input changes
   useEffect(() => {
+    if (query.trim().length === 0) {
+      // Don't clear suggestions here, let handleFocus manage initial featured drugs
+      return;
+    }
+
     const fetchSuggestions = async () => {
-      if (query.trim().length >= 1) {
-        try {
-          const { drugs } = await drugService.getDrugs();
-          const filtered = drugs.filter(
-            (d: DrugSummary) =>
-              d.brandName.toLowerCase().includes(query.toLowerCase()) ||
-              d.genericName.toLowerCase().includes(query.toLowerCase())
-          ).slice(0, 10);
-          setSuggestions(filtered);
-          setShowSuggestions(true);
-        } catch (error) {
-          console.error("Failed to fetch suggestions:", error);
-        }
-      } else {
-        setSuggestions([]);
-        setShowSuggestions(false);
+      try {
+        const { drugs } = await drugService.getDrugs();
+        const trimmedLowerQuery = query.trim().toLowerCase();
+        const filtered = drugs.filter(
+          (d: DrugSummary) =>
+            d.brandName.toLowerCase().includes(trimmedLowerQuery) ||
+            d.genericName.toLowerCase().includes(trimmedLowerQuery) ||
+            d.drugClass.toLowerCase().includes(trimmedLowerQuery) ||
+            (d.company?.toLowerCase()?.includes(trimmedLowerQuery) ?? false)
+        ).slice(0, 10);
+        setSuggestions(filtered);
+        setShowSuggestions(true);
+      } catch (error) {
+        console.error("Failed to fetch suggestions:", error);
       }
     };
 
@@ -70,6 +73,20 @@ export default function Home() {
     setQuery(drug.brandName);
     setShowSuggestions(false);
     router.push(`/drugs/${drug.slug}`);
+  };
+
+  const handleFocus = async () => {
+    if (query.trim().length === 0) {
+      try {
+        const { drugs } = await drugService.getDrugs();
+        setSuggestions(drugs.slice(0, 5));
+        setShowSuggestions(true);
+      } catch (error) {
+        console.error("Failed to fetch featured suggestions:", error);
+      }
+    } else {
+      setShowSuggestions(true);
+    }
   };
 
   return (
@@ -130,7 +147,7 @@ export default function Home() {
                       type="text" 
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
-                      onFocus={() => query.trim().length >= 1 && setShowSuggestions(true)}
+                      onFocus={handleFocus}
                       placeholder="Search any drug name, ingredient, or condition..." 
                       className="pl-12 h-14 text-base border-none shadow-none focus-visible:ring-0" 
                     />
@@ -143,6 +160,8 @@ export default function Home() {
                   suggestions={suggestions} 
                   isVisible={showSuggestions} 
                   onSelect={handleSuggestionSelect} 
+                  isFeatured={query.trim().length === 0}
+                  query={query}
                 />
               </form>
 
@@ -167,8 +186,8 @@ export default function Home() {
 
       {/* Stats Section */}
       <section className="py-3 relative bg-gray-50">
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, #57B8A6 0%, transparent 50%, #57B8A6 100%)' }}></div>
-        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, #57B8A6 0%, transparent 50%, #57B8A6 100%)' }}></div>
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, var(--primary) 0%, transparent 50%, var(--primary) 100%)' }}></div>
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, var(--primary) 0%, transparent 50%, var(--primary) 100%)' }}></div>
         <div className="container-medq">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             {[
