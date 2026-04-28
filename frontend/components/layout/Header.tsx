@@ -14,7 +14,7 @@ const Header = () => {
               </svg>
             </div>
             <div className="leading-tight">
-              <span className="text-2xl font-bold text-primary">Med-Nest</span>
+              <span className="text-2xl font-bold text-[--primary]">Med-Nest</span>
               <div className="text-xs text-gray-500 hidden sm:block">Learn more. Live better.</div>
             </div>
           </Link>

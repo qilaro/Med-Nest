@@ -1,13 +1,77 @@
+"use client";
+
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FeaturesCarousel } from "@/components/sections/FeaturesCarousel";
 import { HealthNews } from "@/components/sections/HealthNews";
 import { AiAssistantCTA } from "@/components/sections/AiAssistantCTA";
 import AZBrowse from "@/components/drugs/AZBrowse";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { SearchSuggestions } from "@/components/drugs/SearchSuggestions";
+import { drugService } from "@/lib/services/drugService";
+import { DrugSummary } from "@/types/drug";
 
 export default function Home() {
+  const router = useRouter();
+  const [query, setQuery] = useState("");
+  const [suggestions, setSuggestions] = useState<DrugSummary[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchRef = useRef<HTMLFormElement>(null);
+
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Handle search input changes
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      if (query.trim().length >= 1) {
+        try {
+          const { drugs } = await drugService.getDrugs();
+          const filtered = drugs.filter(
+            (d) =>
+              d.brandName.toLowerCase().includes(query.toLowerCase()) ||
+              d.genericName.toLowerCase().includes(query.toLowerCase())
+          ).slice(0, 10);
+          setSuggestions(filtered);
+          setShowSuggestions(true);
+        } catch (error) {
+          console.error("Failed to fetch suggestions:", error);
+        }
+      } else {
+        setSuggestions([]);
+        setShowSuggestions(false);
+      }
+    };
+
+    const timer = setTimeout(fetchSuggestions, 300);
+    return () => clearTimeout(timer);
+  }, [query]);
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (query.trim()) {
+      router.push(`/drugs?search=${encodeURIComponent(query)}`);
+      setShowSuggestions(false);
+    }
+  };
+
+  const handleSuggestionSelect = (drug: DrugSummary) => {
+    setQuery(drug.brandName);
+    setShowSuggestions(false);
+    router.push(`/drugs/${drug.slug}`);
+  };
+
   return (
     <div className="flex flex-col flex-1 bg-white">
       {/* Hero Section */}
@@ -55,7 +119,7 @@ export default function Home() {
               </p>
 
               {/* Search Bar - Centered */}
-              <form className="max-w-2xl mx-auto mb-4">
+              <form ref={searchRef} onSubmit={handleSearchSubmit} className="max-w-2xl mx-auto mb-4 relative">
                 <div className="flex gap-2 bg-white rounded-2xl py-1.5 pl-1.5 pr-4 shadow-2xl border border-gray-100">
                   <div className="flex-1 relative flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="absolute left-4 h-5 w-5 text-gray-400" aria-hidden="true">
@@ -64,14 +128,22 @@ export default function Home() {
                     </svg>
                     <Input 
                       type="text" 
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      onFocus={() => query.trim().length >= 1 && setShowSuggestions(true)}
                       placeholder="Search any drug name, ingredient, or condition..." 
                       className="pl-12 h-14 text-base border-none shadow-none focus-visible:ring-0" 
                     />
                   </div>
-                  <Button type="submit" className="h-14 px-8 rounded-xl font-semibold text-base" style={{ backgroundColor: 'var(--primary)' }}>
+                  <Button type="submit" className="h-14 px-8 rounded-xl font-semibold text-base cursor-pointer" style={{ backgroundColor: 'var(--primary)' }}>
                     Search
                   </Button>
                 </div>
+                <SearchSuggestions 
+                  suggestions={suggestions} 
+                  isVisible={showSuggestions} 
+                  onSelect={handleSuggestionSelect} 
+                />
               </form>
 
               {/* Trending Searches */}
