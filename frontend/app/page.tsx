@@ -167,8 +167,8 @@ export default function Home() {
 
       {/* Stats Section */}
       <section className="py-3 relative bg-gray-50">
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, #57B8A6 0%, transparent 50%, #57B8A6 100%)' }}></div>
-        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, #57B8A6 0%, transparent 50%, #57B8A6 100%)' }}></div>
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, var(--primary) 0%, transparent 50%, var(--primary) 100%)' }}></div>
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, var(--primary) 0%, transparent 50%, var(--primary) 100%)' }}></div>
         <div className="container-medq">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             {[
