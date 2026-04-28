@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Search, Filter, Pill, Loader2 } from "lucide-react";
+import { Search, SlidersHorizontal, Pill, Loader2, X, AlertCircle, Star } from "lucide-react";
 import { drugService } from "@/lib/services/drugService";
 import { DrugClass, DrugSummary } from "@/types/drug";
 import DrugCard from "@/components/drugs/DrugCard";
@@ -10,6 +10,7 @@ import AZBrowse from "@/components/drugs/AZBrowse";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { SearchSuggestions } from "@/components/drugs/SearchSuggestions";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 /**
  * The core content of the Drugs page.
@@ -20,14 +21,24 @@ function DrugsContent() {
   
   const searchQ = searchParams.get("search") || "";
   const drugClassFilter = searchParams.get("drug_class") || "";
+  const companyFilter = searchParams.get("company") || "";
+  const genericFilter = searchParams.get("generic") || "";
+  const ratingFilter = searchParams.get("rating") || "";
   const letterFilter = searchParams.get("letter") || "";
-  const isFiltered = !!(searchQ || drugClassFilter || letterFilter);
+  const isFiltered = !!(searchQ || drugClassFilter || companyFilter || genericFilter || ratingFilter || letterFilter);
 
   const [drugs, setDrugs] = useState<DrugSummary[]>([]);
   const [classes, setClasses] = useState<DrugClass[]>([]);
+  const [companies, setCompanies] = useState<string[]>([]);
+  const [generics, setGenerics] = useState<string[]>([]);
   const [query, setQuery] = useState(searchQ);
   const [selectedClass, setSelectedClass] = useState(drugClassFilter);
+  const [selectedCompany, setSelectedCompany] = useState(companyFilter);
+  const [selectedGeneric, setSelectedGeneric] = useState(genericFilter);
+  const [selectedRating, setSelectedRating] = useState(ratingFilter);
   const [loading, setLoading] = useState(true);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [warning, setWarning] = useState<string | null>(null);
   
   // Suggestion state
   const [suggestions, setSuggestions] = useState<DrugSummary[]>([]);
@@ -50,17 +61,22 @@ function DrugsContent() {
     async function fetchData() {
       setLoading(true);
       try {
-        const [drugsData, classesData] = await Promise.all([
+        const [drugsData, classesData, companiesData] = await Promise.all([
           drugService.getDrugs({ 
             drug_class: drugClassFilter || undefined,
             letter: letterFilter || undefined
           }),
-          drugService.getDrugClasses()
+          drugService.getDrugClasses(),
+          drugService.getCompanies()
         ]);
 
         let filteredDrugs = drugsData.drugs;
         
-        // Local filtering for search (Standard for MVP)
+        // Extract unique generic names for filter
+        const uniqueGenerics = Array.from(new Set(drugsData.drugs.map((d: DrugSummary) => d.genericName) as string[])).sort();
+        setGenerics(uniqueGenerics);
+        
+        // Local filtering
         if (searchQ) {
           const trimmedLowerQuery = query.trim().toLowerCase();
           filteredDrugs = filteredDrugs.filter(
@@ -72,8 +88,22 @@ function DrugsContent() {
           );
         }
 
+        if (companyFilter) {
+          filteredDrugs = filteredDrugs.filter((dr: DrugSummary) => dr.company === companyFilter);
+        }
+        
+        if (genericFilter) {
+          filteredDrugs = filteredDrugs.filter((dr: DrugSummary) => dr.genericName === genericFilter);
+        }
+        
+        if (ratingFilter) {
+          const minRating = parseFloat(ratingFilter);
+          filteredDrugs = filteredDrugs.filter((dr: DrugSummary) => (dr.averageRating || 0) >= minRating);
+        }
+
         setDrugs(filteredDrugs);
         setClasses(classesData);
+        setCompanies(companiesData);
       } catch (error) {
         console.error("Failed to fetch drugs:", error);
       } finally {
@@ -82,14 +112,11 @@ function DrugsContent() {
     }
 
     fetchData();
-  }, [searchQ, drugClassFilter, letterFilter]);
+  }, [searchQ, drugClassFilter, companyFilter, genericFilter, ratingFilter, letterFilter]);
 
   // Handle suggestion filtering
   useEffect(() => {
-    if (query.trim().length === 0) {
-      // Do not clear suggestions automatically, let handleFocus manage featured state
-      return;
-    }
+    if (query.trim().length === 0) return;
 
     const lowerQuery = query.trim().toLowerCase();
     const filtered = drugs.filter(
@@ -103,14 +130,30 @@ function DrugsContent() {
     setShowSuggestions(true);
   }, [query, drugs]);
 
-  // Update URL when search form is submitted
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSearch = (e?: React.FormEvent, isFilterAction = false) => {
+    if (e) e.preventDefault();
+
+    if (isFilterAction && !selectedClass && !selectedCompany && !selectedGeneric && !selectedRating) {
+      setWarning("No filter selected");
+      setTimeout(() => setWarning(null), 3000);
+      return;
+    }
+
+    if (!isFilterAction && !query.trim()) {
+      setWarning("No medicine searched");
+      setTimeout(() => setWarning(null), 3000);
+      return;
+    }
+
     const params = new URLSearchParams();
     if (query) params.set("search", query);
     if (selectedClass) params.set("drug_class", selectedClass);
+    if (selectedCompany) params.set("company", selectedCompany);
+    if (selectedGeneric) params.set("generic", selectedGeneric);
+    if (selectedRating) params.set("rating", selectedRating);
     router.push(`/drugs?${params.toString()}`);
     setShowSuggestions(false);
+    setIsFilterOpen(false);
   };
 
   const handleSuggestionSelect = (drug: DrugSummary) => {
@@ -133,135 +176,143 @@ function DrugsContent() {
     }
   };
 
+  const clearFilters = () => {
+    setQuery("");
+    setSelectedClass("");
+    setSelectedCompany("");
+    setSelectedGeneric("");
+    setSelectedRating("");
+    router.push("/drugs");
+  };
+
   return (
     <div className="container-medq py-10">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold text-navy mb-2">Drug Directory</h1>
-        <p className="text-muted-foreground">
-          Browse our complete database of medications, verified by pharmacists.
-        </p>
-      </header>
+      <div className="max-w-4xl mx-auto">
+        <header className="mb-8">
+          <h1 className="text-3xl font-bold text-navy mb-2">Drug Directory</h1>
+          <p className="text-muted-foreground">
+            Browse our complete database of medications, verified by pharmacists.
+          </p>
+        </header>
 
-      {/* Search & Filter Bar - Now Above A-Z */}
-      <form ref={searchRef} onSubmit={handleSearch} className="flex flex-wrap gap-4 mb-10 items-end">
-        <div className="flex-1 min-w-[280px] space-y-2 relative">
-          <label className="text-sm font-semibold text-navy ml-1">Search Medication</label>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        {warning && (
+          <div className="flex items-center gap-2 p-4 mb-4 bg-yellow-50 text-yellow-700 rounded-lg border border-yellow-200">
+            <AlertCircle className="h-5 w-5" />
+            <p className="font-semibold">{warning}</p>
+          </div>
+        )}
+
+        <form ref={searchRef} onSubmit={(e) => handleSearch(e)} className="flex flex-wrap gap-4 mb-10 items-center">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onFocus={handleFocus}
-              placeholder="e.g. Paracetamol, Nexium..."
-              className="pl-10 h-12"
+              placeholder="Search medications..."
+              className="pl-10 h-14 rounded-xl text-base shadow-sm"
+            />
+            <SearchSuggestions 
+              suggestions={suggestions} 
+              isVisible={showSuggestions} 
+              onSelect={handleSuggestionSelect} 
+              isFeatured={query.trim().length === 0}
+              query={query}
             />
           </div>
-          <SearchSuggestions 
-            suggestions={suggestions} 
-            isVisible={showSuggestions} 
-            onSelect={handleSuggestionSelect} 
-            isFeatured={query.trim().length === 0}
-            query={query}
-          />
-        </div>
 
-        <div className="w-[180px] space-y-2">
-          <label className="text-sm font-semibold text-navy ml-1">Drug Class</label>
-          <select
-            value={selectedClass}
-            onChange={(e) => setSelectedClass(e.target.value)}
-            className="w-full h-12 rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer"
-          >
-            <option value="">All Classes</option>
-            {classes.map((c) => (
-              <option key={c.name} value={c.name}>
-                {c.name} ({c.count})
-              </option>
-            ))}
-          </select>
-        </div>
+          <Popover open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="h-14 px-6 rounded-xl gap-2 font-semibold text-base border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors">
+                <SlidersHorizontal className="h-5 w-5" />
+                Filters
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80 p-6 space-y-6 bg-white opacity-100 min-h-[400px]" side="bottom" align="start" sideOffset={8}>
+              <div className="space-y-2">
+                <label className="text-sm font-semibold">Drug Class</label>
+                <select
+                  value={selectedClass}
+                  onChange={(e) => setSelectedClass(e.target.value)}
+                  className="w-full h-12 rounded-lg border border-gray-200 px-3 cursor-pointer [&>option]:cursor-pointer"
+                >
+                  <option value="">All Classes</option>
+                  {classes.map((c) => <option key={c.name} value={c.name}>{c.name}</option>)}
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-semibold">Company</label>
+                <select
+                  value={selectedCompany}
+                  onChange={(e) => setSelectedCompany(e.target.value)}
+                  className="w-full h-12 rounded-lg border border-gray-200 px-3 cursor-pointer [&>option]:cursor-pointer"
+                >
+                  <option value="">All Companies</option>
+                  {companies.map((c) => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-semibold">Generic Name</label>
+                <select
+                  value={selectedGeneric}
+                  onChange={(e) => setSelectedGeneric(e.target.value)}
+                  className="w-full h-12 rounded-lg border border-gray-200 px-3 cursor-pointer [&>option]:cursor-pointer"
+                >
+                  <option value="">All Generics</option>
+                  {generics.map((g) => <option key={g} value={g}>{g}</option>)}
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-semibold">Minimum Rating</label>
+                <select
+                  value={selectedRating}
+                  onChange={(e) => setSelectedRating(e.target.value)}
+                  className="w-full h-12 rounded-lg border border-gray-200 px-3 cursor-pointer [&>option]:cursor-pointer"
+                >
+                  <option value="">All Ratings</option>
+                  <option value="5">5.0 ★★★★★</option>
+                  <option value="4">4.0+ ★★★★☆</option>
+                  <option value="3">3.0+ ★★★☆☆</option>
+                  <option value="2">2.0+ ★★☆☆☆</option>
+                </select>
+              </div>
+              <Button className="w-full h-12 font-bold bg-primary cursor-pointer" onClick={() => handleSearch(undefined, true)}>Apply Filters</Button>
+            </PopoverContent>
+          </Popover>
 
-        <Button type="submit" className="h-12 px-5 bg-primary hover:bg-primary-dark cursor-pointer font-bold uppercase tracking-wide">
-          Find Medicine
-        </Button>
-
-        {isFiltered && (
-          <Button 
-            variant="ghost" 
-            onClick={() => {
-              setQuery("");
-              setSelectedClass("");
-              router.push("/drugs");
-            }}
-            className="h-12 text-muted-foreground hover:text-primary cursor-pointer"
-          >
-            Clear Filters
+          <Button type="submit" className="h-14 px-8 rounded-xl font-bold bg-primary hover:bg-primary-dark cursor-pointer">
+            Find Medicine
           </Button>
-        )}
-      </form>
 
-      {/* A-Z Browse Navigation - Now Below Search */}
-      <AZBrowse />
+          {isFiltered && (
+            <Button variant="ghost" onClick={clearFilters} className="text-muted-foreground h-14 cursor-pointer">
+              <X className="h-5 w-5 mr-1" /> Clear
+            </Button>
+          )}
+        </form>
 
-      {/* Results Grid */}
+        <AZBrowse showAdvancedSearch={false} />
+        <hr className="my-8 border-t border-gray-200" />
+      </div>
+      
       {loading ? (
         <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
           <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
-          <p>Scanning medical database...</p>
+          <p>Scanning database...</p>
         </div>
       ) : (
-        <>
-          {letterFilter ? (
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold text-navy mb-1">
-                Most Common '{letterFilter.toUpperCase()}' Drugs
-              </h2>
-              <p className="text-muted-foreground">
-                Common medications that begin with the letter '{letterFilter.toUpperCase()}'
-              </p>
-            </div>
-          ) : !isFiltered && (
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold text-navy mb-1">Popular Drug Searches</h2>
-              <p className="text-muted-foreground">Frequently searched medications and medical treatments.</p>
-            </div>
-          )}
-
-          {isFiltered && (
-            <div className="flex items-center justify-between mb-6">
-              <p className="text-sm font-medium text-muted-foreground">
-                Showing <span className="text-navy">{drugs.length}</span> results
-              </p>
-            </div>
-          )}
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {isFiltered ? (
-              drugs.map((drug) => <DrugCard key={drug.id} drug={drug} />)
-            ) : (
-              drugs.slice(0, 12).map((drug) => <DrugCard key={drug.id} drug={drug} />)
-            )}
+        <div className="mx-auto max-w-4xl">
+          <h2 className="text-xl font-bold text-navy mb-6">Popular Drug Searches</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {isFiltered ? drugs.map((drug) => <DrugCard key={drug.id} drug={drug} />) : drugs.slice(0, 12).map((drug) => <DrugCard key={drug.id} drug={drug} />)}
           </div>
-
-          {drugs.length === 0 && isFiltered && (
-            <div className="text-center py-20 bg-muted/30 rounded-3xl border-2 border-dashed">
-              <Pill className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-20" />
-              <h3 className="text-xl font-bold text-navy mb-1">No Medications Found</h3>
-              <p className="text-muted-foreground max-w-xs mx-auto">
-                We couldn't find any results matching your search. Try adjusting your filters.
-              </p>
-            </div>
-          )}
-        </>
+        </div>
       )}
     </div>
   );
 }
 
-/**
- * Main Page Export
- */
 export default function DrugsPage() {
   return (
     <Suspense fallback={

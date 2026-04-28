@@ -73,7 +73,7 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
     <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-[100] max-h-[400px] overflow-y-auto">
       {isFeatured && (
         <div className="px-6 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider bg-gray-50 border-b border-gray-100 text-left">
-          Featured Searches
+          Popular Drug Searches
         </div>
       )}
       <div className="py-2">
@@ -96,7 +96,7 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
                 </span>
               </div>
               <div className="text-xs opacity-70 truncate font-medium">
-                {drug.genericName} • {drug.dosageForm}
+                <HighlightText text={drug.genericName} query={query} isHighlighted={isFeatured} /> • {drug.dosageForm}
               </div>
             </div>
           </button>

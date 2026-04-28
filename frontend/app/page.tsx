@@ -177,7 +177,7 @@ export default function Home() {
 
               {/* AZBrowse included directly in hero for maximum visibility */}
               <div className="max-w-4xl mx-auto">
-                <AZBrowse />
+                <AZBrowse showAdvancedSearch={true} />
               </div>
             </div>
           </div>

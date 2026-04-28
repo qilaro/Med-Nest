@@ -118,6 +118,20 @@ export const drugService = {
   },
 
   /**
+   * Get all companies
+   */
+  getCompanies: async (): Promise<string[]> => {
+    try {
+      return await apiFetch<string[]>("/drugs/companies");
+    } catch (error) {
+      const response = await fetch("/data/drugs.json");
+      const data = await response.json();
+      const companies = Array.from(new Set(data.drugs.map((d: any) => d.company))).sort() as string[];
+      return companies;
+    }
+  },
+
+  /**
    * Get a single drug by its slug
    */
   getDrugBySlug: (slug: string) => {

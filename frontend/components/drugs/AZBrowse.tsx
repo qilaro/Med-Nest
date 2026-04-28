@@ -10,7 +10,7 @@ const TABS = ["Browse Drugs", "Conditions", "Symptoms"];
 /**
  * AZBrowse Content Component
  */
-function AZBrowseContent() {
+function AZBrowseContent({ showAdvancedSearch = true }: { showAdvancedSearch?: boolean }) {
   const searchParams = useSearchParams();
   const currentLetter = searchParams.get("letter");
   const [activeTab, setActiveTab] = useState(TABS[0]);
@@ -18,20 +18,30 @@ function AZBrowseContent() {
   return (
     <div className="w-full max-w-4xl my-8">
       {/* Tabs */}
-      <div className="flex gap-2 mb-6">
-        {TABS.map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`px-6 py-2.5 rounded-lg font-medium text-sm transition-colors cursor-pointer ${
-              activeTab === tab
-                ? "bg-[#0D261E] text-white"
-                : "bg-white text-blue-600 hover:bg-gray-100 border border-gray-200"
-            }`}
+      <div className="flex justify-between items-center mb-6">
+        <div className="flex gap-2">
+          {TABS.map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`px-6 py-2.5 rounded-lg font-medium text-sm transition-colors cursor-pointer ${
+                activeTab === tab
+                  ? "bg-[#0D261E] text-white"
+                  : "bg-white text-blue-600 hover:bg-gray-100 border border-gray-200"
+              }`}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+        {showAdvancedSearch && (
+          <Link 
+            href="/drugs"
+            className="px-6 py-2.5 rounded-lg font-medium text-sm transition-colors cursor-pointer bg-white text-blue-600 hover:bg-gray-100 border border-gray-200"
           >
-            {tab}
-          </button>
-        ))}
+            Advanced Search
+          </Link>
+        )}
       </div>
 
       {/* A-Z Grid */}
@@ -60,22 +70,16 @@ function AZBrowseContent() {
           >
             0-9
           </Link>
-          <Link
-            href="#"
-            className="flex items-center justify-center col-span-3 h-12 rounded-lg font-semibold bg-white text-gray-700 border border-gray-200 hover:bg-gray-100 hover:border-gray-300 transition-all cursor-pointer px-4 whitespace-nowrap"
-          >
-            Advanced Search
-          </Link>
         </div>
       </div>
     </div>
   );
 }
 
-export default function AZBrowse() {
+export default function AZBrowse({ showAdvancedSearch }: { showAdvancedSearch?: boolean }) {
   return (
     <Suspense fallback={<div className="h-40 w-full animate-pulse bg-gray-100 rounded-2xl" />}>
-      <AZBrowseContent />
+      <AZBrowseContent showAdvancedSearch={showAdvancedSearch} />
     </Suspense>
   );
 }
