@@ -79,12 +79,11 @@ function DrugsContent() {
 
     fetchData();
   }, [searchQ, drugClassFilter, letterFilter]);
-
   // Handle suggestion filtering
   useEffect(() => {
     if (query.trim().length >= 1) {
       const filtered = drugs.filter(
-        (d) =>
+        (d: DrugSummary) =>
           d.brandName.toLowerCase().includes(query.toLowerCase()) ||
           d.genericName.toLowerCase().includes(query.toLowerCase())
       ).slice(0, 10);

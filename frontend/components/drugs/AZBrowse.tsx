@@ -1,80 +1,57 @@
 "use client";
 
-import { useState, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
+import { Button } from "@/components/ui/button";
 
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-const TABS = ["Browse Drugs", "Conditions", "Symptoms"];
 
 /**
- * AZBrowse Content Component
+ * AZBrowse Component
+ * Refined A-Z navigation with a solid, high-contrast professional aesthetic.
  */
 function AZBrowseContent() {
   const searchParams = useSearchParams();
   const currentLetter = searchParams.get("letter");
-  const [activeTab, setActiveTab] = useState(TABS[0]);
 
   return (
-    <div className="w-full max-w-4xl mx-auto my-8">
-      {/* Tabs */}
-      <div className="flex gap-2 mb-6">
-        {TABS.map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`px-6 py-2.5 rounded-lg font-medium text-sm transition-colors cursor-pointer ${
-              activeTab === tab
-                ? "bg-navy text-white"
-                : "bg-gray-100 text-blue-600 hover:bg-gray-200"
+    <div className="bg-white p-8 rounded-3xl border border-gray-200 shadow-sm shadow-gray-200/50 my-8">
+      <h2 className="text-xl font-bold text-navy mb-6 flex items-center gap-2">
+        <span className="w-1.5 h-6 bg-primary rounded-full" />
+        Browse Medications A-Z
+      </h2>
+      <div className="flex flex-wrap gap-2">
+        {LETTERS.map((letter) => (
+          <Button
+            key={letter}
+            variant={currentLetter === letter ? "default" : "secondary"}
+            className={`w-10 h-10 p-0 font-bold border transition-all duration-200 ${
+              currentLetter === letter 
+                ? "bg-primary hover:bg-primary-dark border-primary text-white shadow-md shadow-primary/20" 
+                : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-primary hover:text-primary"
             }`}
+            asChild
           >
-            {tab}
-          </button>
+            <Link href={`/drugs?letter=${letter}`}>{letter}</Link>
+          </Button>
         ))}
-      </div>
-
-      {/* A-Z Grid */}
-      <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(48px,1fr))] gap-2">
-          {LETTERS.map((letter) => (
-            <Link
-              key={letter}
-              href={`/drugs?letter=${letter}`}
-              className={`flex items-center justify-center h-12 rounded-lg font-semibold border transition-all cursor-pointer ${
-                currentLetter === letter
-                  ? "bg-primary text-white border-primary shadow-md"
-                  : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100 hover:border-gray-300"
-              }`}
-            >
-              {letter}
-            </Link>
-          ))}
-          <Link
-            href="/drugs?letter=0-9"
-            className={`flex items-center justify-center h-12 rounded-lg font-semibold border transition-all cursor-pointer ${
-              currentLetter === "0-9"
-                ? "bg-primary text-white border-primary shadow-md"
-                : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100 hover:border-gray-300"
-            }`}
-          >
-            0-9
-          </Link>
-          <Link
-            href="#"
-            className="flex items-center justify-center col-span-2 sm:col-span-3 h-12 rounded-lg font-semibold bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100 hover:border-gray-300 transition-all cursor-pointer"
-          >
-            Advanced Search
-          </Link>
-        </div>
+        <Button
+          variant={currentLetter === "0-9" ? "default" : "secondary"}
+          className={`w-16 h-10 p-0 font-bold border transition-all duration-200 ${
+            currentLetter === "0-9" 
+              ? "bg-primary hover:bg-primary-dark border-primary text-white shadow-md shadow-primary/20" 
+              : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-primary hover:text-primary"
+          }`}
+          asChild
+        >
+          <Link href="/drugs?letter=0-9">0-9</Link>
+        </Button>
       </div>
     </div>
   );
 }
 
-/**
- * AZBrowse Component
- */
 export default function AZBrowse() {
   return (
     <Suspense fallback={<div className="h-40 w-full animate-pulse bg-gray-100 rounded-2xl" />}>
