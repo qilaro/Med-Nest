@@ -21,6 +21,7 @@ function DrugsContent() {
   const searchQ = searchParams.get("search") || "";
   const drugClassFilter = searchParams.get("drug_class") || "";
   const letterFilter = searchParams.get("letter") || "";
+  const isFiltered = !!(searchQ || drugClassFilter || letterFilter);
 
   const [drugs, setDrugs] = useState<DrugSummary[]>([]);
   const [classes, setClasses] = useState<DrugClass[]>([]);
@@ -61,10 +62,13 @@ function DrugsContent() {
         
         // Local filtering for search (Standard for MVP)
         if (searchQ) {
+          const trimmedLowerQuery = query.trim().toLowerCase();
           filteredDrugs = filteredDrugs.filter(
             (dr: DrugSummary) =>
-              dr.brandName.toLowerCase().includes(searchQ.toLowerCase()) ||
-              dr.genericName.toLowerCase().includes(searchQ.toLowerCase())
+              dr.brandName.toLowerCase().includes(trimmedLowerQuery) ||
+              dr.genericName.toLowerCase().includes(trimmedLowerQuery) ||
+              dr.drugClass.toLowerCase().includes(trimmedLowerQuery) ||
+              (dr.company?.toLowerCase()?.includes(trimmedLowerQuery) ?? false)
           );
         }
 
@@ -79,20 +83,24 @@ function DrugsContent() {
 
     fetchData();
   }, [searchQ, drugClassFilter, letterFilter]);
+
   // Handle suggestion filtering
   useEffect(() => {
-    if (query.trim().length >= 1) {
-      const filtered = drugs.filter(
-        (d: DrugSummary) =>
-          d.brandName.toLowerCase().includes(query.toLowerCase()) ||
-          d.genericName.toLowerCase().includes(query.toLowerCase())
-      ).slice(0, 10);
-      setSuggestions(filtered);
-      setShowSuggestions(true);
-    } else {
-      setSuggestions([]);
-      setShowSuggestions(false);
+    if (query.trim().length === 0) {
+      // Do not clear suggestions automatically, let handleFocus manage featured state
+      return;
     }
+
+    const lowerQuery = query.trim().toLowerCase();
+    const filtered = drugs.filter(
+      (d: DrugSummary) =>
+        d.brandName.toLowerCase().includes(lowerQuery) ||
+        d.genericName.toLowerCase().includes(lowerQuery) ||
+        d.drugClass.toLowerCase().includes(lowerQuery) ||
+        (d.company?.toLowerCase()?.includes(lowerQuery) ?? false)
+    ).slice(0, 10);
+    setSuggestions(filtered);
+    setShowSuggestions(true);
   }, [query, drugs]);
 
   // Update URL when search form is submitted
@@ -109,6 +117,20 @@ function DrugsContent() {
     setQuery(drug.brandName);
     setShowSuggestions(false);
     router.push(`/drugs/${drug.slug}`);
+  };
+
+  const handleFocus = async () => {
+    if (query.trim().length === 0) {
+      try {
+        const { drugs: allDrugs } = await drugService.getDrugs();
+        setSuggestions(allDrugs.slice(0, 5));
+        setShowSuggestions(true);
+      } catch (error) {
+        console.error("Failed to fetch suggestions:", error);
+      }
+    } else {
+      setShowSuggestions(true);
+    }
   };
 
   return (
@@ -130,7 +152,7 @@ function DrugsContent() {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              onFocus={() => query.trim().length >= 1 && setShowSuggestions(true)}
+              onFocus={handleFocus}
               placeholder="e.g. Paracetamol, Nexium..."
               className="pl-10 h-12"
             />
@@ -139,6 +161,8 @@ function DrugsContent() {
             suggestions={suggestions} 
             isVisible={showSuggestions} 
             onSelect={handleSuggestionSelect} 
+            isFeatured={query.trim().length === 0}
+            query={query}
           />
         </div>
 
@@ -162,7 +186,7 @@ function DrugsContent() {
           Find Medicine
         </Button>
 
-        {(searchQ || drugClassFilter || letterFilter) && (
+        {isFiltered && (
           <Button 
             variant="ghost" 
             onClick={() => {
@@ -170,7 +194,7 @@ function DrugsContent() {
               setSelectedClass("");
               router.push("/drugs");
             }}
-            className="h-12 text-muted-foreground hover:text-primary"
+            className="h-12 text-muted-foreground hover:text-primary cursor-pointer"
           >
             Clear Filters
           </Button>
@@ -188,19 +212,39 @@ function DrugsContent() {
         </div>
       ) : (
         <>
-          <div className="flex items-center justify-between mb-6">
-            <p className="text-sm font-medium text-muted-foreground">
-              Showing <span className="text-navy">{drugs.length}</span> {letterFilter ? `starting with ${letterFilter}` : "results"}
-            </p>
-          </div>
+          {letterFilter ? (
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold text-navy mb-1">
+                Most Common '{letterFilter.toUpperCase()}' Drugs
+              </h2>
+              <p className="text-muted-foreground">
+                Common medications that begin with the letter '{letterFilter.toUpperCase()}'
+              </p>
+            </div>
+          ) : !isFiltered && (
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold text-navy mb-1">Popular Drug Searches</h2>
+              <p className="text-muted-foreground">Frequently searched medications and medical treatments.</p>
+            </div>
+          )}
+
+          {isFiltered && (
+            <div className="flex items-center justify-between mb-6">
+              <p className="text-sm font-medium text-muted-foreground">
+                Showing <span className="text-navy">{drugs.length}</span> results
+              </p>
+            </div>
+          )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {drugs.map((drug) => (
-              <DrugCard key={drug.id} drug={drug} />
-            ))}
+            {isFiltered ? (
+              drugs.map((drug) => <DrugCard key={drug.id} drug={drug} />)
+            ) : (
+              drugs.slice(0, 12).map((drug) => <DrugCard key={drug.id} drug={drug} />)
+            )}
           </div>
 
-          {drugs.length === 0 && (
+          {drugs.length === 0 && isFiltered && (
             <div className="text-center py-20 bg-muted/30 rounded-3xl border-2 border-dashed">
               <Pill className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-20" />
               <h3 className="text-xl font-bold text-navy mb-1">No Medications Found</h3>
