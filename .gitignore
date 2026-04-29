@@ -32,3 +32,4 @@ docs/tasks.md
 .turbo/
 frontend/.turbo/
 frontend/.next/
+frontend/public/data/drug_details/

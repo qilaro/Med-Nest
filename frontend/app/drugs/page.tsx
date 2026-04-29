@@ -73,7 +73,7 @@ function DrugsContent() {
         let filteredDrugs = drugsData.drugs;
         
         // Extract unique generic names for filter
-        const uniqueGenerics = Array.from(new Set(drugsData.drugs.map((d: DrugSummary) => d.genericName) as string[])).sort();
+        const uniqueGenerics: string[] = Array.from(new Set(drugsData.drugs.map((d: DrugSummary) => d.genericName))).filter((g): g is string => typeof g === 'string').sort();
         setGenerics(uniqueGenerics);
         
         // Local filtering
@@ -116,19 +116,24 @@ function DrugsContent() {
 
   // Handle suggestion filtering
   useEffect(() => {
-    if (query.trim().length === 0) return;
+    if (query.trim().length === 0) {
+      setShowSuggestions(false);
+      return;
+    }
 
-    const lowerQuery = query.trim().toLowerCase();
-    const filtered = drugs.filter(
-      (d: DrugSummary) =>
-        d.brandName.toLowerCase().includes(lowerQuery) ||
-        d.genericName.toLowerCase().includes(lowerQuery) ||
-        d.drugClass.toLowerCase().includes(lowerQuery) ||
-        (d.company?.toLowerCase()?.includes(lowerQuery) ?? false)
-    ).slice(0, 10);
-    setSuggestions(filtered);
-    setShowSuggestions(true);
-  }, [query, drugs]);
+    const fetchFuzzySuggestions = async () => {
+      try {
+        const { results } = await drugService.searchDrugs(query);
+        setSuggestions(results.slice(0, 10));
+        setShowSuggestions(true);
+      } catch (error) {
+        console.error("Failed to fetch fuzzy suggestions:", error);
+      }
+    };
+
+    const timer = setTimeout(fetchFuzzySuggestions, 300);
+    return () => clearTimeout(timer);
+  }, [query]);
 
   const handleSearch = (e?: React.FormEvent, isFilterAction = false) => {
     if (e) e.preventDefault();

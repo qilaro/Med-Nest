@@ -32,32 +32,24 @@ export default function Home() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Handle search input changes
+  // Handle search input changes with fuzzy search
   useEffect(() => {
     if (query.trim().length === 0) {
-      // Don't clear suggestions here, let handleFocus manage initial featured drugs
+      setShowSuggestions(false);
       return;
     }
 
-    const fetchSuggestions = async () => {
+    const fetchFuzzySuggestions = async () => {
       try {
-        const { drugs } = await drugService.getDrugs();
-        const trimmedLowerQuery = query.trim().toLowerCase();
-        const filtered = drugs.filter(
-          (d: DrugSummary) =>
-            d.brandName.toLowerCase().includes(trimmedLowerQuery) ||
-            d.genericName.toLowerCase().includes(trimmedLowerQuery) ||
-            d.drugClass.toLowerCase().includes(trimmedLowerQuery) ||
-            (d.company?.toLowerCase()?.includes(trimmedLowerQuery) ?? false)
-        ).slice(0, 10);
-        setSuggestions(filtered);
+        const { results } = await drugService.searchDrugs(query);
+        setSuggestions(results.slice(0, 10));
         setShowSuggestions(true);
       } catch (error) {
-        console.error("Failed to fetch suggestions:", error);
+        console.error("Failed to fetch fuzzy suggestions:", error);
       }
     };
 
-    const timer = setTimeout(fetchSuggestions, 300);
+    const timer = setTimeout(fetchFuzzySuggestions, 300);
     return () => clearTimeout(timer);
   }, [query]);
 
@@ -118,7 +110,7 @@ export default function Home() {
           >
             <div className="relative z-10 max-w-3xl text-center">
               {/* Badge */}
-              <div className="inline-flex items-center gap-2 bg-white/65 border border-gray-300 rounded-full px-4 py-2 text-sm mb-6 mt-1 text-gray-800">
+              <div className="inline-flex items-center gap-2 bg-white/65 border border-gray-300 rounded-full px-4 py-2 text-sm mb-2 mt-1 text-gray-800">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-yellow-400" aria-hidden="true">
                   <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path>
                 </svg>
@@ -152,7 +144,7 @@ export default function Home() {
                       className="pl-12 h-14 text-base border-none shadow-none focus-visible:ring-0" 
                     />
                   </div>
-                  <Button type="submit" className="h-14 px-8 rounded-xl font-semibold text-base cursor-pointer" style={{ backgroundColor: 'var(--primary)' }}>
+                  <Button type="submit" className="h-14 px-8 rounded-xl font-semibold text-base cursor-pointer transition-all hover:opacity-90 active:scale-95" style={{ backgroundColor: 'var(--primary)' }}>
                     Search
                   </Button>
                 </div>
@@ -178,6 +170,15 @@ export default function Home() {
               {/* AZBrowse included directly in hero for maximum visibility */}
               <div className="max-w-4xl mx-auto">
                 <AZBrowse showAdvancedSearch={true} />
+                <p className="text-sm text-gray-700 font-semibold mt-2 italic">
+                  Can't remember? Just type what you can remember to{" "}
+                  <button 
+                    onClick={() => searchRef.current?.querySelector('input')?.focus()} 
+                    className="text-blue-600 hover:text-blue-800 underline underline-offset-2 cursor-pointer font-bold"
+                  >
+                    try our phonetic search.
+                  </button>
+                </p>
               </div>
             </div>
           </div>

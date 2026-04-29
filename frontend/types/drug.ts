@@ -26,6 +26,11 @@ export interface DrugDetail extends DrugSummary {
   disclaimer?: string;
   createdAt?: string;
   updatedAt?: string;
+  // Bangladesh-specific fields
+  fixedMarketPrice?: number;
+  availabilityInBD?: boolean;
+  brandName_bn?: string;
+  bmDcVerificationLink?: string;
 }
 
 export interface DrugAZGroup {

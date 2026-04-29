@@ -1,10 +1,9 @@
-```javascript
-Project Specification By Sakib _ Updated By Zemam
+
+# Project Specification By Sakib _ Updated By Zemam
+
 MVP Proposal: Medicine Information Platform (SEO-Driven)
 
-```
-
-**&#32;1. Objective**
+# 1. Objective
 
 ```javascript
 Build a lightweight, SEO-first medicine information platform to:
@@ -19,7 +18,7 @@ Success = traction (users, search queries, indexed pages)
 
 ***
 
-**2. Scope (MVP)**
+## 2. Scope (MVP)
 
 ```javascript
 Core Features
@@ -28,13 +27,13 @@ Core Features
 ```javascript
 A.A) Medicine search: Drugs (A-Z)
 
-By brand
-By Class
-By generic name
-By Company
-Full text search
-Close Spelled 
-Bookmarked drugs(Redirect to F)
+✅ By brand
+✅ By Class
+✅ By generic name
+✅ By Company
+✅ Full text search
+✅ Close Spelled 
+- Bookmarked drugs(Redirect to F)
 
 A.B) Medicine detail page:
 
@@ -96,7 +95,7 @@ Update Medicine
 Review FAQ answers written by Pharmacist
 ```
 
-**3. Data Strategy**
+## 3. Data Strategy
 
 ```javascript
 A) Initial dataset: 50–100 medicines (manual curation)
@@ -105,7 +104,7 @@ B) Gradual expansion to 300–500 medicines post-launch
 
 ***
 
-**4. Tech Stack**
+## 4. Tech Stack
 
 ```javascript
 Frontend : Next.js + Typescript
@@ -131,7 +130,7 @@ Search : PostgreSQL Full text Search first,later upgrade to Meilisearch
 
 ***
 
-**5. SEO Strategy (Primary Distribution)**
+## 5. SEO Strategy (Primary Distribution)
 
 ```javascript
 TBD
@@ -139,7 +138,7 @@ TBD
 
 ***
 
-**6. Metrics (Traction-Focused)**
+## 6. Metrics (Traction-Focused)
 
 ```javascript
 Search (Click Rate)
@@ -175,7 +174,7 @@ Top medicines searched
 
 ***
 
-**7. Timeline**
+## 7. Timeline
 
 ```javascript
 TBD
@@ -183,7 +182,7 @@ TBD
 
 ***
 
-**8. Future Leverage**
+## 8. Future Leverage
 
 ```javascript
 Once traction is achieved:
@@ -212,7 +211,7 @@ Warnings
 
 ***
 
-**9. Summary**
+## 9. Summary
 
 ```javascript
 This MVP is a traction-first, execution-focused entry point into healthcare, leveraging:

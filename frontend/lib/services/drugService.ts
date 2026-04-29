@@ -4,6 +4,8 @@ import {
   DrugAZResponse, 
   DrugClass 
 } from "../../types/drug";
+import Fuse from "fuse.js";
+import drugsData from "../../public/data/drugs.json";
 
 // Add local interface for list response until types/drug.ts is updated
 export interface DrugsResponse {
@@ -46,17 +48,14 @@ export const drugService = {
     
     try {
       const data = await apiFetch<DrugsResponse>(`/drugs?${q}`);
-      // If API succeeds but returns no drugs, fallback to local JSON for development
       if (data.drugs.length === 0) {
         throw new Error("Empty API response");
       }
       return data;
     } catch (error) {
       console.warn("API unavailable or empty, falling back to local mock data.");
-      const response = await fetch("/data/drugs.json");
-      const data = await response.json();
       
-      let drugs = data.drugs;
+      let drugs = [...drugsData.drugs];
       if (params?.drug_class) {
         drugs = drugs.filter((d: any) => d.drugClass === params.drug_class);
       }
@@ -85,10 +84,7 @@ export const drugService = {
     try {
       return await apiFetch<DrugAZResponse>("/drugs/az");
     } catch (error) {
-      const response = await fetch("/data/drugs.json");
-      const data = await response.json();
-      const drugs = data.drugs;
-      
+      const drugs = drugsData.drugs;
       const groups = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(letter => ({
         letter,
         drugs: drugs.filter((d: any) => d.brandName.startsWith(letter))
@@ -105,11 +101,8 @@ export const drugService = {
     try {
       return await apiFetch<DrugClass[]>("/drugs/classes");
     } catch (error) {
-      const response = await fetch("/data/drugs.json");
-      const data = await response.json();
       const classes: Record<string, number> = {};
-      
-      data.drugs.forEach((d: any) => {
+      drugsData.drugs.forEach((d: any) => {
         classes[d.drugClass] = (classes[d.drugClass] || 0) + 1;
       });
       
@@ -124,24 +117,31 @@ export const drugService = {
     try {
       return await apiFetch<string[]>("/drugs/companies");
     } catch (error) {
-      const response = await fetch("/data/drugs.json");
-      const data = await response.json();
-      const companies = Array.from(new Set(data.drugs.map((d: any) => d.company))).sort() as string[];
+      const companies = Array.from(new Set(drugsData.drugs.map((d: any) => d.company))).sort() as string[];
       return companies;
     }
   },
 
   /**
-   * Get a single drug by its slug
+   * Search for drugs with fuzzy matching
    */
-  getDrugBySlug: (slug: string) => {
-    return apiFetch<DrugDetail>(`/drugs/${slug}`);
-  },
-
-  /**
-   * Search for drugs
-   */
-  searchDrugs: (query: string) => {
-    return apiFetch<{ results: any[]; total: number }>(`/search?q=${encodeURIComponent(query)}`);
+  searchDrugs: async (query: string) => {
+    try {
+      return await apiFetch<{ results: any[]; total: number }>(`/search?q=${encodeURIComponent(query)}`);
+    } catch (error) {
+      const fuse = new Fuse(drugsData.drugs, {
+        keys: [
+          { name: "brandName", weight: 2 },
+          { name: "genericName", weight: 1 },
+          { name: "drugClass", weight: 0.5 },
+          { name: "company", weight: 0.5 }
+        ],
+        threshold: 0.5, 
+        minMatchCharLength: 1, 
+        shouldSort: true
+      });
+      const results = fuse.search(query).map(r => r.item);
+      return { results, total: results.length };
+    }
   }
 };
