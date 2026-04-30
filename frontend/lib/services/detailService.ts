@@ -4,30 +4,23 @@ import path from 'path';
 // The service is server-side and reads files from the public folder.
 // We prioritize checking for the data in the project root, then try looking relative to the 
 // current process directory (which handles Vercel's monorepo structure).
-const DATA_DIR = fs.existsSync(path.join(process.cwd(), 'public/data/drug_details')) 
-  ? path.join(process.cwd(), 'public/data/drug_details')
-  : path.join(process.cwd(), 'frontend', 'public', 'data', 'drug_details');
-
 export async function getDrugDetail(slug: string) {
   try {
-    // 1. Ensure the directory exists
-    if (!fs.existsSync(DATA_DIR)) {
-      return null;
+    // In Next.js server components, we can use absolute URLs for internal fetch.
+    // We assume the origin is available or we can use origin-relative paths
+    // and rely on the Next.js fetch polyfill/handler.
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    
+    // Try exact match
+    const response = await fetch(`${baseUrl}/data/drug_details/${slug}.json`);
+    
+    if (response.ok) {
+      return await response.json();
     }
 
-    // 2. Try exact match
-    const filePath = path.join(DATA_DIR, `${slug}.json`);
-    if (fs.existsSync(filePath)) {
-      return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-    }
-
-    // 3. Fallback logic: try finding a file that starts with the base slug
-    const files = fs.readdirSync(DATA_DIR);
-    const baseMatch = files.find(f => f.startsWith(`${slug.split('-')[0]}.json`));
-    if (baseMatch) {
-      return JSON.parse(fs.readFileSync(path.join(DATA_DIR, baseMatch), 'utf-8'));
-    }
-
+    // If exact match fails, we can't easily iterate the directory with fetch.
+    // However, the previous 'fs' logic tried a fallback. 
+    // We will rely on exact slug matching for now as it's the standard.
     return null;
   } catch (e) {
     console.error(`Error loading detail for ${slug}:`, e);
