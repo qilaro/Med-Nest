@@ -1,0 +1,18 @@
+{
+  "slug": "napa",
+  "brandName": "Napa",
+  "genericName": "Paracetamol",
+  "dosageForm": "Tablet",
+  "strength": "500 mg",
+  "price": "৳ 1.50",
+  "averageRating": 4.8,
+  "reviewCount": 120,
+  "indications": "For the treatment of fever, common cold, influenza, headache, toothache, earache, body ache, myalgia, dysmenorrhoea, neuralgia and sprains.",
+  "dosage": "Adults: 1-2 tablets 3-4 times a day.",
+  "warnings": "Paracetamol should be given with care to patients with impaired kidney or liver function.",
+  "sideEffects": "Side effects are usually mild, though haematological reactions have been reported.",
+  "interactions": "Anticoagulant dosage may require reduction if paracetamol medication is prolonged.",
+  "faqs": [
+    { "question": "Is it safe during pregnancy?", "answer": "Yes, it is considered safe when taken as directed." }
+  ]
+}

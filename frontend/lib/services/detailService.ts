@@ -1,26 +1,36 @@
 import fs from 'fs';
 import path from 'path';
 
-// The service is server-side and reads files from the public folder.
-// We prioritize checking for the data in the project root, then try looking relative to the 
-// current process directory (which handles Vercel's monorepo structure).
 export async function getDrugDetail(slug: string) {
   try {
-    // In Next.js server components, we can use absolute URLs for internal fetch.
-    // We assume the origin is available or we can use origin-relative paths
-    // and rely on the Next.js fetch polyfill/handler.
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-    
-    // Try exact match
-    const response = await fetch(`${baseUrl}/data/drug_details/${slug}.json`);
-    
-    if (response.ok) {
-      return await response.json();
+    // Define possible data directories for different environments (Local, Vercel Monorepo)
+    const possibleDirs = [
+      path.join(process.cwd(), 'public/data/drug_details'),
+      path.join(process.cwd(), 'frontend/public/data/drug_details'),
+      path.join(process.cwd(), '.next/server/public/data/drug_details'),
+      // Fallback for Vercel's deployment structure
+      path.join(process.cwd(), 'static/data/drug_details')
+    ];
+
+    let DATA_DIR = '';
+    for (const dir of possibleDirs) {
+      if (fs.existsSync(dir)) {
+        DATA_DIR = dir;
+        break;
+      }
     }
 
-    // If exact match fails, we can't easily iterate the directory with fetch.
-    // However, the previous 'fs' logic tried a fallback. 
-    // We will rely on exact slug matching for now as it's the standard.
+    if (!DATA_DIR) {
+      console.error('Could not find drug_details directory in any expected location.');
+      return null;
+    }
+
+    // Try exact match
+    const filePath = path.join(DATA_DIR, `${slug}.json`);
+    if (fs.existsSync(filePath)) {
+      return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+    }
+
     return null;
   } catch (e) {
     console.error(`Error loading detail for ${slug}:`, e);

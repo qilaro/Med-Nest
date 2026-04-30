@@ -1,0 +1,25 @@
+{
+  "id": 105,
+  "slug": "napa-drops",
+  "brandName": "Napa",
+  "genericName": "Paracetamol",
+  "dosageForm": "Paediatric Drops",
+  "strength": "80 mg/ml",
+  "drugClass": "Analgesics",
+  "company": "Square Pharmaceuticals Ltd.",
+  "price": "৳20.00",
+  "averageRating": 4.5,
+  "reviewCount": 320,
+  "indications": "Fever, headache, common cold, toothache, and various types of mild to moderate pain.",
+  "dosage": "Adults: 500 mg to 1 g every 4-6 hours. Maximum 4 g per day. Children: 10-15 mg/kg body weight.",
+  "warnings": "Use with caution in liver disease. Avoid alcohol. High doses can cause severe liver damage.",
+  "sideEffects": "Usually minimal. Rare skin rashes or blood disorders.",
+  "interactions": "May interact with warfarin and other blood thinners.",
+  "faqs": [
+    {
+      "question": "Can I take it on an empty stomach?",
+      "answer": "Yes, paracetamol can be taken with or without food."
+    }
+  ],
+  "pronunciation": "NA-pa"
+}

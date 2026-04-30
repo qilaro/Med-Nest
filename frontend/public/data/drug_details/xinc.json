@@ -1,0 +1,25 @@
+{
+  "id": 18,
+  "slug": "xinc",
+  "brandName": "Xinc",
+  "genericName": "Zinc Sulfate",
+  "dosageForm": "Tablet",
+  "strength": "20 mg",
+  "drugClass": "Vitamins & Minerals",
+  "company": "Aristopharma Ltd.",
+  "price": "৳4.50",
+  "averageRating": 4.3,
+  "reviewCount": 290,
+  "indications": "Used according to physician's advice for specific medical conditions.",
+  "dosage": "As directed by the registered physician.",
+  "warnings": "Keep out of reach of children. Store in a cool, dry place.",
+  "sideEffects": "Consult your doctor if any unusual symptoms occur.",
+  "interactions": "Tell your doctor about all other medicines you are taking.",
+  "faqs": [
+    {
+      "question": "How should I store this?",
+      "answer": "Store in a cool and dry place, away from light."
+    }
+  ],
+  "pronunciation": "X-i-n-c"
+}

@@ -1,0 +1,25 @@
+{
+  "id": 6,
+  "slug": "monas-10",
+  "brandName": "Monas",
+  "genericName": "Montelukast",
+  "dosageForm": "Tablet",
+  "strength": "10 mg",
+  "drugClass": "Leukotriene Receptor Antagonists",
+  "company": "The ACME Laboratories Ltd.",
+  "price": "৳16.00",
+  "averageRating": 4.5,
+  "reviewCount": 450,
+  "indications": "Used according to physician's advice for specific medical conditions.",
+  "dosage": "As directed by the registered physician.",
+  "warnings": "Keep out of reach of children. Store in a cool, dry place.",
+  "sideEffects": "Consult your doctor if any unusual symptoms occur.",
+  "interactions": "Tell your doctor about all other medicines you are taking.",
+  "faqs": [
+    {
+      "question": "How should I store this?",
+      "answer": "Store in a cool and dry place, away from light."
+    }
+  ],
+  "pronunciation": "M-o-n-a-s"
+}

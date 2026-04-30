@@ -1,0 +1,25 @@
+{
+  "id": 3,
+  "slug": "seclo-20",
+  "brandName": "Seclo",
+  "genericName": "Omeprazole",
+  "dosageForm": "Capsule",
+  "strength": "20 mg",
+  "drugClass": "Proton Pump Inhibitors",
+  "company": "Square Pharmaceuticals Ltd.",
+  "price": "৳5.00",
+  "averageRating": 4.7,
+  "reviewCount": 850,
+  "indications": "GERD, gastric ulcer, duodenal ulcer, acid reflux, and Zollinger-Ellison syndrome.",
+  "dosage": "Standard dose is 20 mg once daily before meals for 4-8 weeks.",
+  "warnings": "Long-term use may lead to bone fractures or vitamin B12 deficiency.",
+  "sideEffects": "Headache, diarrhea, abdominal pain, nausea, and flatulence.",
+  "interactions": "May interact with clopidogrel and certain antifungal medications.",
+  "faqs": [
+    {
+      "question": "When is the best time to take it?",
+      "answer": "Usually 30-60 minutes before breakfast."
+    }
+  ],
+  "pronunciation": "SEK-lo"
+}

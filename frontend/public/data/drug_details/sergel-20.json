@@ -1,0 +1,25 @@
+{
+  "id": 4,
+  "slug": "sergel-20",
+  "brandName": "Sergel",
+  "genericName": "Esomeprazole",
+  "dosageForm": "Capsule",
+  "strength": "20 mg",
+  "drugClass": "Proton Pump Inhibitors",
+  "company": "Healthcare Pharmaceuticals Ltd.",
+  "price": "৳7.00",
+  "averageRating": 4.8,
+  "reviewCount": 1100,
+  "indications": "Used according to physician's advice for specific medical conditions.",
+  "dosage": "As directed by the registered physician.",
+  "warnings": "Keep out of reach of children. Store in a cool, dry place.",
+  "sideEffects": "Consult your doctor if any unusual symptoms occur.",
+  "interactions": "Tell your doctor about all other medicines you are taking.",
+  "faqs": [
+    {
+      "question": "How should I store this?",
+      "answer": "Store in a cool and dry place, away from light."
+    }
+  ],
+  "pronunciation": "SER-jel"
+}

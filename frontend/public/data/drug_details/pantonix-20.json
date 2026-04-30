@@ -1,0 +1,25 @@
+{
+  "id": 10,
+  "slug": "pantonix-20",
+  "brandName": "Pantonix",
+  "genericName": "Pantoprazole",
+  "dosageForm": "Tablet",
+  "strength": "20 mg",
+  "drugClass": "Proton Pump Inhibitors",
+  "company": "Incepta Pharmaceuticals Ltd.",
+  "price": "৳7.00",
+  "averageRating": 4.6,
+  "reviewCount": 690,
+  "indications": "Used according to physician's advice for specific medical conditions.",
+  "dosage": "As directed by the registered physician.",
+  "warnings": "Keep out of reach of children. Store in a cool, dry place.",
+  "sideEffects": "Consult your doctor if any unusual symptoms occur.",
+  "interactions": "Tell your doctor about all other medicines you are taking.",
+  "faqs": [
+    {
+      "question": "How should I store this?",
+      "answer": "Store in a cool and dry place, away from light."
+    }
+  ],
+  "pronunciation": "P-a-n-t-o-n-i-x"
+}
