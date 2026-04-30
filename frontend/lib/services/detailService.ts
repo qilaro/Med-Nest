@@ -1,8 +1,12 @@
 import fs from 'fs';
 import path from 'path';
 
-// This service is server-only. It reads individual JSON files from the public folder.
-const DATA_DIR = path.join(process.cwd(), 'public/data/drug_details');
+// The service is server-side and reads files from the public folder.
+// We prioritize checking for the data in the project root, then try looking relative to the 
+// current process directory (which handles Vercel's monorepo structure).
+const DATA_DIR = fs.existsSync(path.join(process.cwd(), 'public/data/drug_details')) 
+  ? path.join(process.cwd(), 'public/data/drug_details')
+  : path.join(process.cwd(), 'frontend', 'public', 'data', 'drug_details');
 
 export async function getDrugDetail(slug: string) {
   try {
