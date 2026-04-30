@@ -26,6 +26,7 @@ export interface DrugDetail extends DrugSummary {
   disclaimer?: string;
   createdAt?: string;
   updatedAt?: string;
+  pronunciation?: string;
   // Bangladesh-specific fields
   fixedMarketPrice?: number;
   availabilityInBD?: boolean;
