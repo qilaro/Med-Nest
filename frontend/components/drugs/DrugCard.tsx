@@ -86,11 +86,12 @@ export default function DrugCard({ drug }: DrugCardProps) {
               <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
                 {drug.drugClass}
               </p>
-              {drug.averageRating !== undefined && (
-                <div className="flex items-center gap-1">
+              <div className="flex flex-col items-end gap-1">
+                <p className="text-sm font-bold text-navy">{drug.price}</p>
+                {drug.averageRating !== undefined && (
                   <StarRating rating={drug.averageRating} size="sm" />
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
         </CardContent>

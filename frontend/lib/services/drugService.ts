@@ -123,6 +123,27 @@ export const drugService = {
   },
 
   /**
+   * Get a single drug by its slug
+   */
+  getDrugBySlug: async (slug: string): Promise<DrugDetail> => {
+    try {
+      const res = await fetch(`${API_BASE}/drugs/${slug}`);
+      if (res.ok) {
+        return await res.json();
+      }
+      throw new Error(`API returned ${res.status}`);
+    } catch (error) {
+      console.warn(`API fetch for ${slug} failed, falling back to local mock data.`);
+      const drug = drugsData.drugs.find((d: any) => d.slug === slug);
+      if (!drug) {
+        console.error(`Drug with slug '${slug}' not found in local data.`);
+        throw new Error("Drug not found");
+      }
+      return drug as unknown as DrugDetail;
+    }
+  },
+
+  /**
    * Search for drugs with fuzzy matching
    */
   searchDrugs: async (query: string) => {
