@@ -59,7 +59,7 @@ export default async function DrugDetailPage({ params }: PageProps) {
 
   if (!drug) notFound();
 
-  const unitPrice = parseFloat(drug.price.replace(/[^0-9.]/g, '')) || 0;
+  const unitPrice = parseFloat(String(drug.price).replace(/[^0-9.]/g, '')) || 0;
   const stripPrice = (unitPrice * 10).toFixed(2);
   const boxPrice = (unitPrice * 100).toFixed(2);
   
@@ -112,7 +112,7 @@ export default async function DrugDetailPage({ params }: PageProps) {
                     <div className="grid grid-cols-2 gap-x-4 gap-y-4 text-sm">
                       <div><p className="font-bold text-gray-400 uppercase tracking-wider text-[10px]">Generic</p><Link href={`/drugs?search=${encodeURIComponent(drug.genericName)}`} className="font-bold text-primary hover:underline">{drug.genericName}</Link></div>
                       <div><p className="font-bold text-gray-400 uppercase tracking-wider text-[10px]">Route</p><p className="font-bold text-navy">Oral</p></div>
-                      <div><p className="font-bold text-gray-400 uppercase tracking-wider text-[10px]">Class</p><Link href={`/drugs?class=${encodeURIComponent(drug.drugClass)}`} className="font-bold text-primary hover:underline">{drug.drugClass}</Link></div>
+                      <div><p className="font-bold text-gray-400 uppercase tracking-wider text-[10px]">Class</p>                      <Link href={`/drugs?class=${encodeURIComponent(drug.drugClass || '')}`} className="font-bold text-primary hover:underline">{drug.drugClass}</Link></div>
                       <div><p className="font-bold text-gray-400 uppercase tracking-wider text-[10px]">Form / Str.</p><p className="font-bold text-navy">{drug.dosageForm} <span className="text-gray-400 font-medium">({drug.strength})</span></p></div>
                     </div>
                   </CardContent>

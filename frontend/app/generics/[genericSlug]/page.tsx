@@ -77,7 +77,7 @@ async function getGenericDetail(slug: string): Promise<GenericDetail | null> {
     LIMIT 1
   `);
 
-  return (partial.rows[0] || null) as unknown as GenericDetail | null;
+  return partial.rows[0] as unknown as GenericDetail | null;
 }
 
 export default async function GenericDetailPage({ params }: PageProps) {

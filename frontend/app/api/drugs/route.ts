@@ -1,13 +1,16 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { sql } from 'drizzle-orm';
+import { drugsQuerySchema } from '@/lib/validators';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const drugClass = searchParams.get('drug_class');
-  const letter = searchParams.get('letter');
-  const page = parseInt(searchParams.get('page') || '1');
-  const limit = parseInt(searchParams.get('limit') || '50');
+  const parsed = drugsQuerySchema.safeParse(Object.fromEntries(searchParams));
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Invalid query parameters', details: parsed.error.flatten() }, { status: 400 });
+  }
+
+  const { drug_class: drugClass, letter, page, limit } = parsed.data;
   const offset = (page - 1) * limit;
 
   try {

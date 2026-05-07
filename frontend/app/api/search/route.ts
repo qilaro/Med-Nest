@@ -1,14 +1,16 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { sql } from 'drizzle-orm';
+import { searchQuerySchema } from '@/lib/validators';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const query = searchParams.get('q');
-
-  if (!query || query.trim().length === 0) {
+  const parsed = searchQuerySchema.safeParse(Object.fromEntries(searchParams));
+  if (!parsed.success) {
     return NextResponse.json({ results: [] });
   }
+
+  const query = parsed.data.q;
 
   try {
     const results = await db.execute(sql`

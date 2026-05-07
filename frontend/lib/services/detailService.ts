@@ -1,9 +1,58 @@
 import { db } from '@/lib/db';
 import { sql } from 'drizzle-orm';
-import fs from 'fs';
-import path from 'path';
 
-export async function getDrugDetail(slug: string) {
+async function fallbackFromFile(slug: string): Promise<Record<string, unknown> | null> {
+  try {
+    const fs = await import('fs');
+    const path = await import('path');
+
+    const dirs = [
+      path.join(process.cwd(), 'public/data/drug_details'),
+      path.join(process.cwd(), 'frontend/public/data/drug_details'),
+      path.join(process.cwd(), '.next/server/public/data/drug_details'),
+      path.join(process.cwd(), 'static/data/drug_details'),
+    ];
+
+    for (const dir of dirs) {
+      const filePath = path.join(dir, `${slug}.json`);
+      if (fs.existsSync(filePath)) {
+        return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+      }
+    }
+  } catch {}
+  return null;
+}
+
+export interface DrugDetailResult {
+  id: string;
+  slug: string;
+  brandName: string;
+  genericName: string;
+  dosageForm: string;
+  strength: string;
+  drugClass: string | null;
+  company: string | null;
+  companyName: string | null;
+  price: string;
+  priceStrip: string | null;
+  priceBox: string | null;
+  packSize: string | null;
+  imageUrl: string | null;
+  averageRating: number;
+  reviewCount: number;
+  indications: string;
+  sideEffects: string;
+  interactions: string;
+  dosage: string;
+  contraindications: string;
+  precautions: string;
+  pregnancyLactation: string;
+  storageConditions: string;
+  overdoseEffects: string;
+  type: string;
+}
+
+export async function getDrugDetail(slug: string): Promise<DrugDetailResult | null> {
   try {
     const result = await db.execute(sql`
       SELECT 
@@ -38,79 +87,40 @@ export async function getDrugDetail(slug: string) {
     `);
 
     if (result.rows.length > 0) {
-      const d = result.rows[0];
+      const d = result.rows[0] as Record<string, unknown>;
       return {
-        id: d.id,
-        slug: d.slug,
-        brandName: d.brand_name,
-        genericName: d.generic_name,
-        dosageForm: d.dosage_form,
-        strength: d.strength,
-        drugClass: d.therapeutic_class,
-        company: d.company_name,
-        companyName: d.company_name,
+        id: String(d.id || ''),
+        slug: String(d.slug || ''),
+        brandName: String(d.brand_name || ''),
+        genericName: String(d.generic_name || ''),
+        dosageForm: String(d.dosage_form || ''),
+        strength: String(d.strength || ''),
+        drugClass: d.therapeutic_class ? String(d.therapeutic_class) : null,
+        company: d.company_name ? String(d.company_name) : null,
+        companyName: d.company_name ? String(d.company_name) : null,
         price: d.price_unit ? `৳ ${d.price_unit}` : "N/A",
-        priceStrip: d.price_strip,
-        priceBox: d.price_box,
-        packSize: d.pack_size,
-        imageUrl: d.image_url,
+        priceStrip: d.price_strip ? String(d.price_strip) : null,
+        priceBox: d.price_box ? String(d.price_box) : null,
+        packSize: d.pack_size ? String(d.pack_size) : null,
+        imageUrl: d.image_url ? String(d.image_url) : null,
         averageRating: Number(d.average_rating) || 0,
-        reviewCount: d.review_count || 0,
-        indications: d.indications || "Information not available.",
-        sideEffects: d.side_effects || "Information not available.",
-        interactions: d.interactions || "Information not available.",
-        dosage: d.dosage || "As directed by physician.",
-        contraindications: d.contraindications || "Information not available.",
-        precautions: d.precautions || "Information not available.",
-        pregnancyLactation: d.pregnancy_lactation || "Information not available.",
-        storageConditions: d.storage_conditions || "Information not available.",
-        overdoseEffects: d.overdose_effects || "Information not available.",
+        reviewCount: Number(d.review_count) || 0,
+        indications: String(d.indications || "Information not available."),
+        sideEffects: String(d.side_effects || "Information not available."),
+        interactions: String(d.interactions || "Information not available."),
+        dosage: String(d.dosage || "As directed by physician."),
+        contraindications: String(d.contraindications || "Information not available."),
+        precautions: String(d.precautions || "Information not available."),
+        pregnancyLactation: String(d.pregnancy_lactation || "Information not available."),
+        storageConditions: String(d.storage_conditions || "Information not available."),
+        overdoseEffects: String(d.overdose_effects || "Information not available."),
         type: 'brand',
       };
     }
 
-    // Fallback to local files
-    const possibleDirs = [
-      path.join(process.cwd(), 'public/data/drug_details'),
-      path.join(process.cwd(), 'frontend/public/data/drug_details'),
-      path.join(process.cwd(), '.next/server/public/data/drug_details'),
-      path.join(process.cwd(), 'static/data/drug_details')
-    ];
-
-    let DATA_DIR = '';
-    for (const dir of possibleDirs) {
-      if (fs.existsSync(dir)) {
-        DATA_DIR = dir;
-        break;
-      }
-    }
-
-    if (DATA_DIR) {
-      const filePath = path.join(DATA_DIR, `${slug}.json`);
-      if (fs.existsSync(filePath)) {
-        return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-      }
-    }
-
-    return null;
+    return await fallbackFromFile(slug) as unknown as DrugDetailResult | null;
   } catch (e) {
     console.error(`Error loading detail for ${slug}:`, e);
-
-    // Fallback to local files on error
-    try {
-      const possibleDirs = [
-        path.join(process.cwd(), 'public/data/drug_details'),
-        path.join(process.cwd(), 'frontend/public/data/drug_details'),
-      ];
-
-      for (const dir of possibleDirs) {
-        const filePath = path.join(dir, `${slug}.json`);
-        if (fs.existsSync(filePath)) {
-          return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-        }
-      }
-    } catch {}
-
-    return null;
+    return await fallbackFromFile(slug) as unknown as DrugDetailResult | null;
   }
 }

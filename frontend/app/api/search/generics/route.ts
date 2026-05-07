@@ -1,15 +1,17 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { generics } from '@/lib/db/schema';
-import { sql, ilike } from 'drizzle-orm';
+import { ilike } from 'drizzle-orm';
+import { genericSearchQuerySchema } from '@/lib/validators';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const query = searchParams.get('q');
-
-  if (!query) {
+  const parsed = genericSearchQuerySchema.safeParse(Object.fromEntries(searchParams));
+  if (!parsed.success || !parsed.data.q) {
     return NextResponse.json([]);
   }
+
+  const query = parsed.data.q;
 
   try {
     const results = await db.select({
