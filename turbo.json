@@ -4,7 +4,12 @@
     "build": {
       "dependsOn": ["^build"],
       "outputs": [".next/**", "!.next/cache/**"],
-      "inputs": ["src/**", "app/**", "lib/**", "types/**", "components/**", "package.json", "next.config.ts"]
+      "inputs": ["src/**", "app/**", "lib/**", "types/**", "components/**", "package.json", "next.config.ts"],
+      "env": [
+        "DATABASE_URL",
+        "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
+        "CLERK_SECRET_KEY"
+      ]
     },
     "type-check": {
       "cache": true
