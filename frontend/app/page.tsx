@@ -82,19 +82,19 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col flex-1 bg-white">
+    <div className="flex flex-col flex-1">
       {/* Hero Section */}
-      <section className="py-4 text-gray-900 bg-white">
+      <section className="py-4 text-gray-900">
         {/* Outer Container with Mint Background and Symmetric 24px Padding */}
         <div 
-          className="container-medq relative overflow-hidden mx-auto" 
-          style={{ 
-            backgroundColor: '#D5E9E7', 
-            borderRadius: '2rem', 
-            maxWidth: '80rem',
-            padding: '24px',
-            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)'
-          }}
+        className="container-medq relative overflow-hidden mx-auto" 
+        style={{ 
+          backgroundColor: '#D5E9E7', 
+          borderRadius: '2rem', 
+          maxWidth: '80rem',
+          padding: '24px',
+          boxShadow: '20px 50px 80px -20px rgba(0, 0, 0, 0.25), 10px 30px 40px -15px rgba(0, 0, 0, 0.15)'
+        }}
         >
           {/* Glass Hero Box - Symmetric 24px padding with soft highlight border */}
           <div
@@ -186,10 +186,10 @@ export default function Home() {
         <div className="container-medq">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             {[
-              { label: 'Drugs Listed', value: '20' },
-              { label: 'Drug Classes', value: '19' },
-              { label: 'Companies', value: '9' },
-              { label: 'Patient Reviews', value: '6' },
+              { label: 'Drugs Listed', value: '40,309' },
+              { label: 'Generics', value: '1,757' },
+              { label: 'Drug Classes', value: '28' },
+              { label: 'Companies', value: '443' },
             ].map((stat) => (
               <div key={stat.label}>
                 <div className="text-3xl font-bold text-primary">{stat.value}</div>

@@ -8,6 +8,17 @@
     "check": "turbo run type-check --filter=frontend"
   },
   "devDependencies": {
+    "axios": "^1.16.0",
+    "cheerio": "^1.2.0",
+    "pg": "^8.20.0",
+    "playwright": "^1.59.1",
+    "playwright-extra": "^4.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
     "turbo": "latest"
+  },
+  "dependencies": {
+    "csv-parse": "^6.2.1",
+    "csv-parser": "^3.2.0",
+    "dotenv": "^17.4.2"
   }
 }

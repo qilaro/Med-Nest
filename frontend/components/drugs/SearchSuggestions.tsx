@@ -1,6 +1,5 @@
 import React from "react";
-import Link from "next/link";
-import { Info } from "lucide-react";
+import { Tag } from "lucide-react";
 import { DrugSummary } from "@/types/drug";
 import { 
   TabletIcon, 
@@ -8,7 +7,8 @@ import {
   SyrupIcon, 
   IVDripIcon, 
   DropsIcon, 
-  InhalerIcon 
+  InhalerIcon,
+  SachetIcon
 } from "@/components/ui/MedicalIcons";
 
 interface SearchSuggestionsProps {
@@ -19,8 +19,11 @@ interface SearchSuggestionsProps {
   query?: string;
 }
 
-const getDosageIcon = (form: string) => {
-  const f = form.toLowerCase();
+const getDosageIcon = (type: string | undefined, form?: string) => {
+  if (type === 'generic') return <SachetIcon size={20} />;
+  if (type === 'class') return <Tag size={20} />;
+  
+  const f = (form || "").toLowerCase();
   if (f.includes("tablet")) return <TabletIcon size={20} />;
   if (f.includes("capsule")) return <PillIcon size={20} />;
   if (f.includes("syrup") || f.includes("suspension")) return <SyrupIcon size={20} />;
@@ -30,16 +33,12 @@ const getDosageIcon = (form: string) => {
   return <PillIcon size={20} />;
 };
 
-/**
- * Highlights the query part of the text
- */
 const HighlightText = ({ text, query, isHighlighted }: { text: string; query?: string; isHighlighted: boolean }) => {
   const trimmedQuery = query?.trim();
   if (!trimmedQuery || trimmedQuery === "" || isHighlighted) {
     return <>{text}</>;
   }
 
-  // Escape special characters in query for regex
   const escapedQuery = trimmedQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const parts = text.split(new RegExp(`(${escapedQuery})`, 'gi'));
   
@@ -47,7 +46,7 @@ const HighlightText = ({ text, query, isHighlighted }: { text: string; query?: s
     <>
       {parts.map((part, i) => 
         part.toLowerCase() === trimmedQuery.toLowerCase() ? (
-          <span key={i} className="font-extrabold text-navy group-hover:text-white">
+          <span key={i} className="font-bold text-navy group-hover:text-white">
             {part}
           </span>
         ) : (
@@ -67,7 +66,7 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
   isFeatured = false,
   query = "",
 }) => {
-  if (!isVisible || suggestions.length === 0) return null;
+  if (!isVisible || (suggestions.length === 0 && query.trim() !== "")) return null;
 
   return (
     <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-[100] max-h-[400px] overflow-y-auto">
@@ -79,24 +78,30 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
       <div className="py-2">
         {suggestions.map((drug) => (
           <button
-            key={drug.id}
+            key={`${drug.type}-${drug.slug}`}
             onClick={() => onSelect(drug)}
-            className="w-full flex items-center gap-4 px-4 py-3 hover:bg-teal-600 hover:text-white transition-colors text-left group cursor-pointer"
+            className="w-full flex items-center gap-4 px-6 py-4 hover:bg-teal-600 hover:text-white transition-colors text-left group cursor-pointer"
           >
-            <div className="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center text-gray-500 group-hover:bg-white/20 group-hover:text-white shrink-0">
-              {getDosageIcon(drug.dosageForm)}
+            <div className="w-12 h-12 rounded-lg bg-gray-50 flex items-center justify-center text-gray-500 group-hover:bg-white/20 group-hover:text-white shrink-0">
+              {getDosageIcon(drug.type, drug.dosageForm)}
             </div>
             <div className="flex-1 overflow-hidden">
               <div className="flex items-baseline gap-2">
-                <span className="text-base truncate">
+                <span className="text-lg truncate font-semibold">
                   <HighlightText text={drug.brandName} query={query} isHighlighted={isFeatured} />
                 </span>
-                <span className="text-sm opacity-80 font-medium">
-                  {drug.strength}
-                </span>
+                {drug.strength && (
+                  <span className="text-base opacity-80 font-medium">
+                    {drug.strength}
+                  </span>
+                )}
               </div>
-              <div className="text-xs opacity-70 truncate font-medium">
-                <HighlightText text={drug.genericName} query={query} isHighlighted={isFeatured} /> • {drug.dosageForm}
+              <div className="text-sm opacity-70 truncate font-medium">
+                <HighlightText text={drug.genericName} query={query} isHighlighted={isFeatured} />
+                {" • "}
+                {drug.dosageForm}
+                {" • "}
+                {drug.company}
               </div>
             </div>
           </button>

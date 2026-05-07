@@ -29,7 +29,7 @@ const newsItems = [
 
 export function HealthNews() {
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-16">
       <div className="container-medq mx-auto px-4">
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-4xl md:text-[3.5rem] font-bold leading-tight">Latest Health News</h2>
@@ -44,7 +44,12 @@ export function HealthNews() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {newsItems.map((item, index) => (
-            <Link key={index} href={item.href} className="bg-white rounded-2xl p-10 border border-gray-200 shadow-sm transition-all duration-150 hover:border-primary hover:shadow-lg group">
+            <Link 
+              key={index} 
+              href={item.href} 
+              className="bg-white rounded-2xl p-10 border border-gray-200 transition-all duration-300 hover:border-primary hover:shadow-[20px_20px_50px_rgba(0,0,0,0.15)] group"
+              style={{ boxShadow: '10px 10px 25px rgba(0, 0, 0, 0.05)' }}
+            >
               <span className="inline-block rounded-full px-3 py-1 text-sm font-semibold font-serif bg-[#E4F1F0] text-[#0A5C55] mb-3">
                 {item.category}
               </span>

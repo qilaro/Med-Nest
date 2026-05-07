@@ -1,29 +1,50 @@
-# MedQ
+# Med-Nest
 
-MedQ is an SEO-first medicine information platform with the motto:
+Med-Nest is a production-grade, SEO-first medicine information platform.
 **"Learn more. Live better."**
 
-This repository is currently in a fresh bootstrap phase with a static Home prototype.
+## 🏗️ Architecture (Gold Standard)
+Consolidated Next.js architecture designed for speed, SEO, and scalability.
 
-## Current State
-- `index.html` + `styles.css` for local Home-page design preview
-- `docs/PRD.md` as product requirements source
-- `AGENTS.md` as AI/agent execution guide
+- **Frontend**: Next.js 15+ (App Router, Server Actions)
+- **Database**: Neon PostgreSQL (Serverless)
+- **ORM**: Drizzle ORM
+- **Styling**: Tailwind CSS + shadcn/ui
+- **Deployment**: Vercel
 
-## Planned Architecture
+## 📂 Project Structure
 ```text
 mednest/
-  frontend/   # Next.js + TypeScript
-  backend/    # FastAPI + Python
-  shared/     # Shared types/constants/contracts
+├── frontend/        # Next.js Application & Database Layer
+│   ├── app/         # App Router (UI & SEO)
+│   ├── lib/db/      # Drizzle Schema & Connection
+│   └── drizzle/     # Generated SQL Migrations
+├── docs/            # Project documentation & Roadmaps
+└── reference/       # UI/UX Source of Truth
 ```
 
-## Local Preview
-```bash
-python3 -m http.server 3000
-```
-Open: `http://localhost:3000`
+## 🚀 Getting Started
 
-## Documentation
-- Product requirements: `docs/PRD.md`
-- Agent operating rules: `AGENTS.md`
+### Prerequisites
+- Node.js & pnpm
+- Neon PostgreSQL instance
+
+### Local Development
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   pnpm install
+   ```
+3. Set up environment variables in `frontend/.env`:
+   ```text
+   DATABASE_URL=your_neon_connection_string
+   ```
+4. Run the development server:
+   ```bash
+   pnpm dev
+   ```
+
+## 📖 Documentation
+- **Session State**: `docs/SESSION_STATE.md` (Current progress)
+- **Project Spec**: `docs/Project_Spec.md`
+- **Database Schema**: `docs/DATABASE_SCHEMA.md`

@@ -106,6 +106,7 @@ function DrugsContent() {
         setCompanies(companiesData);
       } catch (error) {
         console.error("Failed to fetch drugs:", error);
+        setWarning("Failed to load medicines. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -191,8 +192,8 @@ function DrugsContent() {
   };
 
   return (
-    <div className="container-medq py-10">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-[#f9f9f9] py-10">
+      <div className="max-w-[800px] mx-auto">
         <header className="mb-8">
           <h1 className="text-3xl font-bold text-navy mb-2">Drug Directory</h1>
           <p className="text-muted-foreground">
@@ -299,21 +300,21 @@ function DrugsContent() {
 
         <AZBrowse showAdvancedSearch={false} />
         <hr className="my-8 border-t border-gray-200" />
-      </div>
-      
-      {loading ? (
-        <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
-          <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
-          <p>Scanning database...</p>
-        </div>
-      ) : (
-        <div className="mx-auto max-w-4xl">
-          <h2 className="text-xl font-bold text-navy mb-6">Popular Drug Searches</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {isFiltered ? drugs.map((drug) => <DrugCard key={drug.id} drug={drug} />) : drugs.slice(0, 12).map((drug) => <DrugCard key={drug.id} drug={drug} />)}
+
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
+            <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
+            <p>Scanning database...</p>
           </div>
-        </div>
-      )}
+        ) : (
+          <div>
+            <h2 className="text-xl font-bold text-navy mb-6">Popular Drug Searches</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {isFiltered ? drugs.map((drug) => <DrugCard key={drug.id} drug={drug} />) : drugs.slice(0, 12).map((drug) => <DrugCard key={drug.id} drug={drug} />)}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

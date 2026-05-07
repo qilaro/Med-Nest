@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1777653850463,
+      "tag": "0000_tan_ironclad",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1777663901249,
+      "tag": "0001_abnormal_proemial_gods",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1777709220157,
+      "tag": "0002_milky_warpath",
+      "breakpoints": true
+    }
+  ]
+}

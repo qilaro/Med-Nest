@@ -95,37 +95,73 @@ Update Medicine
 Review FAQ answers written by Pharmacist
 ```
 
-## 3. Data Strategy
+## 3. Data Strategy (Gold Standard Data Pipeline)
 
-```javascript
-A) Initial dataset: 50–100 medicines (manual curation)
-B) Gradual expansion to 300–500 medicines post-launch
-```
+**Current Status**: Phase 1 ✅ Complete | Phase 2 🔄 In Progress
+
+**Dataset Size**:
+- **Drugs**: 23,106 (vs Med-Ex ~29,500; gap: -6,400 drugs)
+- **Generics**: 3,325 unique molecules
+- **Companies**: 341 total (331 Bangladesh, 4 JVs, 3 India, 1 UK, 1 Germany, 1 Switzerland)
+- **Audit Logs**: 26,646 entries auto-captured
+
+We will build an automated, high-fidelity pipeline to gather data for 25,000+ medicines using a three-tiered "Truth Aggregation" model:
+
+### A) Tiered Sourcing Model
+1.  **Tier 1: Local Identity (Med-Ex.com.bd)**
+    *   **Purpose**: The source for Bangladesh-specific availability.
+    *   **Data**: BD brand names, local manufacturers, dosage forms, strengths, and current local pricing (Unit, Strip, Box).
+2.  **Tier 2: Clinical Depth & EEAT (Drugs.com)**
+    *   **Purpose**: Global gold standard for medical information.
+    *   **Data**: Detailed pharmacology, mechanisms of action, US-standard side effects, pregnancy/lactation warnings, and professional medical review signatures.
+3.  **Tier 3: Official Verification (Manufacturer Websites)**
+    *   **Purpose**: Final source of truth for prescribing info and assets.
+    *   **Data**: Official Product Inserts (PI), high-resolution pack images, and official company descriptions from Square, Beximco, Incepta, etc.
+
+### B) The "Digital Librarian" Pipeline (Automated)
+1.  **Discovery Phase**: Automated crawling of Med-Ex A–Z indices to identify new generics and brands.
+2.  **Multi-Source Fetching**: Concurrent fetching of data from all three tiers for every new entry.
+3.  **AI Reconciliation**: Using LLM logic to synthesize data from multiple sources (e.g., merging Med-Ex local info with Drugs.com clinical depth).
+4.  **Structure & Ingest**: Mapping the synthesized data into the PostgreSQL Gold Standard Schema and pushing it to Neon.
+5.  **Verification Loop**: Flagging "High-Risk" data for pharmacist verification via the Admin Panel.
+
+### C) Scalability Roadmap
+- **Phase 1 (✅ COMPLETE - May 3, 2026)**: 
+  - ✅ Ingested 23,106 medicines from CSV
+  - ✅ Loaded 3,325 unique generics
+  - ✅ Classified 341 companies by country origin
+  - ✅ RLS + audit logging active (26,646 entries)
+  - ✅ Country column added + indexed for filtering
+- **Phase 2 (🔄 IN PROGRESS - 15 hours, May 3-5)**: 
+  - Build Med-Ex scraper (~7K new drugs)
+  - Company website scrapers for top 20 pharma (~1K new drugs)
+  - Security hardening (CAPTCHA, rate limiting, bot detection) - 7.5 hours
+  - Target: 30,000+ medicines
+- **Phase 3 (Future)**: Full autonomous crawl with monthly sync to 25,000+ brand products
 
 ***
 
 ## 4. Tech Stack
 
 ```javascript
-Frontend : Next.js + Typescript
+Frontend : Next.js + Typescript (App Router + Server Actions)
 Styling : Tailwind CSS + shadcn/ui
 
-Backend : FastAPI + Python (AI, Logic, Chatbot, Search APIs)
-Optional : Next.js Server Actions + API Routes(Auth/simple calls)
+Database : Neon PostgreSQL (serverless, instant branching, native pgvector support)
+ORM : Drizzle ORM (TypeScript)
 
-Database : PostgreSQL (with optional pgvector for AI search and embeddings)
-ORM : SQLAlchemy(Python)
-
-Authentication : Clerk (Frontend auth)  
-JWT/session validation in FastAPI backend
-
+Authentication : Clerk (Frontend auth)
 File Storage : Cloudflare R2
-Hosting : Vercel (Next.js frontend) + Railway (FastAPI backend)
+Hosting : Vercel (Next.js)
 Analytics : Google Analytics + PostHog
-AI : Google Gemini API (primary) 
-RAG over your curated PostgreSQL (pgvector) drug database
-Search : PostgreSQL Full text Search first,later upgrade to Meilisearch 
+AI : Google Gemini API (via RAG over pgvector)
 
+---
+### Future Scalability Path (Post-MVP)
+If we hit our traction metrics, we will migrate the intensive AI and Business Logic into a dedicated FastAPI microservice:
+- Backend Migration : FastAPI + Python (for advanced AI/ML pipelines)
+- Inter-service Auth : JWT-based verification between Next.js and FastAPI
+- Infrastructure : Deployment on Railway/Render for the Python service
 ```
 
 ***

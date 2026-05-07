@@ -47,3 +47,18 @@ We use **Tailwind CSS** combined with **CSS Variables** located in `app/globals.
 1.  **Zero Design Deviation**: Matches `reference/index.html` pixel-for-pixel.
 2.  **Accessibility First**: Uses `aria-labels` and semantic HTML so everyone can use the site.
 3.  **Separation of Concerns**: Visual components should not handle database logic. They just "ask" the services for data.
+
+## 5. Database Schema & Migration Workflow
+
+To maintain production stability, we use Drizzle ORM.
+
+### Schema Updates
+Schema changes must be performed through `frontend/lib/db/schema.ts`. Once the schema is updated, sync the database using the following command from the `frontend/` directory:
+
+```bash
+npx drizzle-kit push
+```
+
+*   **Why `push` over `migrate`?**
+    In our development environment, `push` provides an efficient, direct synchronization between our TypeScript schema definition and the live Neon database. This avoids driver incompatibility issues found with serverless environments during local migration execution.
+*   **Best Practice**: Always verify the schema changes in the Neon Dashboard console after pushing.

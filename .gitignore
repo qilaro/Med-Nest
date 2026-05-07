@@ -19,6 +19,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
+.env
 .env*.local
 
 # vercel
@@ -27,6 +28,9 @@ yarn-error.log*
 # project specific
 temp/
 docs/tasks.md
+cookies.json
+package-lock.json
+frontend/public/data/source_dataset.csv
 
 # Turbo & Build Artifacts
 .turbo/

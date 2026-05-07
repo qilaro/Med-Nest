@@ -61,27 +61,61 @@ Build a lightweight, SEO-first medicine information platform to:
 - Review FAQ answers written by pharmacist
 
 ## 3. Data Strategy
-- Initial dataset: 50–100 medicines (manual curation)
-- Gradual expansion: 300–500 medicines post-launch
+
+**Current Status** (May 3, 2026):
+- ✅ **23,106 medicines** ingested from clinical dataset (vs initial plan of 50-100)
+- ✅ **3,325 unique generics** loaded
+- ✅ **341 pharmaceutical companies** classified by country origin
+- 🔄 **Phase 2 (In Progress)**: Scraping Med-Ex + company websites to reach **30,000+ medicines**
+
+**Dataset Expansion Plan**:
+- Initial dataset: ✅ Completed (23,106 medicines)
+- Post-launch expansion: Phase 2 (15 hours) will add 6,900+ medicines to reach 30K+
 
 ## 4. Tech Stack
-- Frontend: Next.js + TypeScript
+- Frontend: Next.js + TypeScript (App Router + Server Actions)
 - Styling: Tailwind CSS + shadcn/ui
-- Backend: FastAPI + Python
-- Optional backend edge calls: Next.js Server Actions / API Routes (for simple auth/calls)
-- Database: PostgreSQL (optional pgvector for AI search/embeddings)
-- ORM: SQLAlchemy
-- Authentication: Clerk (frontend auth), JWT/session validation in FastAPI
+- Database: PostgreSQL + pgvector
+- ORM: Drizzle ORM (TypeScript)
+- Authentication: Clerk (Frontend auth)
 - File storage: Cloudflare R2
-- Hosting: Vercel (frontend) + Railway (backend)
+- Hosting: Vercel (Next.js)
 - Analytics: Google Analytics + PostHog
 - AI: Google Gemini API (primary), RAG over curated PostgreSQL dataset
-- Search: PostgreSQL full-text first, optional Meilisearch later
+- Search: PostgreSQL full-text search first, optional Meilisearch later
 
-## 5. SEO Strategy
+### Future Scalability Path (Post-Traction)
+If we hit our traction metrics, we will migrate the intensive AI and Business Logic into a dedicated FastAPI microservice:
+- Backend Migration: FastAPI + Python (for advanced AI/ML pipelines)
+- Inter-service Auth: JWT-based verification between Next.js and FastAPI
+- Infrastructure: Deployment on Railway/Render for the Python service
+
+## 5. Security & Compliance (2026 Gold Standard)
+
+### A) Zero-Trust Database Architecture ✅ Active
+- **Row Level Security (RLS)**: All 6 tables protected with default-deny policies
+- **Audit Logging**: Database triggers auto-capture all INSERT/UPDATE/DELETE operations
+- **Authentication**: Clerk integration with middleware protection
+- **User Ownership**: Reviews linked to user_id; read-only for other users
+
+### B) Application Security (Phase 2 - In Progress)
+- Input validation (Zod schema validation for all API inputs)
+- CAPTCHA protection (reCAPTCHA v3 on signup/login)
+- Rate limiting (10 requests/minute per IP address)
+- Bot/scraper detection (User-Agent validation + behavioral analysis)
+- Enhanced audit logging for security events
+- CORS configuration with strict origin allowlist
+- Secure error handling (generic messages, no system info leakage)
+
+### C) Infrastructure Security (External Setup - User Responsibility)
+- Cloudflare DDoS protection (optional, recommended)
+- AWS WAF for advanced filtering (optional, recommended)
+- Professional penetration testing (recommended post-launch)
+
+## 6. SEO Strategy
 TBD (primary distribution channel remains SEO).
 
-## 6. Metrics (Traction-Focused)
+## 7. Metrics (Traction-Focused)
 - Search click rate
 - Returning users (retention)
 - Interaction checker usage

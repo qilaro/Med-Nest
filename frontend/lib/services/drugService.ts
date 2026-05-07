@@ -5,7 +5,7 @@ import {
   DrugClass 
 } from "../../types/drug";
 import Fuse from "fuse.js";
-import drugsData from "../../public/data/drugs.json";
+import drugsData from "@/public/data/drugs.json";
 
 // Add local interface for list response until types/drug.ts is updated
 export interface DrugsResponse {
@@ -16,7 +16,7 @@ export interface DrugsResponse {
   totalPages: number;
 }
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "/api";
 
 async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
@@ -53,27 +53,36 @@ export const drugService = {
       }
       return data;
     } catch (error) {
-      console.warn("API unavailable or empty, falling back to local mock data.");
+      console.error("API error, entering fallback logic:", error);
       
-      let drugs = [...drugsData.drugs];
-      if (params?.drug_class) {
-        drugs = drugs.filter((d: any) => d.drugClass === params.drug_class);
-      }
-      if (params?.letter) {
-        if (params.letter === "0-9") {
-          drugs = drugs.filter((d: any) => /^[0-9]/.test(d.brandName));
-        } else {
-          drugs = drugs.filter((d: any) => d.brandName.toUpperCase().startsWith(params.letter!.toUpperCase()));
+      try {
+        if (!drugsData || !drugsData.drugs) {
+          throw new Error("Local drugsData is missing or malformed");
         }
+        
+        let drugs = [...drugsData.drugs];
+        if (params?.drug_class) {
+          drugs = drugs.filter((d: any) => d.drugClass.toLowerCase() === params.drug_class!.toLowerCase());
+        }
+        if (params?.letter) {
+          if (params.letter === "0-9") {
+            drugs = drugs.filter((d: any) => /^[0-9]/.test(d.brandName));
+          } else {
+            drugs = drugs.filter((d: any) => d.brandName.toUpperCase().startsWith(params.letter!.toUpperCase()));
+          }
+        }
+        
+        return {
+          drugs: drugs,
+          total: drugs.length,
+          page: 1,
+          limit: params?.limit || 50,
+          totalPages: 1
+        };
+      } catch (fallbackError) {
+        console.error("Fallback logic failed:", fallbackError);
+        throw fallbackError;
       }
-      
-      return {
-        drugs: drugs,
-        total: drugs.length,
-        page: 1,
-        limit: params?.limit || 50,
-        totalPages: 1
-      };
     }
   },
 
@@ -95,18 +104,32 @@ export const drugService = {
   },
 
   /**
-   * Get all drug classes with counts
+   * Get all drug classes
    */
-  getDrugClasses: async () => {
+  getDrugClasses: async (): Promise<DrugClass[]> => {
     try {
-      return await apiFetch<DrugClass[]>("/drugs/classes");
+      return await apiFetch<DrugClass[]>("/drug-classes");
     } catch (error) {
-      const classes: Record<string, number> = {};
+      console.warn("API error for drug classes, falling back to local mock data.");
+      const classes = Array.from(new Set(drugsData.drugs.map((d: any) => d.drugClass))).sort() as string[];
+      return classes.map(name => ({ name, count: drugsData.drugs.filter((d: any) => d.drugClass === name).length }));
+    }
+  },
+
+  /**
+   * Get all dosage forms with counts
+   */
+  getDosageForms: async (): Promise<{ name: string; count: number }[]> => {
+    try {
+      return await apiFetch<{ name: string; count: number }[]>("/dosage-forms");
+    } catch (error) {
+      const counts: Record<string, number> = {};
       drugsData.drugs.forEach((d: any) => {
-        classes[d.drugClass] = (classes[d.drugClass] || 0) + 1;
+        if (d.dosageForm) {
+          counts[d.dosageForm] = (counts[d.dosageForm] || 0) + 1;
+        }
       });
-      
-      return Object.entries(classes).map(([name, count]) => ({ name, count }));
+      return Object.entries(counts).map(([name, count]) => ({ name, count }));
     }
   },
 

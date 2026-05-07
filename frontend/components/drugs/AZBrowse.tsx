@@ -2,29 +2,43 @@
 
 import { useState, Suspense } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-const TABS = ["Browse Drugs", "Conditions", "Symptoms"];
+const TABS = ["Browse Trade", "Browse Generics", "Browse Class", "Dosage Form"];
 
 /**
  * AZBrowse Content Component
  */
 function AZBrowseContent({ showAdvancedSearch = true }: { showAdvancedSearch?: boolean }) {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const currentLetter = searchParams.get("letter");
-  const [activeTab, setActiveTab] = useState(TABS[0]);
+  const [activeTab, setActiveTab] = useState("");
+
+  const handleTabClick = (tab: string) => {
+    setActiveTab(tab);
+    if (tab === "Browse Trade") {
+      router.push("/trade");
+    } else if (tab === "Browse Generics") {
+      router.push("/generics");
+    } else if (tab === "Browse Class") {
+      router.push("/class");
+    } else if (tab === "Dosage Form") {
+      router.push("/dosage-forms");
+    }
+  };
 
   return (
     <div className="w-full max-w-4xl my-8">
       {/* Tabs */}
       <div className="flex justify-between items-center mb-6">
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-nowrap overflow-x-auto">
           {TABS.map((tab) => (
             <button
               key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-6 py-2.5 rounded-lg font-medium text-sm transition-colors cursor-pointer ${
+              onClick={() => handleTabClick(tab)}
+              className={`px-4 py-2.5 rounded-lg font-medium text-sm whitespace-nowrap transition-colors cursor-pointer shadow-lg ${
                 activeTab === tab
                   ? "bg-[#0D261E] text-white"
                   : "bg-white text-blue-600 hover:bg-gray-100 border border-gray-200"

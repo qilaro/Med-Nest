@@ -1,16 +1,18 @@
 export interface DrugSummary {
-  id: number;
+  id: number | string;
   slug: string;
   brandName: string;
   genericName: string;
   dosageForm: string;
   strength: string;
   drugClass: string;
+  companyName?: string;
   company?: string;
   price?: string;
   imageUrl?: string;
   averageRating?: number;
   reviewCount?: number;
+  type?: 'brand' | 'generic' | 'class';
 }
 
 export interface DrugDetail extends DrugSummary {

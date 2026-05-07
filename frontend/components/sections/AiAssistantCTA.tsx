@@ -2,16 +2,17 @@ import Link from "next/link"
 
 export function AiAssistantCTA() {
   return (
-    <section className="py-16 bg-white">
+    <section className="py-16">
       <div 
-        className="container-medq py-16 px-4 text-center text-gray-900 mx-auto" 
-        style={{ 
-          backgroundColor: '#efdcf2', 
-          borderRadius: '3rem', 
-          maxWidth: '80rem',
-          boxShadow: '0 40px 60px -15px rgba(0, 0, 0, 0.15), 0 20px 30px -10px rgba(0, 0, 0, 0.1)' 
-        }}
+      className="container-medq py-16 px-4 text-center text-gray-900 mx-auto" 
+      style={{ 
+        backgroundColor: '#efdcf2', 
+        borderRadius: '3rem', 
+        maxWidth: '80rem',
+        boxShadow: '20px 50px 80px -20px rgba(0, 0, 0, 0.25), 10px 30px 40px -15px rgba(0, 0, 0, 0.15)' 
+      }}
       >
+
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-12 w-12 mx-auto mb-4 opacity-90 text-navy" aria-hidden="true">
           <path d="M12 8V4H8"></path>
           <rect width="16" height="12" x="4" y="8" rx="2"></rect>

@@ -1,0 +1,18 @@
+<svg width="300" height="300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="medical-pattern" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
+      <!-- Using a more visible dark color with low opacity for the pattern -->
+      <g fill="#2D8A78" fill-opacity="0.1">
+        <!-- Capsule -->
+        <rect x="20" y="20" width="12" height="6" rx="3" transform="rotate(45, 26, 23)" />
+        <!-- Cross -->
+        <path d="M70 30h8v4h-8zM74 26h4v12h-4z" />
+        <!-- Heart/Pulse -->
+        <path d="M20 70h5l3-6l3 12l3-18l3 6h5" fill="none" stroke="#2D8A78" stroke-width="2" stroke-opacity="0.2" />
+        <!-- Pill -->
+        <circle cx="80" cy="80" r="5" />
+      </g>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#medical-pattern)" />
+</svg>
