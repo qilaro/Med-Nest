@@ -24,7 +24,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" className={cn("h-full antialiased", "font-sans", notoSans.variable, playfairDisplayHeading.variable)}>
-        <body className="min-h-full flex flex-col font-serif relative">
+        <body className="min-h-full flex flex-col font-serif relative" suppressHydrationWarning>
           <EmergencyBanner />
           <Header />
           <main className="flex-1 relative z-10">
