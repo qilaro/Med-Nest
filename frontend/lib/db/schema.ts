@@ -55,6 +55,11 @@ export const generics = pgTable('generics', {
   pregnancyCategory: varchar('pregnancy_category', { length: 10 }),
   csaSchedule: varchar('csa_schedule', { length: 50 }),
 
+  // Source & Classification
+  medicineType: varchar('medicine_type', { length: 50 }).default('Allopathic'),
+  sourceUrl: text('source_url'),
+  sourceId: varchar('source_id', { length: 50 }),
+
   // Denormalized / Flexible Data (JSONB)
   brandNamesList: jsonb('brand_names_list').default('[]'),
   relatedDrugs: jsonb('related_drugs').default('[]'),
