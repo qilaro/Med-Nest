@@ -1,75 +1,57 @@
-# 🚀 Med-Nest: Industrial Production Roadmap (2-Week Sprint)
+# Session State — Med-Nest
 
-## 🏗️ Sprint Strategy: DevSecOps & Mobile-First
-**Goal**: Deliver a production-grade, high-security medical platform by May 14, 2026.
+## Current Database State (May 2026)
 
----
+| Table       | Rows    |
+|-------------|---------|
+| `brands`    | 40,309  |
+| `generics`  | 1,757   |
+| `companies` | 443     |
+| `reviews`   | 0       |
+| `faqs`      | 0       |
+| `audit_logs`| 0       |
 
-## 📅 Sprint 1: Infrastructure, Data & Security (Days 1-4)
+## ✅ Completed
 
-### 1.1 The "Platinum" Data Pipeline (See `docs/DATA_PIPELINE.md`)
-- [x] **Database Initialization**: Neon PostgreSQL + Drizzle ORM configured.
-- [x] **Gold Standard Schema**: 20+ medical fields implemented in `schema.ts`.
-- [x] **Clinical Seed Acquired**: `source_dataset.csv` (12MB) extracted and ready.
-- [ ] **Step 1 (Ingest)**: 
-    - [ ] Install `csv-parse`.
-    - [ ] Build and execute `frontend/scripts/ingest-data.ts`.
-- [ ] **Step 2 (Market Sync)**: Build automated crawler for Med-Ex BD sync.
-- [ ] **Step 3 (Official Verification)**: Targeted company site scraping for PI & Assets.
-- [ ] **Step 4 (AI Synthesis)**: LLM logic to rewrite into original Med-Nest voice.
+### Infrastructure
+- Neon PostgreSQL + Drizzle ORM configured
+- Lazy DB connection pattern (safe for Vercel build)
+- Turbo repo monorepo with env var passthrough
 
-### 1.2 Security & Compliance (2026 Standards)
-- [ ] **Zero-Trust Implementation**: Configure secrets management.
-- [ ] **Audit Logging**: DB-level triggers for medical data integrity.
-- [ ] **Authentication**: Secure Clerk integration.
+### API Routes (DB-backed)
+- `GET /api/drugs` — paginated list with drug_class & letter filters
+- `GET /api/drugs/az` — A-Z grouped drug listing
+- `GET /api/drugs/[slug]` — drug detail (joins brands + generics)
+- `GET /api/drugs/companies` — company list
+- `GET /api/drug-classes` — drug classes with counts
+- `GET /api/dosage-forms` — dosage forms with counts
+- `GET /api/search?q=` — search brands and generics via ILIKE
 
----
+### Pages
+- Drug directory (`/drugs`) — search, filters, A-Z browse, drug cards
+- Drug detail (`/drugs/[slug]`) — all info tabs, pricing, alternate brands
+- Generics directory (`/generics`)
+- Generic detail (`/generics/[genericSlug]`)
+- Class browse (`/class`)
+- Dosage forms browse (`/dosage-forms`)
+- Trade name browse (`/trade`)
 
-## 📅 Sprint 2: Core Engineering & Mobile UX (Days 5-10)
-... (Pending)
+### Services
+- `drugService.ts` — client-side, calls `/api/*` routes with local JSON fallback
+- `detailService.ts` — server-side, queries DB via Drizzle with local file fallback
 
-## 📈 Enrichment Progress Log
+### Build
+- `pnpm build` passes (TypeScript + Turbopack)
+- Vercel deploy requires `DATABASE_URL` in project env vars + `turbo.json`
 
-### Completed Generic Drug Enrichments
-- [x] **Metronidazole** (Done) - Includes "What is" description.
-- [x] **Cefixime** (Done) - Includes "What is" description.
-- [x] **Esomeprazole** (Done) - Includes "What is" description.
+## 🔄 In Progress
+- Vercel deployment env var configuration
+- Data scraping pipeline (Med-Ex + company sites)
 
-### Enrichment Data Integrity
-- All enrichments include the "What is..." section extracted from sources for better drug context.
-
----
-
-## 🔒 SECURITY HARDENING PLAN (May 3, 2026)
-
-### Phase: Sprint 1 Extension (Post Data Ingestion)
-
-**Goal:** Enterprise-grade security + 30K drugs
-
-### What I Can Deliver (✅)
-- Input validation & sanitization
-- CAPTCHA on auth routes
-- Rate limiting (10 req/min per IP)
-- Bot/scraper detection
-- Enhanced audit logging
-- CORS + security headers
-- Role-based access control
-
-### What Requires External Setup (⚠️)
-- Cloudflare DDoS protection
-- AWS WAF
-- Professional penetration testing
-
-### Timeline
-- **Security:** 7.5 hours
-- **Scraping (to 30K):** 15 hours
-- **Total:** ~22.5 hours (3 days)
-
-### Data Target
-- Current: 23,106 drugs
-- Target: 30,000+ drugs
-- Source: Med-Ex + 20 company websites
-- Deduplication: Automatic matching by brand+generic+strength
-
----
-
+## 📅 Planned
+- Security hardening (Zod validation, rate limiting, CAPTCHA)
+- AI chatbot integration
+- Compare drugs feature
+- Interaction checker
+- Favorites/bookmarks
+- Admin panel
