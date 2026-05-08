@@ -25,6 +25,23 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" className={cn("h-full antialiased", "font-sans", notoSans.variable, playfairDisplayHeading.variable)}>
         <body className="min-h-full flex flex-col font-serif relative" suppressHydrationWarning>
+          <script dangerouslySetInnerHTML={{ __html: `
+document.addEventListener('contextmenu',function(e){e.preventDefault()});
+document.addEventListener('copy',function(e){e.preventDefault()});
+document.addEventListener('dragstart',function(e){e.preventDefault()});
+document.addEventListener('keydown',function(e){
+  if(e.key==='F12'||(e.ctrlKey&&e.shiftKey&&(e.key==='I'||e.key==='J'||e.key==='C'))||(e.ctrlKey&&e.key==='U')){
+    e.preventDefault();
+  }
+});
+setInterval(function(){
+  var t=Date.now();
+  debugger;
+  if(Date.now()-t>100){
+    document.body.innerHTML='<div style="text-align:center;margin-top:40vh;padding:20px"><h1>DevTools Detected</h1><p>Please close Developer Tools.</p></div>';
+  }
+},5000);
+`}} />
           <EmergencyBanner />
           <Header />
           <main className="flex-1 relative z-10">
