@@ -31,6 +31,17 @@ docs/tasks.md
 cookies.json
 cookies.txt
 package-lock.json
+frontend/scraped_data/
+frontend/*.log
+frontend/*.json
+frontend/rebuild_brands.py
+frontend/import_dgda.py
+frontend/scrape.py
+frontend/rotate.py
+frontend/medex.json.save
+frontend/medex.user.js
+frontend/medex-ultimate.user.js
+frontend/extract.html
 frontend/public/data/source_dataset.csv
 
 # Turbo & Build Artifacts
