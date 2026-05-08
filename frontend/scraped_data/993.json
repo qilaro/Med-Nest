@@ -1,0 +1,20 @@
+{
+  "id": 993,
+  "name": "Bicarbonate Component [HCO3 Hemodialysis Solution] | Indications, Pharmacology, Dosage, Side Effects &amp; other Generic info with Available Brand names in Bangladesh",
+  "indications": "Bicarbonate Component [HCO3 Hemodialysis Solution] solution is indicated in renal failure, Chronic renal failure and Haemodialysis. Bicarbonate serves a crucial biochemical role in the physiological pH buffering system.",
+  "composition": "Each 1 liter solution contains- Sodium Chloride: 30.5 gm Sodium bicarbonate: 66 gm Highly purified water: q.s. to 1 liter",
+  "pharmacology": "Sodium chloride is the major extracellular cation. It is important in electrolyte and fluid balance, osmotic pressure control and water distribution as it restores sodium ions. It is used as a source of electrolytes and water for hydration, treatment of metabolic acidosis, priming solution in haemodialysis and treatment of hyperosmolar diabetes. It is also used as diluents for infusion of compatible drug additives. Sodium bicarbonate raises blood and urinary pH by dissociation to provide bicarbonate ions, which neutralises the hydrogen ion concentration. It also neutralises gastric acid via production of carbon dioxide.",
+  "dosage_&amp;_administration": "Acidic component Bicarbonate Component should be used in the dilution ratio of- Acidic component: 1.00 Volume Bicarbonate Component: 1.83 Volume Purified Water: 34.00 Volume",
+  "interaction": "Sodium bicarbonate: Increases toxicity of amphetamines, ephedrine, pseudoephedrine, flecainide, quinidine and quinine. Decreases effects of lithium, chlorpropamide and salicylates due to increased clearance. May affect the absorption of certain drugs due to raised intra-gastric pH. Sodium chloride: May affect serum concentrations of lithium.",
+  "contraindications": "Known hypersensitivity to any of the ingredients of this preparation.",
+  "precautions_&amp;_warnings": "Bicarbonate Component needs to be used with Acidic component (not to be used alone). Before use, the mixed solution must be diluted with highly purified water. Close the container tightly immediately after use. Discard solution in case of visible solid particles inside. Discard solution after 96 hours of first opening.",
+  "therapeutic_class": "Haemodialysis solutions",
+  "storage_conditions": "Keep out of reach of children. Not for Injection. Store below 30 C.",
+  "brand_prices": {
+    "Dialyte-B": "\u09f3 358.93",
+    "G-Haemodialysis B": "\u09f3 350.00",
+    "Hemosol-B": "\u09f3 382.00",
+    "Renal Care B": "\u09f3 382.80",
+    "Renalaid-B": "\u09f3 358.93"
+  }
+}
