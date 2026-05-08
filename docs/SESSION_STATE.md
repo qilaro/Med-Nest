@@ -1,51 +1,58 @@
 # Session State — Med-Nest
 
-## Current Database State (May 2026)
+## Database State (May 9, 2026)
 
-| Table       | Rows    |
-|-------------|---------|
-| `brands`    | 40,886  |
-| `generics`  | 2,737   |
-| `companies` | 443     |
-| `brands with prices` | 25,393 (62%) |
-| `reviews`   | 0       |
-| `faqs`      | 0       |
-| `audit_logs`| 0       |
+| Table | Rows |
+|-------|------|
+| `brands` | **41,271** |
+| `generics` | 2,737 |
+| `companies` | 443 |
+| `brands with prices` | 25,393 (61.5%) |
+
+### Brands by Type
+| Type | Count |
+|------|-------|
+| Allopathic | 41,185 |
+| Veterinary | 32 |
+| Herbal | 22 |
+| Vaccine (Human) | 19 |
+| Veterinary Vaccine | 13 |
 
 ## ✅ Completed
 
 ### Data Pipeline
-- **DGDA pricing imported**: 25,393 brands with official government prices
-- **CSV generic data**: 2,737 generics with medical content from clinical dataset
-- **Scraped data integrated**: Brand prices from Med-Ex matched to DB brands
-- **Brand names cleaned**: Removed strength/dosage form duplication from 5,833 brands
-- **Deduplication**: 256 duplicate brands removed
-- **All brands linked**: 100% linked to company + generic
+- **DGDA**: Rebuilt brands from official BD govt pricing database
+- **Brand names cleaned**: Removed strength/dosage form duplication
+- **Duplicates removed**: 256 exact duplicates deleted
+- **OpenFDA**: 484 generics matched with US drug labels
+- **Incepta Pharma scraped**: 772 products (385 new brands) with type labels
+- **Incepta Vaccines**: 32 vaccines scraped (19 human + 13 animal)
+
+### Security
+- CSP headers, HSTS, XSS, nosniff
+- Permissions policy (camera/mic/geolocation disabled)
+- Rate limiting (60 req/min)
+- Bot detection (40+ patterns)
+- Right-click, copy, F12, DevTools blocked
+- Zod validation on all 8 API routes
+- RLS on all DB tables
+- Clerk auth middleware
 
 ### Infrastructure
-- Neon PostgreSQL + Drizzle ORM configured
-- Lazy DB connection pattern
-- 8 database tables with GIN indexes, RLS, search indexes
-- Zod validation on all API routes
-- Rate limiting (60 req/min)
+- Neon PostgreSQL + Drizzle ORM
+- Lazy DB connection (Vercel-safe)
+- 8 API routes with Zod + rate limiting
 - Loading states, error boundaries, 404 pages
+- GIN indexes for search, pg_trgm for fuzzy matching
 
-### API Routes (DB-backed)
-- `GET /api/drugs` — paginated with filters
-- `GET /api/drugs/az` — A-Z grouping
-- `GET /api/drugs/[slug]` — detail with generics join
-- `GET /api/drugs/companies` — company list
-- `GET /api/drug-classes` — classes with counts
-- `GET /api/dosage-forms` — dosage forms with counts
-- `GET /api/search?q=` — ILIKE search
+## 🔄 Next Session
+1. Scrape Square Pharma, Beximco, ACME, Renata etc.
+2. Show prices + medical info on drug detail page  
+3. Type badge (Herbal/Vet/Vaccine) in search
+4. Unify pages under `/drugs?filter=X`
 
-## 🔄 In Progress
-- **OpenFDA integration**: Match generics to US FDA data for richer medical info
-- **BD pharma company scraping**: Top 10 companies for pricing
-
-## 📅 Planned
-- Compare drugs feature
-- Interaction checker
-- AI chatbot
-- Favorites/bookmarks
-- Admin panel
+## 📖 Key Docs
+- `docs/SOURCE_OF_TRUTH.md` — Read FIRST in every session
+- `docs/SECURITY.md` — Security hardening details
+- `docs/DATABASE_SCHEMA.md` — Full schema
+- `docs/SCRAPING.md` — How to run scrapers
