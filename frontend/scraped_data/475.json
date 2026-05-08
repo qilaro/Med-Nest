@@ -1,0 +1,18 @@
+{
+  "id": 475,
+  "name": "Fluconazole (Ophthalmic) | \u09ab\u09cd\u09b2\u09c1\u0995\u09cb\u09a8\u09be\u099c\u09b2 (\u0985\u09aa\u09a5\u09be\u09b2\u09ae\u09bf\u0995) | Indications, Pharmacology, Dosage, Side Effects & other Generic info with Available Brand names in Bangladesh",
+  "indications": "Fluconazole eye drop is indicated in the treatment of fungal corneal ulcers/ keratitis.",
+  "pharmacology": "Fluconazole eye drop is a topical ophthalmic solution containing Fluconazole (a bis-triazole derivative) having established therapeutic activity against superficial ocular fungal infections. Fluconazole is fungistatic in action. The drug inhibits cytochrome P-450 14-alfa demethylase in susceptible fungi which leads to alteration of cellular membrane resulting in increased membrane permeability, leakage of essential elements and impaired uptake of precursor molecules to DNA.",
+  "dosage__administration": "Instill 1 drop to be instilled into the affected eye(s) 5 times daily.",
+  "interaction": "Fluconazole can alter pharmacokinetics of certain drugs undergoing hepatic metabolism.",
+  "contraindications": "The drug is contraindicated in patients with hypersensitivity to azoles.",
+  "side_effects": "This drug is generally well tolerated. Eosinophillia has been reported in some patients.",
+  "pregnancy__lactation": "There are no adequate and well-controlled studies in pregnant women. Fluconazole should be used during pregnancy only if the potential benefit justifies the potential risk to the fetus. Nursing mother should not be given as the drug is excreted in breast milk in concentration similar to plasma.",
+  "precautions__warnings": "Use of fluconazole may result in overgrowth of non-susceptible strains of candida other than Candida albicans",
+  "therapeutic_class": "Ophthalmic Anti-fungal Products",
+  "storage_conditions": "Keep out of the reach of children. Store in a cool, dry place, away from heat and direct light. Do not use more than 4 weeks after opening the bottle.",
+  "brand_prices": {
+    "Naz": "\u09f3 100.50",
+    "Nispore": "\u09f3 80.00"
+  }
+}

@@ -29,6 +29,7 @@ yarn-error.log*
 temp/
 docs/tasks.md
 cookies.json
+cookies.txt
 package-lock.json
 frontend/public/data/source_dataset.csv
 
