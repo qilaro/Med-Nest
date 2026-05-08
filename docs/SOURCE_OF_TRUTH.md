@@ -59,9 +59,11 @@ All validated with Zod, server-side, rate-limited (60/min):
 
 ### Frontend
 - [ ] Show prices on drug detail page
+- [ ] No price → "Price Updating, Contact Pharmacy"
+- [ ] Verified brand → Green tick + "Medically verified by MedNest from {company}"
 - [ ] Show medical info from generics join
 - [ ] Unify generics/class/trade pages under `/drugs?filter=X`
-- [ ] Type badge (Herbal/Vet/Vaccine) in search suggestions
+- [ ] Type badge (Herbal/Vet/Vaccine/Allopathic) in search suggestions
 
 ## Common Patterns
 - **DB connection**: `lib/db/index.ts` (lazy proxy pattern)
