@@ -50,12 +50,18 @@ All validated with Zod, server-side, rate-limited (60/min):
 
 ## What's Next
 ### Data Pipeline
-- [ ] Scrape Square Pharma
+- [ ] Scrape Square Pharma (iterate PID 1-1059 directly)
 - [ ] Scrape Beximco Pharma
 - [ ] Scrape ACME Laboratories
 - [ ] Scrape Renata PLC
 - [ ] Scrape Healthcare Pharmaceuticals
 - [ ] Scrape Beacon Pharmaceuticals
+
+### Square Scraper Fix
+- Don't use listing pages (only 530 found)
+- Iterate PID 1-1059 directly, check `<h3>` for valid product
+- Grab PDF (`pdoc` link) + image URL from each page
+- Update all brand variants in DB
 
 ### Frontend
 - [ ] Show prices on drug detail page
