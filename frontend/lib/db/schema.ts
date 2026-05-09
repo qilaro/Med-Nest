@@ -116,13 +116,9 @@ export const brands = pgTable('brands', {
   genericName: varchar('generic_name', { length: 255 }).notNull(),
   companyName: varchar('company_name', { length: 255 }).notNull(),
   therapeuticClass: varchar('therapeutic_class', { length: 255 }),
-  indications: text('indications'),
 
   // Brand-Specific Content
   description: text('description'),
-  alcoholWarning: text('alcohol_warning'),
-  pregnancyWarning: text('pregnancy_warning'),
-  breastfeedingWarning: text('breastfeeding_warning'),
 
   // Verification (3 dimensions)
   brandVerified: boolean('brand_verified').default(false),
