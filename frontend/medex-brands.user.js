@@ -42,7 +42,8 @@
         results.forEach(function(r) { var k = r.brand + '|' + r.company + '|' + r.strength; if (!keys[k]) { stored.push(r); keys[k] = true; } });
         localStorage.setItem('mxb', JSON.stringify(stored));
         
-        var page = parseInt(window.location.href.match(/page=(\d+)/) || [,'1'])[1];
+        var pageMatch = window.location.href.match(/[?&]page=(\d+)/);
+        var page = pageMatch ? parseInt(pageMatch[1]) : 1;
         
         var badge = document.createElement('div');
         badge.style.cssText = 'position:fixed;bottom:20px;right:20px;background:#8b5cf6;color:white;padding:10px 18px;border-radius:10px;font:bold 14px sans-serif;z-index:99999;cursor:pointer';
