@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Med-Ex Brands Verifier
 // @namespace   medex-brands
-// @version     1.0
+// @version     1.2
 // @include     https://medex.com.bd/brands*
 // @grant       none
 // ==/UserScript==
@@ -18,7 +18,12 @@
             var companyEl = row.querySelector('.data-row-company');
             if (!brandEl) return;
             
+            var icon = brandEl.querySelector('.dosage-icon');
+            var dosageForm = icon ? (icon.getAttribute('title') || icon.getAttribute('alt') || '') : '';
+            
+            // Brand name: textContent minus the icon's alt/title text
             var brand = brandEl.textContent.trim();
+            
             var strength = strengthEl ? strengthEl.textContent.trim() : '';
             var company = companyEl ? companyEl.textContent.trim() : '';
             
@@ -32,14 +37,14 @@
                 }
             }
             
-            results.push({brand: brand, generic: generic, strength: strength, company: company});
+            results.push({brand: brand, generic: generic, strength: strength, company: company, dosageForm: dosageForm});
         });
         
         if (results.length < 5) return;
         
         var stored = JSON.parse(localStorage.getItem('mxb') || '[]');
-        var keys = {}; stored.forEach(function(r) { keys[r.brand + '|' + r.company + '|' + r.strength] = true; });
-        results.forEach(function(r) { var k = r.brand + '|' + r.company + '|' + r.strength; if (!keys[k]) { stored.push(r); keys[k] = true; } });
+        var keys = {}; stored.forEach(function(r) { keys[r.brand + '|' + r.company + '|' + r.strength + '|' + (r.dosageForm||'')] = true; });
+        results.forEach(function(r) { var k = r.brand + '|' + r.company + '|' + r.strength + '|' + (r.dosageForm||''); if (!keys[k]) { stored.push(r); keys[k] = true; } });
         localStorage.setItem('mxb', JSON.stringify(stored));
         
         var pageMatch = window.location.href.match(/[?&]page=(\d+)/);
