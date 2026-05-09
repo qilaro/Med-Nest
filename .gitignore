@@ -48,3 +48,5 @@ frontend/public/data/source_dataset.csv
 .turbo/
 frontend/.turbo/
 frontend/.next/
+*.html
+*.png

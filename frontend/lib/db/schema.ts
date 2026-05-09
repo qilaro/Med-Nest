@@ -126,6 +126,10 @@ export const brands = pgTable('brands', {
 
   // Verification
   verified: boolean('verified').default(false),
+  verificationStatus: varchar('verification_status', { length: 20 }).default('pending'),
+  verifiedAt: timestamp('verified_at'),
+  verifiedBy: varchar('verified_by', { length: 255 }),
+  verificationNotes: text('verification_notes'),
 
   // Regulatory & Status
   darNumber: text('dar_number'),
@@ -236,5 +240,22 @@ export const auditLogs = pgTable('audit_logs', {
   newValues: jsonb('new_values'),
   userId: uuid('user_id'),
   ipAddress: varchar('ip_address', { length: 45 }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+/**
+ * VERIFICATION_LOG TABLE
+ * Track all verification actions
+ */
+export const verificationLog = pgTable('verification_log', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  entityType: varchar('entity_type', { length: 50 }).notNull(),
+  entityId: uuid('entity_id').notNull(),
+  action: varchar('action', { length: 50 }).notNull(),
+  oldValues: jsonb('old_values'),
+  newValues: jsonb('new_values'),
+  changedFields: text('changed_fields').array(),
+  performedBy: varchar('performed_by', { length: 255 }).default('system'),
+  notes: text('notes'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
