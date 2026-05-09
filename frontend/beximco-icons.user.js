@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Beximco Icons
 // @namespace   beximco-icons
-// @version     1.0
+// @version     1.1
 // @include     https://www.beximcopharma.com/products/our-product-range
 // @grant       none
 // ==/UserScript==
@@ -10,9 +10,9 @@
     'use strict';
     setTimeout(function() {
         var result = [];
-        document.querySelectorAll('[class*="theme"]').forEach(function(el) {
+        document.querySelectorAll('.product-copy').forEach(function(el) {
             var a = el.querySelector('a.reloadPage');
-            var img = el.querySelector('img');
+            var img = el.closest('[class*="row"]').querySelector('img');
             if (a) {
                 result.push({
                     name: a.textContent.trim(),
@@ -23,7 +23,7 @@
         });
         
         if (result.length === 0) {
-            alert('No classes found. Try reloading the page.');
+            alert('No classes found. Try reloading.');
             return;
         }
         
