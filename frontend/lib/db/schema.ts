@@ -124,6 +124,9 @@ export const brands = pgTable('brands', {
   pregnancyWarning: text('pregnancy_warning'),
   breastfeedingWarning: text('breastfeeding_warning'),
 
+  // Verification
+  verified: boolean('verified').default(false),
+
   // Regulatory & Status
   darNumber: text('dar_number'),
   darStatus: varchar('dar_status', { length: 50 }).default('Active'),
