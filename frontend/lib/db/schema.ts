@@ -124,9 +124,10 @@ export const brands = pgTable('brands', {
   pregnancyWarning: text('pregnancy_warning'),
   breastfeedingWarning: text('breastfeeding_warning'),
 
-  // Verification
-  verified: boolean('verified').default(false),
-  verificationStatus: varchar('verification_status', { length: 20 }).default('pending'),
+  // Verification (3 dimensions)
+  brandVerified: boolean('brand_verified').default(false),
+  priceVerified: boolean('price_verified').default(false),
+  genericVerified: boolean('generic_verified').default(false),
   verifiedAt: timestamp('verified_at'),
   verifiedBy: varchar('verified_by', { length: 255 }),
   verificationNotes: text('verification_notes'),
