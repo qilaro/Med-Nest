@@ -30,6 +30,7 @@ export async function GET(request: Request) {
         b.image_url as "imageUrl",
         b.average_rating::float as "averageRating",
         b.review_count as "reviewCount",
+        b.verification_status as "verificationStatus",
         'brand' as type
       FROM brands b
       WHERE 1=1
@@ -56,7 +57,13 @@ export async function GET(request: Request) {
     const countResult = await db.execute(countQuery);
     const total = Number(countResult.rows[0]?.total) || 0;
 
-    dataQuery = sql`${dataQuery} ORDER BY b.brand_name ASC LIMIT ${limit} OFFSET ${offset}`;
+    dataQuery = sql`${dataQuery} ORDER BY 
+      CASE b.verification_status 
+        WHEN 'verified' THEN 1 
+        WHEN 'verified_auto' THEN 2 
+        ELSE 3 
+      END, b.brand_name ASC 
+      LIMIT ${limit} OFFSET ${offset}`;
     const result = await db.execute(dataQuery);
 
     return NextResponse.json({

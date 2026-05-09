@@ -21,13 +21,20 @@ export async function GET(request: Request) {
         b.strength as strength,
         b.company_name as "companyName",
         b.company_name as "company",
+        b.verification_status as "verificationStatus",
         MIN(b.slug) as slug,
         'brand' as type
       FROM brands b
       WHERE b.brand_name ILIKE ${'%' + query + '%'} OR b.generic_name ILIKE ${'%' + query + '%'}
-      GROUP BY b.brand_name, b.generic_name, b.dosage_form, b.strength, b.company_name
-      ORDER BY (CASE WHEN b.brand_name ILIKE ${query + '%'} THEN 1 ELSE 2 END),
-               MIN(similarity(b.brand_name, ${query})) DESC
+      GROUP BY b.brand_name, b.generic_name, b.dosage_form, b.strength, b.company_name, b.verification_status
+      ORDER BY 
+        CASE b.verification_status 
+          WHEN 'verified' THEN 1 
+          WHEN 'verified_auto' THEN 2 
+          ELSE 3 
+        END,
+        (CASE WHEN b.brand_name ILIKE ${query + '%'} THEN 1 ELSE 2 END),
+        MIN(similarity(b.brand_name, ${query})) DESC
       LIMIT 10
     `);
 
