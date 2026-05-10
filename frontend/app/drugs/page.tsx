@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Search, SlidersHorizontal, Pill, Loader2, X, AlertCircle, Star } from "lucide-react";
+import { SlidersHorizontal, Pill, Loader2, X, AlertCircle, Star } from "lucide-react";
 import { drugService } from "@/lib/services/drugService";
 import { DrugClass, DrugSummary } from "@/types/drug";
 import DrugCard from "@/components/drugs/DrugCard";
@@ -210,7 +210,7 @@ function DrugsContent() {
 
         <form ref={searchRef} onSubmit={(e) => handleSearch(e)} className="flex flex-wrap gap-4 mb-10 items-center">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <img src="/icons/pill.svg" alt="search" className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5" />
             <Input
               type="text"
               value={query}

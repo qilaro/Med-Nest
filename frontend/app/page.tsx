@@ -136,10 +136,7 @@ export default function Home() {
               <form ref={searchRef} onSubmit={handleSearchSubmit} className="max-w-2xl mx-auto mb-4 relative">
                 <div className="flex gap-2 bg-white rounded-2xl py-1.5 pl-1.5 pr-4 shadow-sm border border-gray-200">
                   <div className="flex-1 relative flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="absolute left-4 h-5 w-5 text-gray-400" aria-hidden="true">
-                      <path d="m21 21-4.34-4.34"></path>
-                      <circle cx="11" cy="11" r="8"></circle>
-                    </svg>
+                    <img src="/icons/pill.svg" alt="search" className="absolute left-4 h-5 w-5" />
                     <Input 
                       type="text" 
                       value={query}
