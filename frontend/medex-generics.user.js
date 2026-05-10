@@ -98,9 +98,10 @@
                 save('gen_' + genId, { name: genName, id: genId, content: content });
             }
 
-            // Check for "View More Brands" or brand-names link
+            // Only care about "View More Brands" button — NOT "View All"
             var moreBtn = Array.from(document.querySelectorAll('a, button')).find(function(el) {
-                return /view.*more.*brand|show.*all|load.*more/i.test(el.textContent||'');
+                var t = (el.textContent || '').toLowerCase().trim();
+                return t.indexOf('view more brand') !== -1 || t.indexOf('view more brands') !== -1;
             }) || document.querySelector('a[href*="brand-names"]');
 
             if (moreBtn) {
