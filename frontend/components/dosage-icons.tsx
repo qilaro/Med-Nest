@@ -14,6 +14,8 @@ export const CreamIcon = Img('/icons/cream.svg');
 export const OintmentIcon = Img('/icons/ointment.svg');
 export const SprayIcon = Img('/icons/spray.svg');
 export const DropIcon = Img('/icons/drop.svg');
+export const EyeDropperIcon = Img('/icons/eyedropper.svg');
+export const PowderIcon = Img('/icons/powder.svg');
 export const InhalerIcon = Img('/icons/inhaler.svg');
 export const PillIcon = Img('/icons/pill.svg');
 export const HerbalIcon = Img('/icons/herbal.svg');
@@ -36,12 +38,12 @@ const iconMap: Record<string, IconFn> = {
   cream: CreamIcon,
   ointment: OintmentIcon,
   gel: CreamIcon,
-  'eye drops': DropIcon,
-  'ophthalmic solution': DropIcon,
+  'eye drops': EyeDropperIcon,
+  'ophthalmic solution': EyeDropperIcon,
   'paediatric drops': DropIcon,
   'nasal spray': SprayIcon,
   bolus: TabletIcon,
-  powder: TabletIcon,
+  powder: PowderIcon,
   'oral solution': BottleIcon,
   solution: BottleIcon,
   'tablet (extended release)': TabletIcon,
