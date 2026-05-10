@@ -42,6 +42,20 @@
         return { gens: gens, prices: prices };
     }
 
+    function nextRandomPage() {
+        var visited = JSON.parse(localStorage.getItem('mx_visited') || '[]');
+        // Mark current as visited
+        if (visited.indexOf(genId) === -1) { visited.push(genId); localStorage.setItem('mx_visited', JSON.stringify(visited)); }
+        // Pick random unvisited between 3 and 2656
+        var unvisited = [];
+        for (var i = 3; i <= 2656; i++) {
+            if (visited.indexOf(i.toString()) === -1) unvisited.push(i);
+        }
+        if (unvisited.length === 0) return 0; // done
+        var idx = Math.floor(Math.random() * unvisited.length);
+        return unvisited[idx];
+    }
+
     setTimeout(function() {
 
         function extractBrandPrices() {
@@ -97,7 +111,6 @@
             updateBadge('Pg ' + genId + '/2656 | ' + t.gens + ' gens | ' + t.prices + ' prices');
             var delay = (parseInt(genId) % 100 === 0) ? 300000 : 3000 + Math.random() * 2000;
             setTimeout(function() { window.location.href = 'https://medex.com.bd/generics/' + (parseInt(genId)+1); }, delay);
-            return;
         }
 
         if (isGenericPage) {
