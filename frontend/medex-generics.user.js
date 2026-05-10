@@ -112,7 +112,7 @@
             var moreBtn = Array.from(document.querySelectorAll('a, button')).find(function(el) {
                 var t = (el.textContent || '').toLowerCase().trim();
                 return t.indexOf('view more brand') !== -1;
-            }) || document.querySelector('a[href*="brand-names"]');
+            });
 
             if (moreBtn) {
                 var brandUrl = moreBtn.href || moreBtn.getAttribute('data-url') || url.replace(/\/$/, '') + '/brand-names';
