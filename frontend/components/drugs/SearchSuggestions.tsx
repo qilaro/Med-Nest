@@ -60,7 +60,7 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
           className="w-full flex items-center gap-3 px-6 py-3.5 hover:bg-teal-600 hover:text-white transition-colors text-left cursor-pointer border-b border-gray-50 last:border-0"
         >
           <div className="relative shrink-0">
-            <div className="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center text-gray-500 group-hover:bg-white/20 group-hover:text-white" title={drug.dosageForm}>
+            <div className="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center text-gray-500">
               {getDrugIcon(drug.type, drug.dosageForm)}
             </div>
           </div>
@@ -72,6 +72,7 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
               {drug.strength && (
                 <span className="text-sm text-gray-500 shrink-0">{drug.strength}</span>
               )}
+              <span className="text-xs text-gray-400 shrink-0 ml-auto">{drug.dosageForm}</span>
             </div>
             <div className="text-sm text-gray-400 font-medium truncate">
               {isFeatured ? drug.genericName + " • " + drug.company : (
