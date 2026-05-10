@@ -10,6 +10,7 @@ export const TabletIcon = Img('/icons/tablet.svg');
 export const CapsuleIcon = Img('/icons/capsule.svg');
 export const BottleIcon = Img('/icons/bottle.svg');
 export const InjectionIcon = Img('/icons/injection.svg');
+export const InfusionIcon = Img('/icons/infusion.svg');
 export const CreamIcon = Img('/icons/cream.svg');
 export const OintmentIcon = Img('/icons/ointment.svg');
 export const SprayIcon = Img('/icons/spray.svg');
@@ -27,9 +28,9 @@ const iconMap: Record<string, IconFn> = {
   'capsule (enteric coated)': CapsuleIcon,
   injection: InjectionIcon,
   'im injection': InjectionIcon,
-  'iv injection': InjectionIcon,
-  'iv infusion': InjectionIcon,
-  'iv/im injection': InjectionIcon,
+  'iv injection': InfusionIcon,
+  'iv infusion': InfusionIcon,
+  'iv/im injection': InfusionIcon,
   'im/iv injection': InjectionIcon,
   syrup: BottleIcon,
   'powder for suspension': BottleIcon,
