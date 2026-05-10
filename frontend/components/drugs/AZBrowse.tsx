@@ -33,7 +33,7 @@ function AZBrowseContent({ showAdvancedSearch = true }: { showAdvancedSearch?: b
     <div className="w-full max-w-4xl my-8">
       {/* Tabs */}
       <div className="flex justify-between items-center mb-6">
-        <div className="flex gap-2 flex-nowrap overflow-x-auto">
+        <div className="flex gap-2 flex-nowrap overflow-x-auto bg-teal-50/30 p-1 rounded-xl">
           {TABS.map((tab) => (
             <button
               key={tab}
@@ -41,7 +41,7 @@ function AZBrowseContent({ showAdvancedSearch = true }: { showAdvancedSearch?: b
               className={`px-4 py-2.5 rounded-lg font-medium text-sm whitespace-nowrap transition-colors cursor-pointer shadow-lg ${
                 activeTab === tab
                   ? "bg-[#0D261E] text-white"
-                  : "bg-white text-blue-600 hover:bg-gray-100 border border-gray-200"
+                  : "bg-white text-teal-600 hover:bg-teal-50 border border-teal-200"
               }`}
             >
               {tab}
@@ -51,7 +51,7 @@ function AZBrowseContent({ showAdvancedSearch = true }: { showAdvancedSearch?: b
         {showAdvancedSearch && (
           <Link 
             href="/drugs"
-            className="px-6 py-2.5 rounded-lg font-medium text-sm transition-colors cursor-pointer bg-white text-blue-600 hover:bg-gray-100 border border-gray-200"
+            className="px-6 py-2.5 rounded-lg font-medium text-sm transition-colors cursor-pointer bg-white text-teal-600 hover:bg-teal-50 border border-teal-200"
           >
             Advanced Search
           </Link>
@@ -59,7 +59,7 @@ function AZBrowseContent({ showAdvancedSearch = true }: { showAdvancedSearch?: b
       </div>
 
       {/* A-Z Grid */}
-      <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+      <div className="bg-teal-50/50 p-4 rounded-xl border border-teal-100 shadow-sm">
         <div className="grid grid-cols-[repeat(auto-fill,minmax(50px,1fr))] gap-2">
           {LETTERS.map((letter) => (
             <Link
@@ -68,7 +68,7 @@ function AZBrowseContent({ showAdvancedSearch = true }: { showAdvancedSearch?: b
               className={`flex items-center justify-center h-12 rounded-lg font-semibold border transition-all cursor-pointer ${
                 currentLetter === letter
                   ? "bg-primary text-white border-primary shadow-md"
-                  : "bg-white text-gray-700 border-gray-200 hover:bg-gray-100 hover:border-gray-300"
+                  : "bg-white text-teal-700 border-teal-200 hover:bg-teal-50 hover:border-teal-300"
               }`}
             >
               {letter}
@@ -79,7 +79,7 @@ function AZBrowseContent({ showAdvancedSearch = true }: { showAdvancedSearch?: b
             className={`flex items-center justify-center h-12 rounded-lg font-semibold border transition-all cursor-pointer ${
               currentLetter === "0-9"
                 ? "bg-primary text-white border-primary shadow-md"
-                : "bg-white text-gray-700 border-gray-200 hover:bg-gray-100 hover:border-gray-300"
+                : "bg-white text-teal-700 border-teal-200 hover:bg-teal-50 hover:border-teal-300"
             }`}
           >
             0-9
