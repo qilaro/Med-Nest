@@ -59,12 +59,16 @@
         if (isBrandsPage || isGenericPage) {
             if (isBrandsPage) {
                 var prices = extractBrandPrices();
-                if (prices.length) {
-                    save('gen_' + genId + '_prices', prices);
-                    var badge = document.querySelector('#mxbadge') || document.createElement('div');
-                    badge.id = 'mxbadge'; badge.style.cssText = 'position:fixed;bottom:20px;right:20px;background:#22c55e;color:white;padding:10px 18px;border-radius:10px;font:bold 14px sans-serif;z-index:99999;cursor:pointer';
-                    badge.textContent = 'Gen ' + genId + ' | Prices: ' + prices.length;
-                    if (!document.querySelector('#mxbadge')) document.body.appendChild(badge);
+                if (prices.length) save('gen_' + genId + '_prices', prices);
+
+                var stored = JSON.parse(localStorage.getItem('mx_gen4') || '{}');
+                var tg = Object.keys(stored).filter(function(k) { return !k.endsWith('_prices'); }).length;
+                var tp = Object.keys(stored).filter(function(k) { return k.endsWith('_prices'); }).reduce(function(s,k) { return s + stored[k].length; }, 0);
+                updateBadge('Pg ' + genId + '/2656 | ' + tg + ' gens | ' + tp + ' prices');
+
+                setTimeout(function() { window.location.href = 'https://medex.com.bd/generics/' + (parseInt(genId)+1); }, 3000);
+                return;
+            }
                 }
                 setTimeout(function() { window.location.href = 'https://medex.com.bd/generics/' + (parseInt(genId)+1); }, 3000);
                 return;
@@ -103,15 +107,7 @@
             var totalGens = Object.keys(stored).filter(function(k) { return !k.endsWith('_prices'); }).length;
             var totalPrices = Object.keys(stored).filter(function(k) { return k.endsWith('_prices'); })
                 .reduce(function(s,k) { return s + stored[k].length; }, 0);
-
-            var badge = document.querySelector('#mxbadge') || document.createElement('div');
-            badge.id = 'mxbadge'; badge.style.cssText = 'position:fixed;bottom:20px;right:20px;background:#8b5cf6;color:white;padding:10px 18px;border-radius:10px;font:bold 14px sans-serif;z-index:99999;cursor:pointer';
-            badge.textContent = 'Pg ' + genId + '/2656 | ' + totalGens + ' gens | ' + totalPrices + ' prices';
-            badge.onclick = function() {
-                var blob = new Blob([JSON.stringify(JSON.parse(localStorage.getItem('mx_gen4')||'{}'),null,2)], {type:'application/json'});
-                var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'medex_generics.json'; a.click();
-            };
-            if (!document.querySelector('#mxbadge')) document.body.appendChild(badge);
+            updateBadge('Pg ' + genId + '/2656 | ' + totalGens + ' gens | ' + totalPrices + ' prices');
 
             setTimeout(function() { window.location.href = 'https://medex.com.bd/generics/' + (parseInt(genId)+1); }, 2000 + Math.random() * 1500);
         }
