@@ -157,35 +157,59 @@
             }
 
             // Check for "View More Brands" button
-            var moreBtn = document.querySelector('[class*="view-more"], [class*="load-more"], [class*="show-more"], button:has-text("Brand"), button:has-text("brand"), a:has-text("Brand"), a:has-text("brand")') ||
-                         Array.from(document.querySelectorAll('a, button')).find(function(el) {
-                             return /view.*more.*brand|show.*all.*brand|load.*more.*brand/i.test(el.textContent || '');
-                         });
+            var moreBtn = Array.from(document.querySelectorAll('a, button')).find(function(el) {
+                return /view.*more.*brand|show.*all.*brand|load.*more.*brand/i.test(el.textContent || '');
+            });
 
             // Also check for pagination with next page
             var hasBrandsLink = document.querySelector('a[href*="brand-names"]') ||
                                document.querySelector('a[href*="/brands"]');
 
             if (moreBtn || hasBrandsLink) {
-                // Go to brand names page for prices
+                // Navigate to full brand-names page
                 var brandUrl = hasBrandsLink ? hasBrandsLink.href : null;
                 if (!brandUrl && moreBtn) {
                     brandUrl = moreBtn.href || moreBtn.getAttribute('data-url');
                 }
                 if (!brandUrl) {
-                    // Construct URL
-                    var slug = window.location.href.split('/').slice(5).join('/').replace(/\/$/, '');
-                    brandUrl = window.location.origin + '/generics/' + genId + '/' + slug + '/brand-names';
+                    brandUrl = window.location.href.replace(/\/$/, '') + '/brand-names';
                 }
                 if (brandUrl) {
-                    setTimeout(function() {
-                        window.location.href = brandUrl;
-                    }, 2500 + Math.random() * 1500);
+                    setTimeout(function() { window.location.href = brandUrl; }, 2500 + Math.random() * 1500);
                     return;
                 }
             }
 
-            // No more brands button → go to next generic
+            // No "View More" button → scrape visible brands on THIS page
+            var brandPrices = [];
+            var tables = document.querySelectorAll('table');
+            tables.forEach(function(table) {
+                table.querySelectorAll('tr').forEach(function(row) {
+                    var cells = row.querySelectorAll('td');
+                    if (cells.length >= 4) {
+                        var b = cells[0]?.textContent?.trim() || '';
+                        var s = cells[1]?.textContent?.trim() || '';
+                        var d = cells[2]?.textContent?.trim() || '';
+                        var p = cells[3]?.textContent?.trim()?.replace(/[^0-9.]/g, '') || '';
+                        if (b && p) brandPrices.push({ brand: b, strength: s, dosage: d, price: p });
+                    }
+                });
+            });
+            // Also try branded drug list items
+            if (brandPrices.length === 0) {
+                document.querySelectorAll('[class*="brand"], [class*="drug-item"], [class*="product-item"]').forEach(function(el) {
+                    var name = el.querySelector('[class*="name"], [class*="title"], h4, h5')?.textContent?.trim();
+                    var price = el.querySelector('[class*="price"], [class*="cost"]')?.textContent?.trim()?.replace(/[^0-9.]/g, '');
+                    if (name && price) brandPrices.push({ brand: name, strength: '', dosage: '', price: price });
+                });
+            }
+            if (brandPrices.length > 0) {
+                var stored2 = JSON.parse(localStorage.getItem('mx_generic') || '{}');
+                stored2['gen_' + genId + '_prices'] = brandPrices;
+                localStorage.setItem('mx_generic', JSON.stringify(stored2));
+            }
+
+            // Go to next generic
             var nextId = parseInt(genId) + 1;
             setTimeout(function() {
                 window.location.href = 'https://medex.com.bd/generics/' + nextId;
