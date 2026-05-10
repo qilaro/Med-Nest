@@ -17,29 +17,13 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { 
-  TabletIcon, 
-  PillIcon, 
-  SyrupIcon, 
-  IVDripIcon, 
-  DropsIcon, 
-  InhalerIcon 
-} from "@/components/ui/MedicalIcons";
+import { getDosageIcon } from "@/components/dosage-icons";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-const getDosageIcon = (form: string, size = 48) => {
-  const f = form.toLowerCase();
-  if (f.includes("tablet")) return <TabletIcon size={size} className="text-[#2D8A7D]" />;
-  if (f.includes("capsule")) return <PillIcon size={size} className="text-[#2D8A7D]" />;
-  if (f.includes("syrup") || f.includes("suspension")) return <SyrupIcon size={size} className="text-[#2D8A7D]" />;
-  if (f.includes("drop")) return <DropsIcon size={size} className="text-[#2D8A7D]" />;
-  if (f.includes("injection") || f.includes("infusion")) return <IVDripIcon size={size} className="text-[#2D8A7D]" />;
-  if (f.includes("inhaler")) return <InhalerIcon size={size} className="text-[#2D8A7D]" />;
-  return <PillIcon size={size} className="text-[#2D8A7D]" />;
-};
+// Icon display helper — uses getDosageIcon from dosage-icons
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
@@ -80,7 +64,7 @@ export default async function DrugDetailPage({ params }: PageProps) {
           {/* Top Level: Icon + Branding + Quick Facts */}
           <div className="flex items-start gap-6">
             <div className="p-4 bg-mint-soft rounded-2xl shrink-0 mt-1">
-              {getDosageIcon(drug.dosageForm, 48)}
+              {(() => { const Icon = getDosageIcon(drug.dosageForm); return <Icon className="w-12 h-12 text-[#2D8A7D]" />; })()}
             </div>
             
             <div className="flex flex-1 items-start gap-10">

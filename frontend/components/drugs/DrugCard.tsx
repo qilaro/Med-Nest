@@ -4,29 +4,11 @@ import Link from "next/link";
 import { DrugSummary } from "../../types/drug";
 import { Card, CardContent } from "../ui/card";
 import StarRating from "../ui/StarRating";
-import { 
-  TabletIcon, 
-  PillIcon, 
-  SyrupIcon, 
-  IVDripIcon, 
-  DropsIcon, 
-  InhalerIcon 
-} from "@/components/ui/MedicalIcons";
+import { getDosageIcon } from "@/components/dosage-icons";
 
 interface DrugCardProps {
   drug: DrugSummary;
 }
-
-const getDosageIcon = (form: string) => {
-  const f = form.toLowerCase();
-  if (f.includes("tablet")) return <TabletIcon size={24} />;
-  if (f.includes("capsule")) return <PillIcon size={24} />;
-  if (f.includes("syrup") || f.includes("suspension")) return <SyrupIcon size={24} />;
-  if (f.includes("drop")) return <DropsIcon size={24} />;
-  if (f.includes("injection") || f.includes("infusion")) return <IVDripIcon size={24} />;
-  if (f.includes("inhaler")) return <InhalerIcon size={24} />;
-  return <PillIcon size={24} />;
-};
 
 const getDosageLabel = (form: string) => {
   const f = form.toLowerCase();
@@ -55,7 +37,7 @@ export default function DrugCard({ drug }: DrugCardProps) {
               className="w-12 h-12 rounded-xl bg-mint-soft flex items-center justify-center transition-colors group-hover:bg-primary/10 text-primary"
               aria-hidden="true"
             >
-              {getDosageIcon(drug.dosageForm)}
+              {(() => { const Icon = getDosageIcon(drug.dosageForm); return <Icon className="w-6 h-6" />; })()}
             </div>
             <span className="text-[10px] font-bold text-primary/70 uppercase">
               {getDosageLabel(drug.dosageForm)}
