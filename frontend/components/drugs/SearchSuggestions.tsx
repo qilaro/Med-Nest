@@ -64,10 +64,15 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
           <button
             key={`${drug.type}-${drug.slug}`}
             onClick={() => onSelect(drug)}
-            className="w-full flex items-center gap-4 px-6 py-4 hover:bg-teal-600 hover:text-white transition-colors text-left group cursor-pointer"
+            className="w-full flex items-start gap-4 px-6 py-4 hover:bg-teal-600 hover:text-white transition-colors text-left group cursor-pointer"
           >
-            <div className="w-12 h-12 rounded-lg bg-gray-50 flex items-center justify-center text-gray-500 group-hover:bg-white/20 group-hover:text-white shrink-0">
-              {getDrugIcon(drug.type, drug.dosageForm)}
+            <div className="flex flex-col items-center gap-1 shrink-0">
+              <div className="w-12 h-12 rounded-lg bg-gray-50 flex items-center justify-center text-gray-500 group-hover:bg-white/20 group-hover:text-white">
+                {getDrugIcon(drug.type, drug.dosageForm)}
+              </div>
+              <span className="text-[10px] leading-tight text-gray-400 group-hover:text-white/70 text-center max-w-[48px] truncate">
+                {drug.dosageForm}
+              </span>
             </div>
             <div className="flex-1 overflow-hidden">
               <div className="flex items-baseline gap-2">
@@ -82,8 +87,6 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
               </div>
               <div className="text-sm opacity-70 truncate font-medium">
                 <HighlightText text={drug.genericName} query={query} isHighlighted={isFeatured} />
-                {" • "}
-                {drug.dosageForm}
                 {" • "}
                 {drug.company}
               </div>
