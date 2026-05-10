@@ -68,7 +68,7 @@ function AZBrowseContent({ showAdvancedSearch = true }: { showAdvancedSearch?: b
               className={`flex items-center justify-center h-12 rounded-lg font-semibold border transition-all cursor-pointer ${
                 currentLetter === letter
                   ? "bg-primary text-white border-primary shadow-md"
-                  : "bg-white text-teal-700 border-teal-200 hover:bg-teal-50 hover:border-teal-300"
+                  : "bg-white text-teal-700 border-teal-200 hover:bg-teal-100 hover:border-teal-400 hover:text-teal-900"
               }`}
             >
               {letter}
@@ -79,7 +79,7 @@ function AZBrowseContent({ showAdvancedSearch = true }: { showAdvancedSearch?: b
             className={`flex items-center justify-center h-12 rounded-lg font-semibold border transition-all cursor-pointer ${
               currentLetter === "0-9"
                 ? "bg-primary text-white border-primary shadow-md"
-                : "bg-white text-teal-700 border-teal-200 hover:bg-teal-50 hover:border-teal-300"
+                : "bg-white text-teal-700 border-teal-200 hover:bg-teal-100 hover:border-teal-400 hover:text-teal-900"
             }`}
           >
             0-9
