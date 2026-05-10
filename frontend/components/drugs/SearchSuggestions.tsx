@@ -65,7 +65,7 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
         <button
           key={`${drug.type}-${drug.slug}`}
           onClick={() => onSelect(drug)}
-          className="w-full flex items-center gap-3 px-5 py-3 hover:bg-teal-50 transition-colors text-left cursor-pointer border-b border-gray-100 last:border-0"
+          className="w-full flex items-center gap-3 px-5 py-3 hover:bg-teal-100 transition-colors text-left cursor-pointer border-b border-gray-100 last:border-0"
         >
           <div className="w-12 h-12 rounded-xl bg-teal-50 flex items-center justify-center shrink-0 border border-teal-100">
             {getDrugIcon(drug.type, drug.dosageForm)}
