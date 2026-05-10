@@ -8,14 +8,14 @@ const BLACK = '#000000';
 const SW = '2.5';
 const SW2 = '1.5';
 
-// Capsule — exact Gemini SVG
+// Capsule — exact Gemini SVG from user
 export const CapsuleIcon: React.FC<IconProps> = ({ className, ...props }) => (
-  <svg viewBox="0 0 100 100" className={className} {...props}>
-    <rect width="100" height="100" fill={BG}/>
+  <svg width="100%" height="100%" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className={className} {...props}>
+    <rect width="100" height="100" fill="#5f9595" />
     <g transform="translate(50, 50) rotate(-45)">
-      <rect x="-10" y="-25" width="20" height="50" rx="10" fill={WHITE} stroke={BLACK} strokeWidth={SW}/>
-      <path d="M -10 0 L 10 0" stroke={BLACK} strokeWidth={SW}/>
-      <path d="M -10 -5 Q 0 -10 10 -5" fill="none" stroke={BLACK} strokeWidth={SW2} opacity="0.3"/>
+      <rect x="-10" y="-25" width="20" height="50" rx="10" fill="white" stroke="black" strokeWidth="2.5" />
+      <path d="M -10 0 L 10 0" stroke="black" strokeWidth="2.5" />
+      <path d="M -10 -5 Q 0 -10 10 -5" fill="none" stroke="black" strokeWidth="1.5" opacity="0.3" />
     </g>
   </svg>
 );
