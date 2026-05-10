@@ -1,15 +1,7 @@
 import React from "react";
 import { Tag } from "lucide-react";
 import { DrugSummary } from "@/types/drug";
-import { 
-  TabletIcon, 
-  PillIcon, 
-  SyrupIcon, 
-  IVDripIcon, 
-  DropsIcon, 
-  InhalerIcon,
-  SachetIcon
-} from "@/components/ui/MedicalIcons";
+import { getDosageIcon } from "@/components/dosage-icons";
 
 interface SearchSuggestionsProps {
   suggestions: DrugSummary[];
@@ -19,18 +11,10 @@ interface SearchSuggestionsProps {
   query?: string;
 }
 
-const getDosageIcon = (type: string | undefined, form?: string) => {
-  if (type === 'generic') return <SachetIcon size={20} />;
+const getDrugIcon = (type: string | undefined, form?: string) => {
   if (type === 'class') return <Tag size={20} />;
-  
-  const f = (form || "").toLowerCase();
-  if (f.includes("tablet")) return <TabletIcon size={20} />;
-  if (f.includes("capsule")) return <PillIcon size={20} />;
-  if (f.includes("syrup") || f.includes("suspension")) return <SyrupIcon size={20} />;
-  if (f.includes("drop")) return <DropsIcon size={20} />;
-  if (f.includes("injection") || f.includes("infusion")) return <IVDripIcon size={20} />;
-  if (f.includes("inhaler")) return <InhalerIcon size={20} />;
-  return <PillIcon size={20} />;
+  const Icon = getDosageIcon(form || '');
+  return <Icon className="w-5 h-5" />;
 };
 
 const HighlightText = ({ text, query, isHighlighted }: { text: string; query?: string; isHighlighted: boolean }) => {
@@ -83,7 +67,7 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
             className="w-full flex items-center gap-4 px-6 py-4 hover:bg-teal-600 hover:text-white transition-colors text-left group cursor-pointer"
           >
             <div className="w-12 h-12 rounded-lg bg-gray-50 flex items-center justify-center text-gray-500 group-hover:bg-white/20 group-hover:text-white shrink-0">
-              {getDosageIcon(drug.type, drug.dosageForm)}
+              {getDrugIcon(drug.type, drug.dosageForm)}
             </div>
             <div className="flex-1 overflow-hidden">
               <div className="flex items-baseline gap-2">
