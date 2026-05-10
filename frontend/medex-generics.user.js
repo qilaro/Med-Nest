@@ -25,6 +25,7 @@
         // === BRANDS PAGE / GENERIC PAGE WITH BRANDS ===
         function extractBrandPrices() {
             var brands = [];
+            // Method 1: tr.brand-row (brand-names page)
             document.querySelectorAll('tr.brand-row').forEach(function(tr) {
                 var name = tr.getAttribute('data-name') || '';
                 var company = tr.getAttribute('data-company') || '';
@@ -32,27 +33,39 @@
                 var price = tr.getAttribute('data-price') || '';
                 var dosageForm = (tr.querySelector('td:nth-child(2)')?.textContent || '').trim();
                 var companyName = (tr.querySelector('td:nth-child(4)')?.textContent || '').trim();
-
                 var unitPrice = '';
                 var packInfo = '';
-                var containers = tr.querySelectorAll('.package-container');
-                containers.forEach(function(c) {
+                tr.querySelectorAll('.package-container').forEach(function(c) {
                     var up = c.querySelector('span:nth-child(2)')?.textContent?.trim()?.replace(/[^0-9.]/g, '') || '';
                     var pi = c.querySelector('.pack-size-info')?.textContent?.trim() || '';
                     if (!unitPrice && up) unitPrice = up;
                     if (pi) packInfo += (packInfo ? ' | ' : '') + pi;
                 });
-
                 if (!name) return;
-                brands.push({
-                    brand: name,
-                    strength: strength,
-                    dosageForm: dosageForm,
-                    company: companyName || company,
-                    unitPrice: unitPrice || price,
-                    packInfo: packInfo
-                });
+                brands.push({ brand: name, strength: strength, dosageForm: dosageForm, company: companyName || company, unitPrice: unitPrice || price, packInfo: packInfo });
             });
+
+            // Method 2: .hoverable-block (generic page, no "View More" button)
+            if (!brands.length) {
+                document.querySelectorAll('.hoverable-block').forEach(function(block) {
+                    var dr = block.querySelector('.data-row');
+                    if (!dr) return;
+                    var brandEl = dr.querySelector('.data-row-top');
+                    var strEl = dr.querySelector('.data-row-strength');
+                    var coEl = dr.querySelector('.data-row-company');
+                    var priceEl = block.querySelector('.package-pricing, [class*="price"]');
+                    var name = brandEl ? brandEl.textContent.trim().replace(/^\S+\s+/, '') : '';
+                    var strength = strEl ? strEl.textContent.trim() : '';
+                    var company = coEl ? coEl.textContent.trim() : '';
+                    var price = '';
+                    if (priceEl) {
+                        var m = priceEl.textContent.match(/[\d,]+\.?\d*/);
+                        if (m) price = m[0].replace(/,/g, '');
+                    }
+                    if (name) brands.push({ brand: name, strength: strength, dosageForm: '', company: company, unitPrice: price, packInfo: '' });
+                });
+            }
+
             return brands;
         }
 
