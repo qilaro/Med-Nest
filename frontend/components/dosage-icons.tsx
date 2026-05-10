@@ -207,7 +207,7 @@ export const EntericTabletIcon: React.FC<IconProps> = ({ className, ...props }) 
   </svg>
 );
 
-// 19. Inhaler
+// 19. Inhaler device
 export const InhalerIcon: React.FC<IconProps> = ({ className, ...props }) => (
   <svg viewBox="0 0 400 400" fill="none" className={className} {...props}>
     <rect x="110" y="160" width="180" height="90" rx="12" fill={WHITE}/>
