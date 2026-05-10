@@ -7,28 +7,8 @@ const Header = () => {
       <div className="container-medq">
         <div className="flex items-center h-16 gap-4">
           <Link className="flex items-center gap-2 shrink-0" href="/">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #5F8B8B, #3A6B6B)' }}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 200 200">
-                {/* Nest bowl */}
-                <path d="M 35,165 A 75 75 0 0 1 165,165" fill="none" stroke="white" strokeWidth="8" strokeLinecap="round"/>
-                <path d="M 55,155 A 60 60 0 0 1 145,155" fill="none" stroke="white" strokeWidth="5" strokeLinecap="round" opacity="0.6"/>
-                
-                {/* Nest twigs */}
-                <g transform="translate(100, 148)">
-                  <ellipse cx="0" cy="0" rx="42" ry="10" fill="#E8C87A" opacity="0.15" stroke="white" strokeWidth="5"/>
-                  {/* Eggs */}
-                  <circle cx="-15" cy="4" r="4" fill="white" opacity="0.5"/>
-                  <circle cx="12" cy="5" r="3.5" fill="white" opacity="0.4"/>
-                </g>
-
-                {/* Capsule pill */}
-                <g transform="translate(100, 85) rotate(30)">
-                  <rect x="-18" y="-42" width="36" height="84" rx="18" fill="none" stroke="white" strokeWidth="5"/>
-                  <path d="M -18,0 L -18,25 A 18 18 0 0 0 18,25 L 18,0 Z" fill="white" fillOpacity="0.25"/>
-                  <path d="M -18,0 L -18,-25 A 18 18 0 0 1 18,-25 L 18,0 Z" fill="#E8C87A" opacity="0.35"/>
-                  <line x1="-18" y1="0" x2="18" y2="0" stroke="white" strokeWidth="5"/>
-                </g>
-              </svg>
+            <div className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center">
+              <img src="/logo.svg" alt="Med-Nest" className="w-full h-full object-contain" />
             </div>
             <div className="leading-tight">
               <span className="text-2xl font-bold text-[--primary]">Med-Nest</span>
