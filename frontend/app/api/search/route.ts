@@ -13,7 +13,8 @@ export async function GET(request: Request) {
   const query = parsed.data.q;
 
   try {
-    const results = await db.execute(sql`
+    // Brands
+    const brands = await db.execute(sql`
       SELECT 
         b.brand_name as "brandName", 
         b.generic_name as "genericName", 
@@ -21,23 +22,58 @@ export async function GET(request: Request) {
         b.strength as strength,
         b.company_name as "companyName",
         b.company_name as "company",
-        b.brand_verified as "brandVerified",
-        b.price_verified as "priceVerified",
-        b.generic_verified as "genericVerified",
         b.medicine_type as "medicineType",
         MIN(b.slug) as slug,
         'brand' as type
       FROM brands b
       WHERE b.brand_name ILIKE ${'%' + query + '%'} OR b.generic_name ILIKE ${'%' + query + '%'}
-      GROUP BY b.brand_name, b.generic_name, b.dosage_form, b.strength, b.company_name, b.brand_verified, b.price_verified, b.generic_verified, b.medicine_type
+      GROUP BY b.brand_name, b.generic_name, b.dosage_form, b.strength, b.company_name, b.medicine_type
       ORDER BY 
-        b.brand_verified DESC, b.price_verified DESC, b.generic_verified DESC,
         (CASE WHEN b.brand_name ILIKE ${query + '%'} THEN 1 ELSE 2 END),
         MIN(similarity(b.brand_name, ${query})) DESC
-      LIMIT 10
+      LIMIT 5
     `);
 
-    return NextResponse.json({ results: results.rows });
+    // Generics
+    const generics = await db.execute(sql`
+      SELECT 
+        g.name as "brandName", 
+        g.name as "genericName",
+        '' as "dosageForm",
+        '' as strength,
+        '' as "companyName",
+        '' as company,
+        g.medicine_type as "medicineType",
+        g.slug as slug,
+        'generic' as type
+      FROM generics g
+      WHERE g.name ILIKE ${'%' + query + '%'}
+      ORDER BY similarity(g.name, ${query}) DESC
+      LIMIT 3
+    `);
+
+    // Drug Classes
+    const classes = await db.execute(sql`
+      SELECT DISTINCT
+        b.therapeutic_class as "brandName",
+        b.therapeutic_class as "genericName",
+        '' as "dosageForm",
+        '' as strength,
+        '' as "companyName",
+        '' as company,
+        b.medicine_type as "medicineType",
+        '' as slug,
+        'class' as type
+      FROM brands b
+      WHERE b.therapeutic_class IS NOT NULL AND b.therapeutic_class ILIKE ${'%' + query + '%'}
+      ORDER BY b.therapeutic_class
+      LIMIT 3
+    `);
+
+    // Combine: brands first, then generics, then classes
+    const results = [...brands.rows, ...generics.rows, ...classes.rows];
+
+    return NextResponse.json({ results });
   } catch (error) {
     console.error('Search error:', error);
     return NextResponse.json({ error: 'Search failed' }, { status: 500 });

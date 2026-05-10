@@ -69,7 +69,9 @@ export default function Home() {
   const handleSuggestionSelect = (drug: DrugSummary) => {
     setQuery(drug.brandName);
     setShowSuggestions(false);
-    router.push(`/drugs/${drug.slug}`);
+    if (drug.type === 'generic') router.push(`/generics/${drug.slug}`);
+    else if (drug.type === 'class') router.push(`/class?name=${encodeURIComponent(drug.brandName)}`);
+    else router.push(`/drugs/${drug.slug}`);
   };
 
   const handleFocus = async () => {

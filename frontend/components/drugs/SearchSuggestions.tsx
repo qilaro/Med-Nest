@@ -63,7 +63,7 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
       )}
       {suggestions.map((drug) => (
         <button
-          key={`${drug.type}-${drug.slug}`}
+          key={`${drug.type}-${drug.slug || drug.brandName}`}
           onClick={() => onSelect(drug)}
           className="w-full flex items-center gap-3 px-5 py-3 hover:bg-teal-100 transition-colors text-left cursor-pointer border-b border-gray-100 last:border-0"
         >
@@ -75,20 +75,30 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
               <span className="text-base font-semibold text-gray-800 truncate">
                 {isFeatured ? drug.brandName : <HighlightText text={drug.brandName} query={query} />}
               </span>
-              {drug.strength && (
+              {drug.type === 'generic' && (
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 bg-yellow-400 text-yellow-900">Generic</span>
+              )}
+              {drug.type === 'class' && (
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 bg-blue-100 text-blue-700">Class</span>
+              )}
+              {drug.type === 'brand' && drug.strength && (
                 <span className="text-sm text-teal-600 font-semibold shrink-0">{drug.strength}</span>
               )}
-              {drug.medicineType && drug.medicineType !== 'Allopathic' && (
+              {drug.type === 'brand' && drug.medicineType && drug.medicineType !== 'Allopathic' && (
                 <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${TYPE_COLORS[drug.medicineType] || 'bg-gray-400 text-white'}`}>
                   {drug.medicineType}
                 </span>
               )}
-              <span className="text-xs font-semibold text-teal-600 shrink-0 ml-auto bg-teal-50 px-2.5 py-1 rounded-full">{drug.dosageForm}</span>
+              {drug.type === 'brand' && (
+                <span className="text-xs font-semibold text-teal-600 shrink-0 ml-auto bg-teal-50 px-2.5 py-1 rounded-full">{drug.dosageForm}</span>
+              )}
             </div>
             <div className="text-sm text-gray-600 font-medium truncate mt-0.5">
-              {isFeatured ? drug.genericName + " • " + drug.company : (
+              {drug.type === 'generic' && 'Learn more about this generic medicine'}
+              {drug.type === 'class' && 'View drugs in this class'}
+              {drug.type === 'brand' && (isFeatured ? drug.genericName + " • " + drug.company : (
                 <HighlightText text={drug.genericName + " • " + drug.company} query={query} />
-              )}
+              ))}
             </div>
           </div>
         </button>
