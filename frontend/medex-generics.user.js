@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MedEx Generic Scraper
 // @namespace    medex-generics
-// @version      4.1
+// @version      4.2
 // @match        https://medex.com.bd/generics/*
 // @grant        none
 // ==/UserScript==
@@ -95,7 +95,8 @@
             if (prices.length) save('gen_' + genId + '_prices', prices);
             var t = getTotals();
             updateBadge('Pg ' + genId + '/2656 | ' + t.gens + ' gens | ' + t.prices + ' prices');
-            setTimeout(function() { window.location.href = 'https://medex.com.bd/generics/' + (parseInt(genId)+1); }, 3000);
+            var delay = (parseInt(genId) % 100 === 0) ? 300000 : 3000 + Math.random() * 2000;
+            setTimeout(function() { window.location.href = 'https://medex.com.bd/generics/' + (parseInt(genId)+1); }, delay);
             return;
         }
 
@@ -126,7 +127,8 @@
 
             var t = getTotals();
             updateBadge('Pg ' + genId + '/2656 | ' + t.gens + ' gens | ' + t.prices + ' prices');
-            setTimeout(function() { window.location.href = 'https://medex.com.bd/generics/' + (parseInt(genId)+1); }, 2000 + Math.random() * 1500);
+            var delay = (parseInt(genId) % 100 === 0) ? 300000 : 3000 + Math.random() * 2000;
+            setTimeout(function() { window.location.href = 'https://medex.com.bd/generics/' + (parseInt(genId)+1); }, delay);
         }
 
     }, 4000);
