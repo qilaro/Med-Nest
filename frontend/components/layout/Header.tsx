@@ -7,10 +7,18 @@ const Header = () => {
       <div className="container-medq">
         <div className="flex items-center h-16 gap-4">
           <Link className="flex items-center gap-2 shrink-0" href="/">
-            <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-primary">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6 text-white" aria-hidden="true">
-                <path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"></path>
-                <path d="m8.5 8.5 7 7"></path>
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'var(--primary)' }}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" className="h-6 w-6">
+                {/* Nest */}
+                <path d="M3 18c2-3 5-5 9-5s7 2 9 5" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+                <path d="M5 15c1.5-2 4-3.5 7-3.5s5.5 1.5 7 3.5" stroke="white" strokeWidth="1.2" strokeLinecap="round"/>
+                <path d="M7 12c1-1.5 3-2.5 5-2.5s4 1 5 2.5" stroke="white" strokeWidth="0.9" strokeLinecap="round"/>
+                {/* Medical Cross + */}
+                <path d="M12 7v10" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                <path d="M7 12h10" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                {/* Leaf accents */}
+                <path d="M14 4c1 .5 2 2 1.5 3.5" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" opacity="0.7"/>
+                <path d="M10 4c-1 .5-2 2-1.5 3.5" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" opacity="0.7"/>
               </svg>
             </div>
             <div className="leading-tight">
