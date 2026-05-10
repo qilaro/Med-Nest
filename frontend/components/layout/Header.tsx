@@ -7,10 +7,14 @@ const Header = () => {
       <div className="container-medq">
         <div className="flex items-center h-16 gap-4">
           <Link className="flex items-center gap-2 shrink-0" href="/">
-            <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-primary">
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" className="h-6 w-6">
-                <rect x="5" y="6" width="14" height="12" rx="6" stroke="white" strokeWidth="2"/>
-                <line x1="12" y1="6" x2="12" y2="18" stroke="white" strokeWidth="1.5"/>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #5F8B8B, #3A6B6B)' }}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                {/* Nest bowl */}
+                <path d="M4 17c2.5-2.5 5.5-3.5 8-3.5s5.5 1 8 3.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" fill="#FFFFFF20"/>
+                <path d="M5.5 15.5c2-2 4.5-3 6.5-3s4.5 1 6.5 3" stroke="white" strokeWidth="1.2" strokeLinecap="round" opacity="0.7"/>
+                {/* Pill resting in nest */}
+                <rect x="8" y="9" width="8" height="5.5" rx="2.75" stroke="white" strokeWidth="1.8" fill="white" fillOpacity="0.15"/>
+                <line x1="12" y1="9" x2="12" y2="14.5" stroke="white" strokeWidth="1" opacity="0.8"/>
               </svg>
             </div>
             <div className="leading-tight">
