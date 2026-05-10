@@ -33,7 +33,7 @@ function AZBrowseContent({ showAdvancedSearch = true }: { showAdvancedSearch?: b
     <div className="w-full max-w-4xl my-8">
       {/* Tabs */}
       <div className="flex justify-between items-center mb-6">
-        <div className="flex gap-2 flex-nowrap overflow-x-auto bg-teal-50/30 p-1 rounded-xl">
+        <div className="flex gap-2 flex-nowrap overflow-x-auto">
           {TABS.map((tab) => (
             <button
               key={tab}
@@ -41,7 +41,7 @@ function AZBrowseContent({ showAdvancedSearch = true }: { showAdvancedSearch?: b
               className={`px-4 py-2.5 rounded-lg font-medium text-sm whitespace-nowrap transition-colors cursor-pointer shadow-lg ${
                 activeTab === tab
                   ? "bg-[#0D261E] text-white"
-                  : "bg-white text-teal-600 hover:bg-teal-50 border border-teal-200"
+                  : "bg-white text-blue-600 hover:bg-gray-100 border border-gray-200"
               }`}
             >
               {tab}
@@ -51,7 +51,7 @@ function AZBrowseContent({ showAdvancedSearch = true }: { showAdvancedSearch?: b
         {showAdvancedSearch && (
           <Link 
             href="/drugs"
-            className="px-6 py-2.5 rounded-lg font-medium text-sm transition-colors cursor-pointer bg-white text-teal-600 hover:bg-teal-50 border border-teal-200"
+            className="px-6 py-2.5 rounded-lg font-medium text-sm transition-colors cursor-pointer bg-white text-blue-600 hover:bg-gray-100 border border-gray-200"
           >
             Advanced Search
           </Link>
