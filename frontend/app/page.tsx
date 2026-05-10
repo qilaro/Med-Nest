@@ -19,7 +19,12 @@ export default function Home() {
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<DrugSummary[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [stats, setStats] = useState({ drugs: 0, generics: 0, classes: 0, companies: 0 });
   const searchRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    fetch('/api/stats').then(r => r.json()).then(setStats).catch(() => {});
+  }, []);
 
   // Close suggestions when clicking outside
   useEffect(() => {
@@ -186,10 +191,10 @@ export default function Home() {
         <div className="container-medq">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             {[
-              { label: 'Drugs Listed', value: '40,309' },
-              { label: 'Generics', value: '1,757' },
-              { label: 'Drug Classes', value: '28' },
-              { label: 'Companies', value: '443' },
+              { label: 'Drugs Listed', value: stats.drugs.toLocaleString() },
+              { label: 'Generics', value: stats.generics.toLocaleString() },
+              { label: 'Drug Classes', value: stats.classes.toLocaleString() },
+              { label: 'Companies', value: stats.companies.toLocaleString() },
             ].map((stat) => (
               <div key={stat.label}>
                 <div className="text-3xl font-bold text-primary">{stat.value}</div>
