@@ -8,13 +8,26 @@ const Header = () => {
         <div className="flex items-center h-16 gap-4">
           <Link className="flex items-center gap-2 shrink-0" href="/">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #5F8B8B, #3A6B6B)' }}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 200 200">
                 {/* Nest bowl */}
-                <path d="M4 17c2.5-2.5 5.5-3.5 8-3.5s5.5 1 8 3.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" fill="#FFFFFF20"/>
-                <path d="M5.5 15.5c2-2 4.5-3 6.5-3s4.5 1 6.5 3" stroke="white" strokeWidth="1.2" strokeLinecap="round" opacity="0.7"/>
-                {/* Pill resting in nest */}
-                <rect x="8" y="9" width="8" height="5.5" rx="2.75" stroke="white" strokeWidth="1.8" fill="white" fillOpacity="0.15"/>
-                <line x1="12" y1="9" x2="12" y2="14.5" stroke="white" strokeWidth="1" opacity="0.8"/>
+                <path d="M 35,165 A 75 75 0 0 1 165,165" fill="none" stroke="white" strokeWidth="8" strokeLinecap="round"/>
+                <path d="M 55,155 A 60 60 0 0 1 145,155" fill="none" stroke="white" strokeWidth="5" strokeLinecap="round" opacity="0.6"/>
+                
+                {/* Nest twigs */}
+                <g transform="translate(100, 148)">
+                  <ellipse cx="0" cy="0" rx="42" ry="10" fill="#E8C87A" opacity="0.15" stroke="white" strokeWidth="5"/>
+                  {/* Eggs */}
+                  <circle cx="-15" cy="4" r="4" fill="white" opacity="0.5"/>
+                  <circle cx="12" cy="5" r="3.5" fill="white" opacity="0.4"/>
+                </g>
+
+                {/* Capsule pill */}
+                <g transform="translate(100, 85) rotate(30)">
+                  <rect x="-18" y="-42" width="36" height="84" rx="18" fill="none" stroke="white" strokeWidth="5"/>
+                  <path d="M -18,0 L -18,25 A 18 18 0 0 0 18,25 L 18,0 Z" fill="white" fillOpacity="0.25"/>
+                  <path d="M -18,0 L -18,-25 A 18 18 0 0 1 18,-25 L 18,0 Z" fill="#E8C87A" opacity="0.35"/>
+                  <line x1="-18" y1="0" x2="18" y2="0" stroke="white" strokeWidth="5"/>
+                </g>
               </svg>
             </div>
             <div className="leading-tight">
