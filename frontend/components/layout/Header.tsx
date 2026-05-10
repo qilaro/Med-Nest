@@ -7,23 +7,10 @@ const Header = () => {
       <div className="container-medq">
         <div className="flex items-center h-16 gap-4">
           <Link className="flex items-center gap-2 shrink-0" href="/">
-            <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#6BA3A0' }}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" className="h-6 w-6">
-                {/* Nest bowl - woven twigs */}
-                <path d="M4 17c2-2.5 5-4 8-4s6 1.5 8 4" stroke="#A8D8CD" strokeWidth="1.8" strokeLinecap="round"/>
-                <path d="M4.5 16c1.5-2 4.5-3.5 7.5-3.5s6 1.5 7.5 3.5" stroke="#C5E8DE" strokeWidth="1.5" strokeLinecap="round"/>
-                <path d="M5.5 15c1-1.2 3.5-2.5 6.5-2.5s5.5 1.3 6.5 2.5" stroke="#8FC9B8" strokeWidth="1.2" strokeLinecap="round"/>
-                {/* Twig texture */}
-                <path d="M8 17.5c2-1.5 6-1.5 8 0" stroke="#A8D8CD" strokeWidth="1" strokeLinecap="round"/>
-                {/* Leaf stems */}
-                <path d="M9 16V9.5c1-1 2.5-1.5 3-1" stroke="#2E7D32" strokeWidth="1.2" strokeLinecap="round"/>
-                <path d="M15 16V10.5c-1-.8-2.5-1-3-.5" stroke="#388E3C" strokeWidth="1.2" strokeLinecap="round"/>
-                {/* Healing leaf left - larger */}
-                <path d="M9 10.5c1.5-2.5 3.5-2.5 5-1-1 1.2-3 2.5-5 1Z" fill="#2E7D32" opacity="0.9"/>
-                {/* Healing leaf right */}
-                <path d="M14 9.5c-1-2.5-3-3-4.5-2 .8 1.8 3 3 4.5 2Z" fill="#43A047" opacity="0.85"/>
-                {/* Small leaf bud top */}
-                <path d="M11 7.5c.5-1 1.5-1.5 2-1-.3.7-1.2 1.2-2 1Z" fill="#66BB6A"/>
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-primary">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" className="h-6 w-6">
+                <rect x="5" y="6" width="14" height="12" rx="6" stroke="white" strokeWidth="2"/>
+                <line x1="12" y1="6" x2="12" y2="18" stroke="white" strokeWidth="1.5"/>
               </svg>
             </div>
             <div className="leading-tight">
