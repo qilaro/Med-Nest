@@ -64,7 +64,7 @@ export default async function DrugDetailPage({ params }: PageProps) {
           {/* Top Level: Icon + Branding + Quick Facts */}
           <div className="flex items-start gap-6">
             <div className="p-4 bg-mint-soft rounded-2xl shrink-0 mt-1">
-              {(() => { const Icon = getDosageIcon(drug.dosageForm); return <Icon className="w-12 h-12 text-[#2D8A7D]" />; })()}
+              {(() => { const Icon = getDosageIcon(drug.dosageForm); return <Icon className="w-12 h-12" />; })()}
             </div>
             
             <div className="flex flex-1 items-start gap-10">
