@@ -70,7 +70,7 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
               <div className="w-12 h-12 rounded-lg bg-gray-50 flex items-center justify-center text-gray-500 group-hover:bg-white/20 group-hover:text-white">
                 {getDrugIcon(drug.type, drug.dosageForm)}
               </div>
-              <span title={drug.dosageForm} className="text-[10px] leading-tight text-gray-400 group-hover:text-white/70 text-center max-w-[48px] truncate">
+              <span className="text-[10px] leading-tight text-gray-400 text-center max-w-[48px] truncate group-hover:overflow-visible group-hover:whitespace-normal group-hover:bg-teal-600 group-hover:px-1 group-hover:rounded group-hover:z-10">
                 {drug.dosageForm}
               </span>
             </div>
