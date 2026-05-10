@@ -210,7 +210,7 @@ function DrugsContent() {
 
         <form ref={searchRef} onSubmit={(e) => handleSearch(e)} className="flex flex-wrap gap-4 mb-10 items-center">
           <div className="relative flex-1">
-            <img src="/icons/pill.svg" alt="search" className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5" />
+            <img src="/icons/pill.svg" alt="search" className="absolute left-3 top-1/2 -translate-y-1/2 h-7 w-7" />
             <Input
               type="text"
               value={query}
