@@ -24,11 +24,12 @@ export async function GET(request: Request) {
         b.brand_verified as "brandVerified",
         b.price_verified as "priceVerified",
         b.generic_verified as "genericVerified",
+        b.medicine_type as "medicineType",
         MIN(b.slug) as slug,
         'brand' as type
       FROM brands b
       WHERE b.brand_name ILIKE ${'%' + query + '%'} OR b.generic_name ILIKE ${'%' + query + '%'}
-      GROUP BY b.brand_name, b.generic_name, b.dosage_form, b.strength, b.company_name, b.brand_verified, b.price_verified, b.generic_verified
+      GROUP BY b.brand_name, b.generic_name, b.dosage_form, b.strength, b.company_name, b.brand_verified, b.price_verified, b.generic_verified, b.medicine_type
       ORDER BY 
         b.brand_verified DESC, b.price_verified DESC, b.generic_verified DESC,
         (CASE WHEN b.brand_name ILIKE ${query + '%'} THEN 1 ELSE 2 END),

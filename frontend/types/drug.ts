@@ -13,6 +13,7 @@ export interface DrugSummary {
   averageRating?: number;
   reviewCount?: number;
   type?: 'brand' | 'generic' | 'class';
+  medicineType?: string;
 }
 
 export interface DrugDetail extends DrugSummary {

@@ -3,6 +3,18 @@ import { Tag } from "lucide-react";
 import { DrugSummary } from "@/types/drug";
 import { getDosageIcon } from "@/components/dosage-icons";
 
+const TYPE_COLORS: Record<string, string> = {
+  Herbal: 'bg-emerald-500 text-white',
+  Homeopathic: 'bg-violet-500 text-white',
+  Ayurvedic: 'bg-amber-500 text-white',
+  Unani: 'bg-rose-500 text-white',
+  Veterinary: 'bg-blue-500 text-white',
+  Supplement: 'bg-orange-500 text-white',
+  Device: 'bg-gray-500 text-white',
+  PersonalCare: 'bg-pink-500 text-white',
+  Vaccine: 'bg-cyan-500 text-white',
+};
+
 interface SearchSuggestionsProps {
   suggestions: DrugSummary[];
   isVisible: boolean;
@@ -63,8 +75,28 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
               <span className="text-base font-semibold text-gray-800 truncate">
                 {isFeatured ? drug.brandName : <HighlightText text={drug.brandName} query={query} />}
               </span>
+const TYPE_COLORS: Record<string, string> = {
+  Allopathic: 'bg-teal-500 text-white',
+  Herbal: 'bg-emerald-500 text-white',
+  Homeopathic: 'bg-violet-500 text-white',
+  Ayurvedic: 'bg-amber-500 text-white',
+  Unani: 'bg-rose-500 text-white',
+  Veterinary: 'bg-blue-500 text-white',
+  Supplement: 'bg-orange-500 text-white',
+  Device: 'bg-gray-500 text-white',
+  PersonalCare: 'bg-pink-500 text-white',
+  Vaccine: 'bg-cyan-500 text-white',
+};
+
+... (in the JSX, after strength span add the type badge)
+
               {drug.strength && (
                 <span className="text-sm text-teal-600 font-semibold shrink-0">{drug.strength}</span>
+              )}
+              {drug.medicineType && drug.medicineType !== 'Allopathic' && (
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${TYPE_COLORS[drug.medicineType] || 'bg-gray-400 text-white'}`}>
+                  {drug.medicineType}
+                </span>
               )}
               <span className="text-xs font-semibold text-teal-600 shrink-0 ml-auto bg-teal-50 px-2.5 py-1 rounded-full">{drug.dosageForm}</span>
             </div>
