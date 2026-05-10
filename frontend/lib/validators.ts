@@ -16,5 +16,5 @@ export const genericSearchQuerySchema = z.object({
 });
 
 export const slugParamSchema = z.object({
-  slug: z.string().min(1).max(255),
+  slug: z.string().min(1).max(255).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Invalid slug'),
 });

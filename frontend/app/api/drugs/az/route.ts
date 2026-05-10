@@ -25,7 +25,7 @@ export async function GET() {
           b.review_count as "reviewCount",
           'brand' as type
         FROM brands b
-        WHERE b.brand_name ILIKE ${sql.raw(`'${letter}%'`)}
+        WHERE b.brand_name ILIKE ${letter + '%'}
         ORDER BY b.brand_name ASC
         LIMIT 10
       `));

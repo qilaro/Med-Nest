@@ -7,7 +7,7 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const parsed = drugsQuerySchema.safeParse(Object.fromEntries(searchParams));
   if (!parsed.success) {
-    return NextResponse.json({ error: 'Invalid query parameters', details: parsed.error.flatten() }, { status: 400 });
+    return NextResponse.json({ error: 'Invalid query parameters' }, { status: 400 });
   }
 
   const { drug_class: drugClass, letter, page, limit } = parsed.data;

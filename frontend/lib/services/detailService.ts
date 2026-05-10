@@ -2,6 +2,9 @@ import { db } from '@/lib/db';
 import { sql } from 'drizzle-orm';
 
 async function fallbackFromFile(slug: string): Promise<Record<string, unknown> | null> {
+  // Prevent path traversal
+  if (slug.includes('..') || slug.includes('/') || slug.includes('\\')) return null;
+  
   try {
     const fs = await import('fs');
     const path = await import('path');
