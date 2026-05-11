@@ -237,48 +237,48 @@ function DrugsContent() {
           </form>
 
           {/* Inline Filter Bar */}
-          <div className="flex items-center gap-1.5 mb-6 flex-nowrap overflow-x-auto">
-            <div className="relative">
+          <div className="flex items-center gap-1 mb-6 flex-nowrap">
+            <div className="relative min-w-0">
               <select
                 value={selectedClass}
                 onChange={(e) => { setSelectedClass(e.target.value); if (e.target.value) router.push(`/drugs?drug_class=${encodeURIComponent(e.target.value)}`); else clearFilters(); }}
-                className="appearance-none bg-white border border-gray-200 rounded-full px-3 py-1.5 pr-7 text-xs font-medium text-gray-700 cursor-pointer hover:border-teal-300 hover:bg-teal-50 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-200"
+                className="appearance-none bg-white border border-gray-200 rounded-full px-2.5 py-1.5 pr-5 text-xs font-medium text-gray-700 cursor-pointer hover:border-teal-300 hover:bg-teal-50 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-200 min-w-0"
               >
                 <option value="">Drug Class</option>
                 {classes.map((c) => <option key={c.name} value={c.name}>{c.name}</option>)}
               </select>
-              <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+              <svg className="absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
             </div>
 
-            <div className="relative">
+            <div className="relative min-w-0">
               <select
                 value={selectedCompany}
                 onChange={(e) => { setSelectedCompany(e.target.value); if (e.target.value) router.push(`/drugs?company=${encodeURIComponent(e.target.value)}`); else clearFilters(); }}
-                className="appearance-none bg-white border border-gray-200 rounded-full px-3 py-1.5 pr-7 text-xs font-medium text-gray-700 cursor-pointer hover:border-teal-300 hover:bg-teal-50 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-200"
+                className="appearance-none bg-white border border-gray-200 rounded-full px-2.5 py-1.5 pr-5 text-xs font-medium text-gray-700 cursor-pointer hover:border-teal-300 hover:bg-teal-50 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-200 min-w-0"
               >
                 <option value="">Company</option>
                 {companies.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
-              <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+              <svg className="absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
             </div>
 
-            <div className="relative">
+            <div className="relative min-w-0">
               <select
                 value={selectedGeneric}
                 onChange={(e) => { setSelectedGeneric(e.target.value); if (e.target.value) router.push(`/drugs?generic=${encodeURIComponent(e.target.value)}`); else clearFilters(); }}
-                className="appearance-none bg-white border border-gray-200 rounded-full px-3 py-1.5 pr-7 text-xs font-medium text-gray-700 cursor-pointer hover:border-teal-300 hover:bg-teal-50 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-200"
+                className="appearance-none bg-white border border-gray-200 rounded-full px-2.5 py-1.5 pr-5 text-xs font-medium text-gray-700 cursor-pointer hover:border-teal-300 hover:bg-teal-50 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-200 min-w-0"
               >
                 <option value="">Generic</option>
                 {generics.map((g) => <option key={g} value={g}>{g}</option>)}
               </select>
-              <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+              <svg className="absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
             </div>
 
-            <div className="relative">
+            <div className="relative min-w-0">
               <select
                 value={selectedRating}
                 onChange={(e) => { setSelectedRating(e.target.value); if (e.target.value) router.push(`/drugs?rating=${e.target.value}`); else clearFilters(); }}
-                className="appearance-none bg-white border border-gray-200 rounded-full px-3 py-1.5 pr-7 text-xs font-medium text-gray-700 cursor-pointer hover:border-teal-300 hover:bg-teal-50 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-200"
+                className="appearance-none bg-white border border-gray-200 rounded-full px-2.5 py-1.5 pr-5 text-xs font-medium text-gray-700 cursor-pointer hover:border-teal-300 hover:bg-teal-50 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-200 min-w-0"
               >
                 <option value="">Rating</option>
                 <option value="5">5 ★★★★★</option>
@@ -286,13 +286,11 @@ function DrugsContent() {
                 <option value="3">3 ★★★☆☆</option>
                 <option value="2">2 ★★☆☆☆</option>
               </select>
-              <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+              <svg className="absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
             </div>
 
             {isFiltered && (
-              <button onClick={clearFilters} className="text-xs text-gray-400 hover:text-red-500 font-medium transition-colors ml-1">
-                ✕
-              </button>
+              <button onClick={clearFilters} className="text-xs text-gray-400 hover:text-red-500 font-medium transition-colors ml-1 shrink-0">✕</button>
             )}
           </div>
 
