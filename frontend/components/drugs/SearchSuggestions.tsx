@@ -39,8 +39,8 @@ const HighlightText = ({ text, query }: { text: string; query?: string }) => {
     <>
       {parts.map((part, i) => 
         part.toLowerCase() === trimmedQuery.toLowerCase() 
-          ? <span key={i} className="text-teal-600 font-semibold">{part}</span>
-          : <span key={i} className="text-gray-600">{part}</span>
+          ? <span key={i} className="text-teal-700 font-bold">{part}</span>
+          : <span key={i} className="text-gray-700">{part}</span>
       )}
     </>
   );
@@ -128,7 +128,7 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
           onClick={() => onSelect(drug)}
           onMouseEnter={() => setHighlightedIndex(index)}
           className={`w-full flex items-center gap-3 px-5 py-3 transition-colors text-left cursor-pointer border-b border-gray-100 last:border-0 ${
-            highlightedIndex === index ? 'bg-teal-100' : 'hover:bg-teal-50'
+            highlightedIndex === index ? 'bg-teal-200 shadow-sm' : 'hover:bg-teal-100'
           }`}
         >
           <div className="w-12 h-12 rounded-xl bg-teal-50 flex items-center justify-center shrink-0 border border-teal-100">
