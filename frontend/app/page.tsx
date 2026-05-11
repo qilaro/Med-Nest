@@ -19,6 +19,7 @@ export default function Home() {
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<DrugSummary[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [stats, setStats] = useState({ drugs: 0, generics: 0, classes: 0, companies: 0 });
   const [isSearching, setIsSearching] = useState(false);
   const searchRef = useRef<HTMLFormElement>(null);
 
