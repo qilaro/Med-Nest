@@ -10,13 +10,13 @@ const BOT_PATTERNS = [
   'phantomjs', 'mechanize', 'htmlunit',
 ]
 
-export default clerkMiddleware(async (auth, req) => {
+export default clerkMiddleware((auth, req) => {
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
     || req.headers.get('x-real-ip')
     || 'unknown'
 
-  // Rate limiting (Upstash Redis, multi-instance safe)
-  if (!(await rateLimit(ip))) {
+  // Rate limiting
+  if (!rateLimit(ip, 30, 10000)) {
     return NextResponse.json(
       { error: 'Too many requests. Please try again later.' },
       { status: 429, headers: securityHeaders() }
