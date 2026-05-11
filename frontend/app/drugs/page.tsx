@@ -251,7 +251,7 @@ function DrugsContent() {
           </form>
 
           {/* Inline Filter Bar */}
-          <div className="flex items-center gap-1 mb-5 flex-nowrap">
+          <div className="flex items-center gap-1.5 mb-5 flex-nowrap justify-center">
             {[
               { value: selectedClass, set: setSelectedClass, label: "Class", options: classes.map((c: any) => c.name), param: "drug_class" },
               { value: selectedCompany, set: setSelectedCompany, label: "Company", options: companies, param: "company" },
@@ -259,7 +259,7 @@ function DrugsContent() {
               { value: selectedDosageForm, set: setSelectedDosageForm, label: "Form", options: dosageForms, param: "dosage_form" },
               { value: selectedRating, set: setSelectedRating, label: "Rating", options: ["5 ★★★★★", "4 ★★★★☆", "3 ★★★☆☆", "2 ★★☆☆☆"], param: "rating" },
             ].map((filter) => (
-              <div key={filter.label} className="relative min-w-0 shrink-0">
+              <div key={filter.label} className="relative w-[130px]">
                 <select
                   value={filter.value}
                   onChange={(e) => {
@@ -270,14 +270,14 @@ function DrugsContent() {
                       router.push(`/drugs?${p.toString()}`);
                     } else clearFilters();
                   }}
-                  className="appearance-none bg-white border border-gray-200 rounded-full px-3 py-1.5 pr-4 text-xs font-medium text-gray-700 cursor-pointer hover:border-teal-300 hover:bg-teal-50 transition-colors focus:outline-none focus:ring-1 focus:ring-teal-200 min-w-0 max-w-[150px]"
+                  className="appearance-none bg-white border border-gray-200 rounded-full px-3 py-1.5 pr-4 text-xs font-medium text-gray-700 cursor-pointer hover:border-teal-300 hover:bg-teal-50 transition-colors focus:outline-none focus:ring-1 focus:ring-teal-200 w-full text-center"
                 >
                   <option value="">{filter.label}</option>
                   {filter.options.map((opt: string) => (
-                    <option key={opt} value={filter.label === "Rating" ? opt.charAt(0) : opt} className="text-[10px]">{opt}</option>
+                    <option key={opt} value={filter.label === "Rating" ? opt.charAt(0) : opt}>{opt}</option>
                   ))}
                 </select>
-                <svg className="absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
               </div>
             ))}
 
