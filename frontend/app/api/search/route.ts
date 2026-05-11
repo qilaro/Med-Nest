@@ -53,6 +53,18 @@ export async function GET(request: Request) {
       LIMIT 7
     `);
 
+    // Also get company separately with a simple query
+    let brandCompanies: Record<string, string> = {};
+    const compRows = await db.execute(sql`
+      SELECT brand_name, company_name FROM brands 
+      WHERE LOWER(brand_name) ILIKE ${'%' + q + '%'} 
+      GROUP BY brand_name, company_name
+    `);
+    for (const r of compRows.rows) {
+      const rr = r as any;
+      brandCompanies[(rr.brand_name || '').toLowerCase()] = rr.company_name;
+    }
+
     // === SMART STRENGTH SEARCH: "Napa 500" → brand Napa + strength 500 ===
     const strengthMatch = q.match(/^(.*?)\s+(\d+(?:\.\d+)?)$/);
     let strengthBrands: any[] = [];
@@ -143,8 +155,13 @@ export async function GET(request: Request) {
         const key = item.type + '|' + (item.slug || item.brandName).toLowerCase();
         if (!seen.has(key) && combined.length < 15) {
           seen.add(key);
+          // Add company alias if missing
+          if (item.type === 'brand' && !item.company) {
+            item.company = brandCompanies[(item.brandName || '').toLowerCase()] || item.companyName || '';
+          }
           combined.push(item);
         }
+      }
       }
     };
     add(strengthBrands);         // Strength-matched first (most precise)
