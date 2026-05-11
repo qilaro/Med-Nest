@@ -270,19 +270,19 @@ function DrugsContent() {
                       router.push(`/drugs?${p.toString()}`);
                     } else clearFilters();
                   }}
-                  className="appearance-none bg-white border border-gray-200 rounded-full px-2 py-1 pr-3 text-[11px] font-medium text-gray-700 cursor-pointer hover:border-teal-300 hover:bg-teal-50 transition-colors focus:outline-none focus:ring-1 focus:ring-teal-200 min-w-0 max-w-[140px]"
+                  className="appearance-none bg-white border border-gray-200 rounded-full px-3 py-1.5 pr-4 text-xs font-medium text-gray-700 cursor-pointer hover:border-teal-300 hover:bg-teal-50 transition-colors focus:outline-none focus:ring-1 focus:ring-teal-200 min-w-0 max-w-[150px]"
                 >
                   <option value="">{filter.label}</option>
                   {filter.options.map((opt: string) => (
                     <option key={opt} value={filter.label === "Rating" ? opt.charAt(0) : opt} className="text-[10px]">{opt}</option>
                   ))}
                 </select>
-                <svg className="absolute right-1 top-1/2 -translate-y-1/2 pointer-events-none" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                <svg className="absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
               </div>
             ))}
 
             {isFiltered && (
-              <button onClick={clearFilters} className="text-[11px] text-gray-400 hover:text-red-500 font-medium transition-colors shrink-0">✕</button>
+              <button onClick={clearFilters} className="text-xs text-gray-500 hover:text-red-500 font-medium transition-colors shrink-0 ml-0.5">✕</button>
             )}
           </div>
 
