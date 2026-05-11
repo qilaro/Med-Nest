@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Tag, Clock } from "lucide-react";
+import { Tag, Clock, FlaskConical } from "lucide-react";
 import { DrugSummary } from "@/types/drug";
 import { getDosageIcon } from "@/components/dosage-icons";
 
@@ -26,6 +26,7 @@ const TYPE_COLORS: Record<string, string> = {
 
 const getDrugIcon = (type: string | undefined, form?: string) => {
   if (type === 'class') return <Tag size={18} />;
+  if (type === 'generic') return <FlaskConical size={18} className="text-teal-500" />;
   const Icon = getDosageIcon(form || '');
   return <Icon className="w-7 h-7" />;
 };
