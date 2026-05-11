@@ -152,7 +152,7 @@ function DrugsContent() {
     }
 
     const params = new URLSearchParams();
-    if (query) params.set("search", query);
+    if (query) { params.set("search", query); fetch('/api/search/log', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: query.trim() }) }).catch(() => {}); }
     if (selectedClass) params.set("drug_class", selectedClass);
     if (selectedCompany) params.set("company", selectedCompany);
     if (selectedGeneric) params.set("generic", selectedGeneric);
@@ -163,6 +163,7 @@ function DrugsContent() {
   };
 
   const handleSuggestionSelect = (drug: DrugSummary) => {
+    fetch('/api/search/log', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: drug.brandName }) }).catch(() => {});
     setQuery(drug.brandName);
     setShowSuggestions(false);
     if (drug.type === 'generic') router.push(`/generics/${drug.slug}`);
@@ -173,8 +174,9 @@ function DrugsContent() {
   const handleFocus = async () => {
     if (query.trim().length === 0) {
       try {
-        const { drugs: allDrugs } = await drugService.getDrugs();
-        setSuggestions(allDrugs.slice(0, 5));
+        const res = await fetch('/api/popular');
+        const data = await res.json();
+        setSuggestions((data.results || []).slice(0, 5));
         setShowSuggestions(true);
       } catch (error) {
         console.error("Failed to fetch suggestions:", error);

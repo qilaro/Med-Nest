@@ -61,12 +61,14 @@ export default function Home() {
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
+      fetch('/api/search/log', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: query.trim() }) }).catch(() => {});
       router.push(`/drugs?search=${encodeURIComponent(query)}`);
       setShowSuggestions(false);
     }
   };
 
   const handleSuggestionSelect = (drug: DrugSummary) => {
+    fetch('/api/search/log', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: drug.brandName }) }).catch(() => {});
     setQuery(drug.brandName);
     setShowSuggestions(false);
     if (drug.type === 'generic') router.push(`/generics/${drug.slug}`);
@@ -77,8 +79,9 @@ export default function Home() {
   const handleFocus = async () => {
     if (query.trim().length === 0) {
       try {
-        const { drugs } = await drugService.getDrugs();
-        setSuggestions(drugs.slice(0, 5));
+        const res = await fetch('/api/popular');
+        const data = await res.json();
+        setSuggestions((data.results || []).slice(0, 5));
         setShowSuggestions(true);
       } catch (error) {
         console.error("Failed to fetch featured suggestions:", error);
