@@ -56,19 +56,31 @@ export default async function DrugDetailPage({ params }: PageProps) {
   // JSON-LD structured data for SEO
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'Drug',
-    name: drug.brandName,
-    description: `${drug.brandName} ${drug.strength} - ${drug.genericName}. Manufactured by ${drug.company}.`,
-    activeIngredient: drug.genericName,
-    manufacturer: drug.company,
-    dosageForm: drug.dosageForm,
-    url: `https://mednest.com.bd/drugs/${slug}`,
-    offers: {
-      '@type': 'Offer',
-      price: drug.price?.replace(/[^0-9.]/g, '') || '',
-      priceCurrency: 'BDT',
-      availability: 'https://schema.org/InStock',
-    },
+    '@graph': [
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://mednest.com.bd' },
+          { '@type': 'ListItem', position: 2, name: 'Drugs', item: 'https://mednest.com.bd/drugs' },
+          { '@type': 'ListItem', position: 3, name: drug.brandName, item: `https://mednest.com.bd/drugs/${slug}` },
+        ],
+      },
+      {
+        '@type': 'Drug',
+        name: drug.brandName,
+        description: `${drug.brandName} ${drug.strength} - ${drug.genericName}. Manufactured by ${drug.company}.`,
+        activeIngredient: drug.genericName,
+        manufacturer: drug.company,
+        dosageForm: drug.dosageForm,
+        url: `https://mednest.com.bd/drugs/${slug}`,
+        offers: {
+          '@type': 'Offer',
+          price: drug.price?.replace(/[^0-9.]/g, '') || '',
+          priceCurrency: 'BDT',
+          availability: 'https://schema.org/InStock',
+        },
+      },
+    ],
   };
 
   const unitPrice = parseFloat(String(drug.price).replace(/[^0-9.]/g, '')) || 0;

@@ -24,6 +24,7 @@ export const metadata: Metadata = {
   },
   robots: { index: true, follow: true },
   alternates: { canonical: 'https://mednest.com.bd' },
+  verification: { google: 'YOUR_GOOGLE_SEARCH_CONSOLE_ID' },
 };
 
 export default function RootLayout({
@@ -35,6 +36,14 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" className={cn("h-full antialiased", "font-sans", notoSans.variable, playfairDisplayHeading.variable)}>
         <body className="min-h-full flex flex-col font-serif relative" suppressHydrationWarning>
+          <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'MedicalWebPage',
+            name: 'Med-Nest',
+            url: 'https://mednest.com.bd',
+            description: 'Bangladesh medicine index with prices, generics, and medical information.',
+            publisher: { '@type': 'Organization', name: 'Med-Nest' },
+          }) }} />
           <script dangerouslySetInnerHTML={{ __html: `
 document.addEventListener('contextmenu',function(e){e.preventDefault()});
 document.addEventListener('copy',function(e){e.preventDefault()});
