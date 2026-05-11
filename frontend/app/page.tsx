@@ -104,7 +104,7 @@ export default function Home() {
       <section className="py-4 text-gray-900">
         {/* Outer Container with Mint Background and Symmetric 24px Padding */}
         <div 
-        className="container-medq relative mx-auto" 
+        className="container-medq relative z-10 mx-auto" 
         style={{ 
           backgroundColor: '#D5E9E7', 
           borderRadius: '2rem', 
@@ -127,7 +127,7 @@ export default function Home() {
               boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.15)'
             }}
           >
-            <div className="relative z-10 max-w-3xl text-center">
+            <div className="relative max-w-3xl text-center">
               {/* Badge */}
               <div className="inline-flex items-center gap-2 bg-white/65 border border-gray-300 rounded-full px-4 py-2 text-sm mb-2 mt-1 text-gray-800">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-yellow-400" aria-hidden="true">
