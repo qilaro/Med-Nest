@@ -7,19 +7,18 @@ import { useRouter, useSearchParams } from "next/navigation";
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const TABS = ["Browse Trade", "Browse Generics", "Browse Class", "Dosage Form"];
 
-/**
- * AZBrowse Content Component
- */
 function AZBrowseContent({ showAdvancedSearch = true }: { showAdvancedSearch?: boolean }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const currentLetter = searchParams.get("letter");
   const [activeTab, setActiveTab] = useState("");
+  const [showTradeDropdown, setShowTradeDropdown] = useState(false);
 
   const handleTabClick = (tab: string) => {
     setActiveTab(tab);
+    setShowTradeDropdown(false);
     if (tab === "Browse Trade") {
-      router.push("/trade");
+      setShowTradeDropdown(true);
     } else if (tab === "Browse Generics") {
       router.push("/generics");
     } else if (tab === "Browse Class") {
@@ -34,19 +33,42 @@ function AZBrowseContent({ showAdvancedSearch = true }: { showAdvancedSearch?: b
       {/* Tabs */}
       <div className="flex justify-between items-center mb-6">
         <div className="flex gap-2 flex-nowrap overflow-x-auto">
-          {TABS.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => handleTabClick(tab)}
-              className={`px-4 py-2.5 rounded-lg font-medium text-sm whitespace-nowrap transition-colors cursor-pointer shadow-lg ${
-                activeTab === tab
-                  ? "bg-[#0D261E] text-white"
-                  : "bg-white text-blue-600 hover:bg-gray-100 border border-gray-200"
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
+          {TABS.map((tab) =>
+            tab === "Browse Trade" ? (
+              <div key={tab} className="relative">
+                <button
+                  onClick={() => handleTabClick(tab)}
+                  onBlur={() => setTimeout(() => setShowTradeDropdown(false), 200)}
+                  className={`px-4 py-2.5 rounded-lg font-medium text-sm whitespace-nowrap transition-colors cursor-pointer shadow-lg flex items-center gap-1.5 ${
+                    showTradeDropdown
+                      ? "bg-[#0D261E] text-white"
+                      : "bg-white text-blue-600 hover:bg-gray-100 border border-gray-200"
+                  }`}
+                >
+                  {tab}
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                {showTradeDropdown && (
+                  <div className="absolute top-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50 min-w-[160px]">
+                    <Link href="/drugs?type=allopathic" className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-700 transition-colors" onClick={() => setShowTradeDropdown(false)}>Pharmaceutical</Link>
+                    <Link href="/drugs?type=herbal" className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-700 transition-colors" onClick={() => setShowTradeDropdown(false)}>Herbal / Traditional</Link>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <button
+                key={tab}
+                onClick={() => handleTabClick(tab)}
+                className={`px-4 py-2.5 rounded-lg font-medium text-sm whitespace-nowrap transition-colors cursor-pointer shadow-lg ${
+                  activeTab === tab
+                    ? "bg-[#0D261E] text-white"
+                    : "bg-white text-blue-600 hover:bg-gray-100 border border-gray-200"
+                }`}
+              >
+                {tab}
+              </button>
+            )
+          )}
         </div>
         {showAdvancedSearch && (
           <Link 
