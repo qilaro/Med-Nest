@@ -162,7 +162,6 @@ export async function GET(request: Request) {
           combined.push(item);
         }
       }
-      }
     };
     add(strengthBrands);         // Strength-matched first (most precise)
     add(brands);                 // Fuzzy-matched brands
