@@ -124,7 +124,7 @@ function DrugsContent() {
 
     const fetchFuzzySuggestions = async () => {
       try {
-        const { results } = await drugService.searchDrugs(query);
+        const { results } = await drugService.searchDrugs(query.trim());
         setSuggestions(results.slice(0, 10));
         setShowSuggestions(true);
       } catch (error) {

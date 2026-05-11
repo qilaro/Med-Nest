@@ -10,7 +10,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ results: [] });
   }
 
-  const query = parsed.data.q;
+  const query = parsed.data.q.trim();
 
   try {
     // Brands
