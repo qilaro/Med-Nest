@@ -203,11 +203,11 @@ function DrugsContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f9f9f9] py-10">
+    <div className="min-h-screen bg-[#f9f9f9] py-6">
       <div className="max-w-[800px] mx-auto">
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold text-navy mb-2">Drug Directory</h1>
-          <p className="text-muted-foreground">
+        <header className="mb-4">
+          <h1 className="text-3xl font-bold text-navy mb-1">Drug Directory</h1>
+          <p className="text-sm text-muted-foreground">
             Browse our complete database of medications, verified by pharmacists.
           </p>
         </header>
