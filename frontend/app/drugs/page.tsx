@@ -237,7 +237,7 @@ function DrugsContent() {
           </form>
 
           {/* Inline Filter Bar */}
-          <div className="flex flex-wrap items-center gap-1.5 mb-6">
+          <div className="flex items-center gap-1.5 mb-6 flex-nowrap overflow-x-auto">
             <div className="relative">
               <select
                 value={selectedClass}
