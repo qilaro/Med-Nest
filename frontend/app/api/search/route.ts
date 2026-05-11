@@ -34,6 +34,32 @@ export async function GET(request: Request) {
       LIMIT 5
     `);
 
+    // Smart strength search: "Napa 500" → brand "Napa" with strength "500"
+    const strengthMatch = query.match(/^(.*?)\s+(\d+(?:\.\d+)?)$/);
+    let strengthBrands: any[] = [];
+    if (strengthMatch) {
+      const brandPart = strengthMatch[1];
+      const numPart = strengthMatch[2];
+      strengthBrands = (await db.execute(sql`
+        SELECT 
+          b.brand_name as "brandName", 
+          b.generic_name as "genericName", 
+          b.dosage_form as "dosageForm",
+          b.strength as strength,
+          b.company_name as "companyName",
+          b.company_name as "company",
+          b.medicine_type as "medicineType",
+          MIN(b.slug) as slug,
+          'brand' as type
+        FROM brands b
+        WHERE (b.brand_name ILIKE ${brandPart + '%'} OR b.generic_name ILIKE ${brandPart + '%'})
+          AND b.strength ILIKE ${'%' + numPart + '%'}
+        GROUP BY b.brand_name, b.generic_name, b.dosage_form, b.strength, b.company_name, b.medicine_type
+        ORDER BY MIN(similarity(b.brand_name, ${brandPart})) DESC
+        LIMIT 5
+      `)).rows;
+    }
+
     // Generics
     const generics = await db.execute(sql`
       SELECT 
@@ -70,8 +96,8 @@ export async function GET(request: Request) {
       LIMIT 3
     `);
 
-    // Combine: brands first, then generics, then classes
-    const results = [...brands.rows, ...generics.rows, ...classes.rows];
+    // Combine: brands first, then strength-matched, then generics, then classes
+    const results = [...brands.rows, ...strengthBrands, ...generics.rows, ...classes.rows];
 
     return NextResponse.json({ results });
   } catch (error) {
