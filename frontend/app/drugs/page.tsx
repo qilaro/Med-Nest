@@ -193,124 +193,127 @@ function DrugsContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f9f9f9] py-6">
-      <div className="max-w-[800px] mx-auto">
-        <header className="mb-4">
-          <h1 className="text-3xl font-bold text-navy mb-1">Drug Directory</h1>
-          <p className="text-sm text-muted-foreground">
-            Browse our complete database of medications, verified by pharmacists.
-          </p>
-        </header>
+    <div className="min-h-screen bg-gradient-to-b from-[#D5E9E7] via-white to-white py-6">
+      <div className="max-w-[800px] mx-auto px-4">
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-100 shadow-sm p-6 md:p-8">
+          <header className="mb-6">
+            <h1 className="text-3xl font-bold text-navy mb-1">Drug Directory</h1>
+            <p className="text-sm text-gray-500">
+              Browse our complete database of medications, verified by pharmacists.
+            </p>
+          </header>
 
-        {warning && (
-          <div className="flex items-center gap-2 p-4 mb-4 bg-yellow-50 text-yellow-700 rounded-lg border border-yellow-200">
-            <AlertCircle className="h-5 w-5" />
-            <p className="font-semibold">{warning}</p>
-          </div>
-        )}
-
-        <form ref={searchRef} onSubmit={(e) => handleSearch(e)} className="flex flex-wrap gap-4 mb-6 items-start">
-          <div className="relative flex-1 min-w-[280px]">
-            <img src="/icons/pill.svg" alt="search" className="absolute left-4 top-1/2 -translate-y-1/2 h-9 w-9" />
-            <Input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onFocus={handleFocus}
-              placeholder="Search medications..."
-              className="pl-16 h-14 rounded-xl text-base shadow-sm border-2 border-sky-200 focus-visible:border-sky-400"
-            />
-            <SearchSuggestions 
-              suggestions={suggestions} 
-              isVisible={showSuggestions} 
-              onSelect={handleSuggestionSelect} 
-              isFeatured={query.trim().length === 0}
-              query={query}
-              isLoading={isSearching}
-            />
-          </div>
-
-          <Button type="submit" className="h-14 px-8 rounded-xl font-bold bg-primary hover:bg-primary-dark cursor-pointer">
-            Find Medicine
-          </Button>
-        </form>
-
-        {/* Inline Filter Bar */}
-        <div className="flex flex-wrap items-center gap-1.5 mb-6">
-          <div className="relative">
-            <select
-              value={selectedClass}
-              onChange={(e) => { setSelectedClass(e.target.value); if (e.target.value) router.push(`/drugs?drug_class=${encodeURIComponent(e.target.value)}`); else clearFilters(); }}
-              className="appearance-none bg-white border border-gray-200 rounded-full px-3 py-1.5 pr-7 text-xs font-medium text-gray-700 cursor-pointer hover:border-teal-300 hover:bg-teal-50 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-200"
-            >
-              <option value="">Drug Class</option>
-              {classes.map((c) => <option key={c.name} value={c.name}>{c.name}</option>)}
-            </select>
-            <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-          </div>
-
-          <div className="relative">
-            <select
-              value={selectedCompany}
-              onChange={(e) => { setSelectedCompany(e.target.value); if (e.target.value) router.push(`/drugs?company=${encodeURIComponent(e.target.value)}`); else clearFilters(); }}
-              className="appearance-none bg-white border border-gray-200 rounded-full px-3 py-1.5 pr-7 text-xs font-medium text-gray-700 cursor-pointer hover:border-teal-300 hover:bg-teal-50 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-200"
-            >
-              <option value="">Company</option>
-              {companies.map((c) => <option key={c} value={c}>{c}</option>)}
-            </select>
-            <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-          </div>
-
-          <div className="relative">
-            <select
-              value={selectedGeneric}
-              onChange={(e) => { setSelectedGeneric(e.target.value); if (e.target.value) router.push(`/drugs?generic=${encodeURIComponent(e.target.value)}`); else clearFilters(); }}
-              className="appearance-none bg-white border border-gray-200 rounded-full px-3 py-1.5 pr-7 text-xs font-medium text-gray-700 cursor-pointer hover:border-teal-300 hover:bg-teal-50 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-200"
-            >
-              <option value="">Generic</option>
-              {generics.map((g) => <option key={g} value={g}>{g}</option>)}
-            </select>
-            <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-          </div>
-
-          <div className="relative">
-            <select
-              value={selectedRating}
-              onChange={(e) => { setSelectedRating(e.target.value); if (e.target.value) router.push(`/drugs?rating=${e.target.value}`); else clearFilters(); }}
-              className="appearance-none bg-white border border-gray-200 rounded-full px-3 py-1.5 pr-7 text-xs font-medium text-gray-700 cursor-pointer hover:border-teal-300 hover:bg-teal-50 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-200"
-            >
-              <option value="">Rating</option>
-              <option value="5">5 ★★★★★</option>
-              <option value="4">4 ★★★★☆</option>
-              <option value="3">3 ★★★☆☆</option>
-              <option value="2">2 ★★☆☆☆</option>
-            </select>
-            <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-          </div>
-
-          {isFiltered && (
-            <button onClick={clearFilters} className="text-xs text-gray-400 hover:text-red-500 font-medium transition-colors ml-1">
-              ✕
-            </button>
-          )}
-        </div>
-
-        <AZBrowse showTabs={false} />
-        <hr className="my-8 border-t border-gray-200" />
-
-        {loading ? (
-          <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
-            <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
-            <p>Scanning database...</p>
-          </div>
-        ) : (
-          <div>
-            <h2 className="text-xl font-bold text-navy mb-6">Popular Drug Searches</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {isFiltered ? drugs.map((drug) => <DrugCard key={drug.id} drug={drug} />) : drugs.slice(0, 12).map((drug) => <DrugCard key={drug.id} drug={drug} />)}
+          {warning && (
+            <div className="flex items-center gap-2 p-4 mb-6 bg-yellow-50 text-yellow-700 rounded-lg border border-yellow-200">
+              <AlertCircle className="h-5 w-5" />
+              <p className="font-semibold">{warning}</p>
             </div>
+          )}
+
+          <form ref={searchRef} onSubmit={(e) => handleSearch(e)} className="flex flex-wrap gap-4 mb-6 items-start">
+            <div className="relative flex-1 min-w-[280px]">
+              <img src="/icons/pill.svg" alt="search" className="absolute left-4 top-1/2 -translate-y-1/2 h-9 w-9" />
+              <Input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onFocus={handleFocus}
+                placeholder="Search medications..."
+                className="pl-16 h-14 rounded-xl text-base shadow-sm border-2 border-sky-200 focus-visible:border-sky-400"
+              />
+              <SearchSuggestions 
+                suggestions={suggestions} 
+                isVisible={showSuggestions} 
+                onSelect={handleSuggestionSelect} 
+                isFeatured={query.trim().length === 0}
+                query={query}
+                isLoading={isSearching}
+              />
+            </div>
+
+            <Button type="submit" className="h-14 px-8 rounded-xl font-bold bg-primary hover:bg-primary-dark cursor-pointer">
+              Find Medicine
+            </Button>
+          </form>
+
+          {/* Inline Filter Bar */}
+          <div className="flex flex-wrap items-center gap-1.5 mb-6">
+            <div className="relative">
+              <select
+                value={selectedClass}
+                onChange={(e) => { setSelectedClass(e.target.value); if (e.target.value) router.push(`/drugs?drug_class=${encodeURIComponent(e.target.value)}`); else clearFilters(); }}
+                className="appearance-none bg-white border border-gray-200 rounded-full px-3 py-1.5 pr-7 text-xs font-medium text-gray-700 cursor-pointer hover:border-teal-300 hover:bg-teal-50 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-200"
+              >
+                <option value="">Drug Class</option>
+                {classes.map((c) => <option key={c.name} value={c.name}>{c.name}</option>)}
+              </select>
+              <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </div>
+
+            <div className="relative">
+              <select
+                value={selectedCompany}
+                onChange={(e) => { setSelectedCompany(e.target.value); if (e.target.value) router.push(`/drugs?company=${encodeURIComponent(e.target.value)}`); else clearFilters(); }}
+                className="appearance-none bg-white border border-gray-200 rounded-full px-3 py-1.5 pr-7 text-xs font-medium text-gray-700 cursor-pointer hover:border-teal-300 hover:bg-teal-50 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-200"
+              >
+                <option value="">Company</option>
+                {companies.map((c) => <option key={c} value={c}>{c}</option>)}
+              </select>
+              <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </div>
+
+            <div className="relative">
+              <select
+                value={selectedGeneric}
+                onChange={(e) => { setSelectedGeneric(e.target.value); if (e.target.value) router.push(`/drugs?generic=${encodeURIComponent(e.target.value)}`); else clearFilters(); }}
+                className="appearance-none bg-white border border-gray-200 rounded-full px-3 py-1.5 pr-7 text-xs font-medium text-gray-700 cursor-pointer hover:border-teal-300 hover:bg-teal-50 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-200"
+              >
+                <option value="">Generic</option>
+                {generics.map((g) => <option key={g} value={g}>{g}</option>)}
+              </select>
+              <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </div>
+
+            <div className="relative">
+              <select
+                value={selectedRating}
+                onChange={(e) => { setSelectedRating(e.target.value); if (e.target.value) router.push(`/drugs?rating=${e.target.value}`); else clearFilters(); }}
+                className="appearance-none bg-white border border-gray-200 rounded-full px-3 py-1.5 pr-7 text-xs font-medium text-gray-700 cursor-pointer hover:border-teal-300 hover:bg-teal-50 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-200"
+              >
+                <option value="">Rating</option>
+                <option value="5">5 ★★★★★</option>
+                <option value="4">4 ★★★★☆</option>
+                <option value="3">3 ★★★☆☆</option>
+                <option value="2">2 ★★☆☆☆</option>
+              </select>
+              <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </div>
+
+            {isFiltered && (
+              <button onClick={clearFilters} className="text-xs text-gray-400 hover:text-red-500 font-medium transition-colors ml-1">
+                ✕
+              </button>
+            )}
           </div>
-        )}
+
+          <AZBrowse showTabs={false} />
+
+          <div className="mt-8">
+            {loading ? (
+              <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
+                <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
+                <p>Scanning database...</p>
+              </div>
+            ) : (
+              <div>
+                <h2 className="text-xl font-bold text-navy mb-6">Popular Drug Searches</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {isFiltered ? drugs.map((drug) => <DrugCard key={drug.id} drug={drug} />) : drugs.slice(0, 12).map((drug) => <DrugCard key={drug.id} drug={drug} />)}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
