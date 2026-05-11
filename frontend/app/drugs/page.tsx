@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { SlidersHorizontal, Pill, Loader2, X, AlertCircle, Star } from "lucide-react";
+import { Loader2, AlertCircle, Star } from "lucide-react";
 import { drugService } from "@/lib/services/drugService";
 import { DrugClass, DrugSummary } from "@/types/drug";
 import DrugCard from "@/components/drugs/DrugCard";
@@ -10,7 +10,6 @@ import AZBrowse from "@/components/drugs/AZBrowse";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { SearchSuggestions } from "@/components/drugs/SearchSuggestions";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 /**
  * The core content of the Drugs page.
@@ -37,7 +36,6 @@ function DrugsContent() {
   const [selectedGeneric, setSelectedGeneric] = useState(genericFilter);
   const [selectedRating, setSelectedRating] = useState(ratingFilter);
   const [loading, setLoading] = useState(true);
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [warning, setWarning] = useState<string | null>(null);
   
   // Suggestion state
@@ -140,16 +138,9 @@ function DrugsContent() {
     return () => clearTimeout(timer);
   }, [query]);
 
-  const handleSearch = (e?: React.FormEvent, isFilterAction = false) => {
+  const handleSearch = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-
-    if (isFilterAction && !selectedClass && !selectedCompany && !selectedGeneric && !selectedRating) {
-      setWarning("No filter selected");
-      setTimeout(() => setWarning(null), 3000);
-      return;
-    }
-
-    if (!isFilterAction && !query.trim()) {
+    if (!query.trim()) {
       setWarning("No medicine searched");
       setTimeout(() => setWarning(null), 3000);
       return;
@@ -163,7 +154,6 @@ function DrugsContent() {
     if (selectedRating) params.set("rating", selectedRating);
     router.push(`/drugs?${params.toString()}`);
     setShowSuggestions(false);
-    setIsFilterOpen(false);
   };
 
   const handleSuggestionSelect = (drug: DrugSummary) => {
@@ -219,8 +209,8 @@ function DrugsContent() {
           </div>
         )}
 
-        <form ref={searchRef} onSubmit={(e) => handleSearch(e)} className="flex flex-wrap gap-4 mb-10 items-center">
-          <div className="relative flex-1">
+        <form ref={searchRef} onSubmit={(e) => handleSearch(e)} className="flex flex-wrap gap-4 mb-6 items-start">
+          <div className="relative flex-1 min-w-[280px]">
             <img src="/icons/pill.svg" alt="search" className="absolute left-4 top-1/2 -translate-y-1/2 h-9 w-9" />
             <Input
               type="text"
@@ -240,75 +230,70 @@ function DrugsContent() {
             />
           </div>
 
-          <Popover open={isFilterOpen} onOpenChange={setIsFilterOpen}>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className="h-14 px-6 rounded-xl gap-2 font-semibold text-base border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors">
-                <SlidersHorizontal className="h-5 w-5" />
-                Filters
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-80 p-6 space-y-6 bg-white opacity-100 min-h-[400px]" side="bottom" align="start" sideOffset={8}>
-              <div className="space-y-2">
-                <label className="text-sm font-semibold">Drug Class</label>
-                <select
-                  value={selectedClass}
-                  onChange={(e) => setSelectedClass(e.target.value)}
-                  className="w-full h-12 rounded-lg border border-gray-200 px-3 cursor-pointer [&>option]:cursor-pointer"
-                >
-                  <option value="">All Classes</option>
-                  {classes.map((c) => <option key={c.name} value={c.name}>{c.name}</option>)}
-                </select>
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-semibold">Company</label>
-                <select
-                  value={selectedCompany}
-                  onChange={(e) => setSelectedCompany(e.target.value)}
-                  className="w-full h-12 rounded-lg border border-gray-200 px-3 cursor-pointer [&>option]:cursor-pointer"
-                >
-                  <option value="">All Companies</option>
-                  {companies.map((c) => <option key={c} value={c}>{c}</option>)}
-                </select>
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-semibold">Generic Name</label>
-                <select
-                  value={selectedGeneric}
-                  onChange={(e) => setSelectedGeneric(e.target.value)}
-                  className="w-full h-12 rounded-lg border border-gray-200 px-3 cursor-pointer [&>option]:cursor-pointer"
-                >
-                  <option value="">All Generics</option>
-                  {generics.map((g) => <option key={g} value={g}>{g}</option>)}
-                </select>
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-semibold">Minimum Rating</label>
-                <select
-                  value={selectedRating}
-                  onChange={(e) => setSelectedRating(e.target.value)}
-                  className="w-full h-12 rounded-lg border border-gray-200 px-3 cursor-pointer [&>option]:cursor-pointer"
-                >
-                  <option value="">All Ratings</option>
-                  <option value="5">5.0 ★★★★★</option>
-                  <option value="4">4.0+ ★★★★☆</option>
-                  <option value="3">3.0+ ★★★☆☆</option>
-                  <option value="2">2.0+ ★★☆☆☆</option>
-                </select>
-              </div>
-              <Button className="w-full h-12 font-bold bg-primary cursor-pointer" onClick={() => handleSearch(undefined, true)}>Apply Filters</Button>
-            </PopoverContent>
-          </Popover>
-
           <Button type="submit" className="h-14 px-8 rounded-xl font-bold bg-primary hover:bg-primary-dark cursor-pointer">
             Find Medicine
           </Button>
+        </form>
+
+        {/* Inline Filter Bar */}
+        <div className="flex flex-wrap items-center gap-1.5 mb-6">
+          <div className="relative">
+            <select
+              value={selectedClass}
+              onChange={(e) => { setSelectedClass(e.target.value); if (e.target.value) router.push(`/drugs?drug_class=${encodeURIComponent(e.target.value)}`); else clearFilters(); }}
+              className="appearance-none bg-white border border-gray-200 rounded-full px-3 py-1.5 pr-7 text-xs font-medium text-gray-700 cursor-pointer hover:border-teal-300 hover:bg-teal-50 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-200"
+            >
+              <option value="">Drug Class</option>
+              {classes.map((c) => <option key={c.name} value={c.name}>{c.name}</option>)}
+            </select>
+            <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+
+          <div className="relative">
+            <select
+              value={selectedCompany}
+              onChange={(e) => { setSelectedCompany(e.target.value); if (e.target.value) router.push(`/drugs?company=${encodeURIComponent(e.target.value)}`); else clearFilters(); }}
+              className="appearance-none bg-white border border-gray-200 rounded-full px-3 py-1.5 pr-7 text-xs font-medium text-gray-700 cursor-pointer hover:border-teal-300 hover:bg-teal-50 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-200"
+            >
+              <option value="">Company</option>
+              {companies.map((c) => <option key={c} value={c}>{c}</option>)}
+            </select>
+            <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+
+          <div className="relative">
+            <select
+              value={selectedGeneric}
+              onChange={(e) => { setSelectedGeneric(e.target.value); if (e.target.value) router.push(`/drugs?generic=${encodeURIComponent(e.target.value)}`); else clearFilters(); }}
+              className="appearance-none bg-white border border-gray-200 rounded-full px-3 py-1.5 pr-7 text-xs font-medium text-gray-700 cursor-pointer hover:border-teal-300 hover:bg-teal-50 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-200"
+            >
+              <option value="">Generic</option>
+              {generics.map((g) => <option key={g} value={g}>{g}</option>)}
+            </select>
+            <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+
+          <div className="relative">
+            <select
+              value={selectedRating}
+              onChange={(e) => { setSelectedRating(e.target.value); if (e.target.value) router.push(`/drugs?rating=${e.target.value}`); else clearFilters(); }}
+              className="appearance-none bg-white border border-gray-200 rounded-full px-3 py-1.5 pr-7 text-xs font-medium text-gray-700 cursor-pointer hover:border-teal-300 hover:bg-teal-50 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-200"
+            >
+              <option value="">Rating</option>
+              <option value="5">5 ★★★★★</option>
+              <option value="4">4 ★★★★☆</option>
+              <option value="3">3 ★★★☆☆</option>
+              <option value="2">2 ★★☆☆☆</option>
+            </select>
+            <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
 
           {isFiltered && (
-            <Button variant="ghost" onClick={clearFilters} className="text-muted-foreground h-14 cursor-pointer">
-              <X className="h-5 w-5 mr-1" /> Clear
-            </Button>
+            <button onClick={clearFilters} className="text-xs text-gray-400 hover:text-red-500 font-medium transition-colors ml-1">
+              ✕
+            </button>
           )}
-        </form>
+        </div>
 
         <AZBrowse showTabs={false} />
         <hr className="my-8 border-t border-gray-200" />
