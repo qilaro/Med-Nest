@@ -45,12 +45,19 @@ export async function GET(request: Request) {
           OR LOWER(b.generic_name) ILIKE ${'%' + q + '%'}
           OR similarity(LOWER(b.brand_name), LOWER(${q})) > ${threshold}
           OR similarity(LOWER(b.generic_name), LOWER(${q})) > ${threshold}
+      ),
+      deduped AS (
+        SELECT *, ROW_NUMBER() OVER (
+          PARTITION BY "brandName", "companyName", COALESCE(strength,''), COALESCE("dosageForm",'')
+          ORDER BY relevance DESC
+        ) as rn
+        FROM ranked
+        WHERE relevance > 0
       )
-      SELECT DISTINCT ON ("brandName", "companyName", strength, "dosageForm")
-        "brandName", "genericName", "dosageForm", strength, "companyName", "company", "medicineType", slug, type
-      FROM ranked
-      WHERE relevance > 0
-      ORDER BY "brandName", "companyName", strength, "dosageForm", relevance DESC
+      SELECT "brandName", "genericName", "dosageForm", strength, "companyName", "company", "medicineType", slug, type
+      FROM deduped
+      WHERE rn = 1
+      ORDER BY relevance DESC, "brandName" ASC
       LIMIT 10
     `);
 
