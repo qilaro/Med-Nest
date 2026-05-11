@@ -30,7 +30,6 @@ function AZBrowseContent({ showAdvancedSearch = true }: { showAdvancedSearch?: b
             <div key={tab} className="relative">
               <button
                 onClick={() => { setActiveTab(tab); setOpenDropdown(openDropdown === tab ? null : tab); }}
-                onBlur={() => setTimeout(() => setOpenDropdown(null), 200)}
                 className={`px-4 py-2.5 rounded-lg font-medium text-sm whitespace-nowrap transition-colors cursor-pointer shadow-lg ${
                   openDropdown === tab
                     ? "bg-[#0D261E] text-white"
