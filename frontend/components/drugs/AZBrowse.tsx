@@ -5,84 +5,71 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-const TABS = [
-  { label: "Browse Trade", items: [
-    { name: "All", href: "/drugs" },
-    { name: "Pharmaceutical", href: "/drugs?type=allopathic" },
-    { name: "Herbal", href: "/drugs?type=herbal" },
-    { name: "Unani", href: "/drugs?type=unani" },
-    { name: "Homeopathic", href: "/drugs?type=homeopathic" },
-    { name: "Ayurvedic", href: "/drugs?type=ayurvedic" },
-  ]},
-  { label: "Browse Generics", items: [
-    { name: "All", href: "/generics" },
-    { name: "Pharmaceutical", href: "/generics?type=allopathic" },
-    { name: "Herbal", href: "/generics?type=herbal" },
-    { name: "Unani", href: "/generics?type=unani" },
-    { name: "Homeopathic", href: "/generics?type=homeopathic" },
-    { name: "Ayurvedic", href: "/generics?type=ayurvedic" },
-  ]},
-  { label: "Browse Class", items: [
-    { name: "All", href: "/class" },
-    { name: "Pharmaceutical", href: "/class?type=allopathic" },
-    { name: "Herbal", href: "/class?type=herbal" },
-    { name: "Unani", href: "/class?type=unani" },
-    { name: "Homeopathic", href: "/class?type=homeopathic" },
-    { name: "Ayurvedic", href: "/class?type=ayurvedic" },
-  ]},
-  { label: "Dosage Form", items: [
-    { name: "All", href: "/dosage-forms" },
-    { name: "Pharmaceutical", href: "/dosage-forms?type=allopathic" },
-    { name: "Herbal", href: "/dosage-forms?type=herbal" },
-    { name: "Unani", href: "/dosage-forms?type=unani" },
-    { name: "Homeopathic", href: "/dosage-forms?type=homeopathic" },
-    { name: "Ayurvedic", href: "/dosage-forms?type=ayurvedic" },
-  ]},
+const TAB_ITEMS = [
+  { name: "All", href: "/drugs" },
+  { name: "Pharmaceutical", href: "/drugs?type=allopathic" },
+  { name: "Herbal", href: "/drugs?type=herbal" },
+  { name: "Unani", href: "/drugs?type=unani" },
+  { name: "Homeopathic", href: "/drugs?type=homeopathic" },
+  { name: "Ayurvedic", href: "/drugs?type=ayurvedic" },
 ];
+const TABS = ["Browse Trade", "Browse Generics", "Browse Class", "Dosage Form"];
 
+/**
+ * AZBrowse Content Component
+ */
 function AZBrowseContent({ showAdvancedSearch = true }: { showAdvancedSearch?: boolean }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const currentLetter = searchParams.get("letter");
+  const [activeTab, setActiveTab] = useState("");
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setOpenDropdown(null);
       }
     };
-    document.addEventListener('mousedown', handler);
+    if (openDropdown) document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
-  }, []);
+  }, [openDropdown]);
+
+  const handleTabClick = (tab: string) => {
+    setActiveTab(tab);
+    if (tab === openDropdown) {
+      setOpenDropdown(null);
+    } else {
+      setOpenDropdown(tab);
+    }
+  };
 
   return (
     <div className="w-full max-w-4xl my-8" ref={dropdownRef}>
       {/* Tabs */}
       <div className="flex justify-between items-center mb-6">
-        <div className="flex gap-2 flex-nowrap">
+        <div className="flex gap-2 flex-nowrap overflow-x-auto">
           {TABS.map((tab) => (
-            <div key={tab.label} className="relative">
+            <div key={tab} className="relative">
               <button
-                onClick={() => setOpenDropdown(openDropdown === tab.label ? null : tab.label)}
+                onClick={() => handleTabClick(tab)}
                 className={`px-4 py-2.5 rounded-lg font-medium text-sm whitespace-nowrap transition-colors cursor-pointer shadow-lg flex items-center gap-1 ${
-                  openDropdown === tab.label
+                  activeTab === tab
                     ? "bg-[#0D261E] text-white"
                     : "bg-white text-blue-600 hover:bg-gray-100 border border-gray-200"
                 }`}
               >
-                {tab.label}
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                {tab}
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
               </button>
-              {openDropdown === tab.label && (
-                <div className="absolute top-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50 min-w-[180px]">
-                  {tab.items.map((item) => (
+              {openDropdown === tab && (
+                <div className="absolute top-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50 min-w-[150px] left-1/2 -translate-x-1/2">
+                  {TAB_ITEMS.map((item) => (
                     <Link
                       key={item.name}
                       href={item.href}
-                      className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-700 transition-colors"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-700 whitespace-nowrap"
                       onClick={() => setOpenDropdown(null)}
                     >
                       {item.name}
