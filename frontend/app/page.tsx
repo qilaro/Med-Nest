@@ -101,7 +101,7 @@ export default function Home() {
   return (
     <div className="flex flex-col flex-1">
       {/* Hero Section */}
-      <section className="py-2 text-gray-900">
+      <section className="py-4 text-gray-900">
         {/* Outer Container with Mint Background and Symmetric 24px Padding */}
         <div 
         className="container-medq relative mx-auto" 
