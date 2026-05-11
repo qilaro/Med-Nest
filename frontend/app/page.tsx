@@ -101,7 +101,7 @@ export default function Home() {
   return (
     <div className="flex flex-col flex-1">
       {/* Hero Section */}
-      <section className="py-4 text-gray-900">
+      <section className="py-2 text-gray-900">
         {/* Outer Container with Mint Background and Symmetric 24px Padding */}
         <div 
         className="container-medq relative mx-auto" 
@@ -135,12 +135,12 @@ export default function Home() {
               </div>
 
               {/* Title */}
-              <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-gray-900">
+              <h1 className="text-4xl md:text-6xl font-bold mb-3 leading-tight text-gray-900">
                 Learn more. <span style={{ color: 'var(--primary)' }}>Live better.</span>
               </h1>
 
               {/* Subtitle */}
-              <p className="text-xl text-gray-700 mb-10 max-w-2xl mx-auto font-normal">
+              <p className="text-xl text-gray-700 mb-5 max-w-2xl mx-auto font-normal">
                 Your comprehensive source for drug information you can trust.
               </p>
 
@@ -185,7 +185,7 @@ export default function Home() {
               {/* AZBrowse included directly in hero for maximum visibility */}
               <div className="max-w-4xl mx-auto">
                 <AZBrowse showAdvancedSearch={true} />
-                <p className="text-sm text-gray-700 font-semibold mt-2 italic">
+                <p className="text-sm text-gray-700 font-semibold italic">
                   Can't remember? Just type what you can remember with our phonetic search.
                 </p>
               </div>
