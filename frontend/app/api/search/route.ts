@@ -27,7 +27,7 @@ export async function GET(request: Request) {
           b.company_name as "companyName",
           b.company_name as "company",
           b.medicine_type as "medicineType",
-          MIN(b.slug) as slug,
+          b.slug as slug,
           'brand' as type,
           CASE 
             WHEN LOWER(b.brand_name) = LOWER(${q}) THEN 100
@@ -46,12 +46,12 @@ export async function GET(request: Request) {
           OR similarity(LOWER(b.brand_name), LOWER(${q})) > ${threshold}
           OR similarity(LOWER(b.generic_name), LOWER(${q})) > ${threshold}
       )
-      SELECT "brandName", "genericName", "dosageForm", strength, "companyName", "company", "medicineType", slug, type
+      SELECT DISTINCT ON ("brandName", "companyName", strength, "dosageForm")
+        "brandName", "genericName", "dosageForm", strength, "companyName", "company", "medicineType", slug, type
       FROM ranked
       WHERE relevance > 0
-      GROUP BY "brandName", "genericName", "dosageForm", strength, "companyName", "company", "medicineType", slug, type, relevance
-      ORDER BY relevance DESC, "brandName" ASC
-      LIMIT 7
+      ORDER BY "brandName", "companyName", strength, "dosageForm", relevance DESC
+      LIMIT 10
     `);
 
     // === SMART STRENGTH SEARCH: "Napa 500" → brand Napa + strength 500 ===
