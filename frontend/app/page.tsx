@@ -117,7 +117,9 @@ export default function Home() {
           <div
             className="relative flex flex-col items-center justify-center text-center"
             style={{
-              padding: '24px',
+          padding: '24px',
+          paddingTop: '16px',
+          paddingBottom: '32px',
               borderRadius: '2rem',
               background: 'rgba(255, 255, 255, 0.4)',
               backdropFilter: 'blur(12px)',
