@@ -212,14 +212,14 @@ function DrugsContent() {
 
         <form ref={searchRef} onSubmit={(e) => handleSearch(e)} className="flex flex-wrap gap-4 mb-10 items-center">
           <div className="relative flex-1">
-            <img src="/icons/pill.svg" alt="search" className="absolute left-3 top-1/2 -translate-y-1/2 h-7 w-7" />
+            <img src="/icons/pill.svg" alt="search" className="absolute left-4 top-1/2 -translate-y-1/2 h-9 w-9" />
             <Input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onFocus={handleFocus}
               placeholder="Search medications..."
-              className="pl-10 h-14 rounded-xl text-base shadow-sm"
+              className="pl-16 h-14 rounded-xl text-base shadow-sm"
             />
             <SearchSuggestions 
               suggestions={suggestions} 

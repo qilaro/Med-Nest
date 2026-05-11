@@ -138,14 +138,14 @@ export default function Home() {
               <form ref={searchRef} onSubmit={handleSearchSubmit} className="max-w-4xl mx-auto mb-4 relative">
                 <div className="flex gap-2 bg-white rounded-2xl py-1.5 pl-1.5 pr-4 shadow-sm border border-gray-200">
                   <div className="flex-1 relative flex items-center">
-                    <img src="/icons/pill.svg" alt="search" className="absolute left-4 h-7 w-7" />
+                    <img src="/icons/pill.svg" alt="search" className="absolute left-5 h-9 w-9" />
                     <Input 
                       type="text" 
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
                       onFocus={handleFocus}
                       placeholder="Search any drug name, ingredient, or condition..." 
-                      className="pl-12 h-14 text-base border-none shadow-none focus-visible:ring-0" 
+                      className="pl-16 h-14 text-base border-none shadow-none focus-visible:ring-0" 
                     />
                   </div>
                   <Button type="submit" className="h-14 px-8 rounded-xl font-semibold text-base cursor-pointer transition-all hover:opacity-90 active:scale-95" style={{ backgroundColor: 'var(--primary)' }}>
