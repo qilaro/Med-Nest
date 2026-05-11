@@ -115,7 +115,7 @@ export default function Home() {
         >
           {/* Glass Hero Box - Symmetric 24px padding with soft highlight border */}
           <div
-            className="relative overflow-hidden flex flex-col items-center justify-center text-center"
+            className="relative flex flex-col items-center justify-center text-center"
             style={{
               padding: '24px',
               borderRadius: '2rem',
