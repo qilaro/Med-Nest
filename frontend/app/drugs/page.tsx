@@ -43,6 +43,7 @@ function DrugsContent() {
   // Suggestion state
   const [suggestions, setSuggestions] = useState<DrugSummary[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
   const searchRef = useRef<HTMLFormElement>(null);
 
   // Close suggestions when clicking outside
@@ -124,11 +125,14 @@ function DrugsContent() {
 
     const fetchFuzzySuggestions = async () => {
       try {
+        setIsSearching(true);
         const { results } = await drugService.searchDrugs(query.trim());
         setSuggestions(results.slice(0, 10));
         setShowSuggestions(true);
       } catch (error) {
         console.error("Failed to fetch fuzzy suggestions:", error);
+      } finally {
+        setIsSearching(false);
       }
     };
 
@@ -174,12 +178,15 @@ function DrugsContent() {
   const handleFocus = async () => {
     if (query.trim().length === 0) {
       try {
+        setIsSearching(true);
         const res = await fetch('/api/popular');
         const data = await res.json();
         setSuggestions((data.results || []).slice(0, 5));
         setShowSuggestions(true);
       } catch (error) {
         console.error("Failed to fetch suggestions:", error);
+      } finally {
+        setIsSearching(false);
       }
     } else {
       setShowSuggestions(true);
@@ -229,6 +236,7 @@ function DrugsContent() {
               onSelect={handleSuggestionSelect} 
               isFeatured={query.trim().length === 0}
               query={query}
+              isLoading={isSearching}
             />
           </div>
 

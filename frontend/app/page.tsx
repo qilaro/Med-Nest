@@ -19,7 +19,7 @@ export default function Home() {
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<DrugSummary[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [stats, setStats] = useState({ drugs: 0, generics: 0, classes: 0, companies: 0 });
+  const [isSearching, setIsSearching] = useState(false);
   const searchRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
@@ -46,11 +46,14 @@ export default function Home() {
 
     const fetchFuzzySuggestions = async () => {
       try {
+        setIsSearching(true);
         const { results } = await drugService.searchDrugs(query.trim());
         setSuggestions(results.slice(0, 10));
         setShowSuggestions(true);
       } catch (error) {
         console.error("Failed to fetch fuzzy suggestions:", error);
+      } finally {
+        setIsSearching(false);
       }
     };
 
@@ -79,12 +82,15 @@ export default function Home() {
   const handleFocus = async () => {
     if (query.trim().length === 0) {
       try {
+        setIsSearching(true);
         const res = await fetch('/api/popular');
         const data = await res.json();
         setSuggestions((data.results || []).slice(0, 5));
         setShowSuggestions(true);
       } catch (error) {
         console.error("Failed to fetch featured suggestions:", error);
+      } finally {
+        setIsSearching(false);
       }
     } else {
       setShowSuggestions(true);
@@ -155,12 +161,13 @@ export default function Home() {
                     Search
                   </Button>
                 </div>
-                <SearchSuggestions 
+                 <SearchSuggestions 
                   suggestions={suggestions} 
                   isVisible={showSuggestions} 
                   onSelect={handleSuggestionSelect} 
                   isFeatured={query.trim().length === 0}
                   query={query}
+                  isLoading={isSearching}
                 />
               </form>
 
