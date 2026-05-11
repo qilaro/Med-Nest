@@ -7,19 +7,36 @@ import { useRouter, useSearchParams } from "next/navigation";
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const TABS = [
   { label: "Browse Trade", items: [
+    { name: "All", href: "/drugs" },
     { name: "Pharmaceutical", href: "/drugs?type=allopathic" },
-    { name: "Herbal / Traditional", href: "/drugs?type=herbal" },
+    { name: "Herbal", href: "/drugs?type=herbal" },
+    { name: "Unani", href: "/drugs?type=unani" },
+    { name: "Homeopathic", href: "/drugs?type=homeopathic" },
+    { name: "Ayurvedic", href: "/drugs?type=ayurvedic" },
   ]},
   { label: "Browse Generics", items: [
-    { name: "All Generics", href: "/generics" },
-    { name: "Allopathic Generics", href: "/generics?type=allopathic" },
-    { name: "Herbal Generics", href: "/generics?type=herbal" },
+    { name: "All", href: "/generics" },
+    { name: "Pharmaceutical", href: "/generics?type=allopathic" },
+    { name: "Herbal", href: "/generics?type=herbal" },
+    { name: "Unani", href: "/generics?type=unani" },
+    { name: "Homeopathic", href: "/generics?type=homeopathic" },
+    { name: "Ayurvedic", href: "/generics?type=ayurvedic" },
   ]},
   { label: "Browse Class", items: [
-    { name: "Drug Classes", href: "/class" },
+    { name: "All", href: "/class" },
+    { name: "Pharmaceutical", href: "/class?type=allopathic" },
+    { name: "Herbal", href: "/class?type=herbal" },
+    { name: "Unani", href: "/class?type=unani" },
+    { name: "Homeopathic", href: "/class?type=homeopathic" },
+    { name: "Ayurvedic", href: "/class?type=ayurvedic" },
   ]},
   { label: "Dosage Form", items: [
-    { name: "Dosage Forms", href: "/dosage-forms" },
+    { name: "All", href: "/dosage-forms" },
+    { name: "Pharmaceutical", href: "/dosage-forms?type=allopathic" },
+    { name: "Herbal", href: "/dosage-forms?type=herbal" },
+    { name: "Unani", href: "/dosage-forms?type=unani" },
+    { name: "Homeopathic", href: "/dosage-forms?type=homeopathic" },
+    { name: "Ayurvedic", href: "/dosage-forms?type=ayurvedic" },
   ]},
 ];
 
@@ -45,7 +62,7 @@ function AZBrowseContent({ showAdvancedSearch = true }: { showAdvancedSearch?: b
     <div className="w-full max-w-4xl my-8" ref={dropdownRef}>
       {/* Tabs */}
       <div className="flex justify-between items-center mb-6">
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex gap-2 flex-nowrap">
           {TABS.map((tab) => (
             <div key={tab.label} className="relative">
               <button
