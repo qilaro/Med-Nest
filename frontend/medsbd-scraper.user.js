@@ -18,62 +18,46 @@
     var totalPages = 0;
 
     setTimeout(function() {
-        // Calculate total pages from the pagination
-        var paginationLinks = document.querySelectorAll('a[href*="page="]');
-        paginationLinks.forEach(function(link) {
-            var n = parseInt(link.textContent.trim());
-            if (n && n > totalPages) totalPages = n;
-        });
-        // Also check for "Next" to know if more pages exist
-        var hasNext = Array.from(paginationLinks).some(function(l) { return l.textContent.trim().toLowerCase().includes('next'); });
+        // Get total pages from pagination "Showing X to Y of Z results"
+        var showingText = document.body.textContent.match(/Showing\s+\d+\s+to\s+\d+\s+of\s+(\d+)\s+results/i);
+        var totalItems = showingText ? parseInt(showingText[1]) : 0;
+        totalPages = Math.ceil(totalItems / 30) || 1;
 
-        // Extract brand rows
-        // Each brand is inside an <a> tag (direct link to brand detail page)
+        // Extract brands from exact HTML structure
         var brands = [];
         var brandLinks = document.querySelectorAll('a[href*="/brand/"]');
 
         brandLinks.forEach(function(link) {
             var href = link.getAttribute('href');
-            if (!href) return;
+            if (!href || href.includes('/brands/')) return; // Skip letter nav links
 
-            // Dosage form: in a div with class "form" or the first visible text
-            var formEl = link.querySelector('.form, [class*="form"]');
+            // Dosage form
+            var formEl = link.querySelector('.form > .text-sm, .form');
             var dosageForm = formEl ? formEl.textContent.trim() : '';
 
             // Brand name
-            var nameEl = link.querySelector('.brand_name, [class*="brand_name"]');
+            var nameEl = link.querySelector('.brand_name');
             var brandName = nameEl ? nameEl.textContent.trim() : '';
 
             // Strength
-            var strengthEl = link.querySelector('.strength, sup');
+            var strengthEl = link.querySelector('.strength');
             var strength = strengthEl ? strengthEl.textContent.trim() : '';
 
-            // Generic name
-            var genericEl = link.querySelector('.generic, i, em');
+            // Generic name (<i> tag)
+            var genericEl = link.querySelector('i');
             var genericName = genericEl ? genericEl.textContent.trim() : '';
 
-            // Company name
-            // It's the text after the generic, try to find it
+            // Company name (last .text-sm inside the link, not the dosage form)
             var companyName = '';
-            if (genericEl && genericEl.parentElement) {
-                var parent = genericEl.parentElement;
-                var nextSibling = parent.nextElementSibling;
-                if (nextSibling) {
-                    companyName = nextSibling.textContent.trim();
-                } else if (parent.parentElement) {
-                    var grandparent = parent.parentElement;
-                    var allDivs = grandparent.querySelectorAll(':scope > div');
-                    for (var i = 0; i < allDivs.length; i++) {
-                        var txt = allDivs[i].textContent.trim();
-                        if (txt && !txt.includes(brandName) && !txt.includes(strength) && !txt.includes(genericName) && !txt.includes(dosageForm)) {
-                            companyName = txt;
-                            break;
-                        }
-                    }
-                }
+            var textSmEls = link.querySelectorAll('.text-sm');
+            for (var i = textSmEls.length - 1; i >= 0; i--) {
+                var txt = textSmEls[i].textContent.trim();
+                if (txt && txt !== dosageForm) { companyName = txt; break; }
             }
 
             if (!brandName) return;
+
+            var slug = href.replace(/.*\/brand\//, '').replace(/\/$/, '');
 
             brands.push({
                 brandName: brandName,
@@ -81,67 +65,37 @@
                 strength: strength,
                 genericName: genericName,
                 companyName: companyName,
+                slug: slug,
                 url: href.startsWith('http') ? href : 'https://medsbd.com' + href
             });
         });
 
-        // If brandLinks didn't work, try the other structure (maybe not inside <a>)
         if (brands.length === 0) {
-            document.querySelectorAll('[class*="brand_name"]').forEach(function(el) {
-                var link = el.closest('a');
-                var href = link ? link.getAttribute('href') : '';
-
-                var brandRow = el.closest('[class*="py-2"], .md\\:flex, [class*="block"]') || el.parentElement;
-                var formEl = brandRow ? brandRow.querySelector('.form, [class*="form"]') : null;
-                var strengthEl = brandRow ? brandRow.querySelector('.strength, sup') : null;
-                var genericEl = brandRow ? brandRow.querySelector('.generic, i, em') : null;
-
-                var brandName = el.textContent.trim();
-                var dosageForm = formEl ? formEl.textContent.trim() : '';
-                var strength = strengthEl ? strengthEl.textContent.trim() : '';
-                var genericName = genericEl ? genericEl.textContent.trim() : '';
-
-                // Company: find the last div/span with text
-                var companyName = '';
-                if (brandRow) {
-                    var texts = brandRow.querySelectorAll('div');
-                    texts.forEach(function(div) {
-                        var t = div.textContent.trim();
-                        if (t && !t.includes(brandName) && !t.includes(strength) && !t.includes(genericName) && t !== dosageForm) {
-                            companyName = t;
-                        }
-                    });
-                }
-
-                if (brandName) brands.push({
-                    brandName: brandName,
-                    dosageForm: dosageForm,
-                    strength: strength,
-                    genericName: genericName,
-                    companyName: companyName,
-                    url: href ? (href.startsWith('http') ? href : 'https://medsbd.com' + href) : ''
-                });
-            });
+            console.log('MedsBD scraper: No brands found');
+            return;
         }
 
-        if (brands.length === 0) {
-            return; // No brands found, skip
-        }
-
-        // Store
+        // Store in localStorage, grouped by letter > page
         var stored = JSON.parse(localStorage.getItem('msbd') || '{}');
         if (!stored[currentLetter]) stored[currentLetter] = {};
-        var key = 'page_' + currentPage;
-        stored[currentLetter][key] = brands;
+        stored[currentLetter]['page_' + currentPage] = brands;
         localStorage.setItem('msbd', JSON.stringify(stored));
 
-        // Show badge
+        // Accumulate total across all letters/pages
+        var totalBrands = 0;
+        for (var l in stored) {
+            for (var p in stored[l]) {
+                totalBrands += stored[l][p].length;
+            }
+        }
+
+        // Badge
         var badge = document.querySelector('#msbdbadge') || document.createElement('div');
         badge.id = 'msbdbadge';
         badge.style.cssText = 'position:fixed;bottom:20px;right:20px;background:#0d9488;color:white;padding:10px 18px;border-radius:10px;font:bold 14px sans-serif;z-index:99999;cursor:pointer';
-        badge.textContent = currentLetter.toUpperCase() + ' pg' + currentPage + '/' + (totalPages || '?') + ' | ' + brands.length + ' brands';
+        badge.textContent = currentLetter.toUpperCase() + ' pg' + currentPage + '/' + totalPages + ' | ' + brands.length + ' new | ' + totalBrands + ' total';
         badge.onclick = function() {
-            var blob = new Blob([JSON.stringify(JSON.parse(localStorage.getItem('msbd') || '{}'), null, 2)], { type: 'application/json' });
+            var blob = new Blob([JSON.stringify(stored, null, 2)], { type: 'application/json' });
             var a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
             a.download = 'medsbd_brands.json';
@@ -149,37 +103,31 @@
         };
         if (!document.querySelector('#msbdbadge')) document.body.appendChild(badge);
 
-        // === PAGE NAVIGATION LOGIC ===
+        // === NAVIGATION ===
         var delay = 2000 + Math.random() * 2000;
 
-        // Check if there's a next page
-        var nextLink = Array.from(document.querySelectorAll('a')).filter(function(a) {
-            return a.textContent.trim().toLowerCase().includes('next') || 
-                   (a.getAttribute('href') && a.getAttribute('href').includes('page=' + (currentPage + 1)));
-        })[0];
-
+        // Next page or next letter
+        var nextPageUrl = '';
+        var nextLink = document.querySelector('a[rel="next"], a[href*="page=' + (currentPage + 1) + '"]');
         if (nextLink) {
-            var nextUrl = nextLink.getAttribute('href') || '';
-            if (nextUrl) {
-                if (nextUrl.startsWith('http')) {
-                    setTimeout(function() { window.location.href = nextUrl; }, delay);
-                } else {
-                    setTimeout(function() { window.location.href = 'https://medsbd.com' + nextUrl; }, delay);
-                }
-                return;
-            }
+            nextPageUrl = nextLink.getAttribute('href') || '';
         }
 
-        // No next page — move to next letter or done
-        var currentIdx = LETTERS.indexOf(currentLetter);
-        if (currentIdx >= 0 && currentIdx < LETTERS.length - 1) {
-            var nextLetter = LETTERS[currentIdx + 1];
-            setTimeout(function() {
-                window.location.href = 'https://medsbd.com/brands/' + nextLetter;
-            }, delay);
+        if (nextPageUrl) {
+            var fullUrl = nextPageUrl.startsWith('http') ? nextPageUrl : 'https://medsbd.com' + nextPageUrl;
+            setTimeout(function() { window.location.href = fullUrl; }, delay);
         } else {
-            badge.textContent = 'DONE! All letters complete';
-            badge.style.background = '#059669';
+            // Move to next letter
+            var currentIdx = LETTERS.indexOf(currentLetter);
+            if (currentIdx >= 0 && currentIdx < LETTERS.length - 1) {
+                var nextLetter = LETTERS[currentIdx + 1];
+                setTimeout(function() {
+                    window.location.href = 'https://medsbd.com/brands/' + nextLetter;
+                }, delay);
+            } else {
+                badge.textContent = '✓ DONE! ' + totalBrands + ' brands collected';
+                badge.style.background = '#059669';
+            }
         }
 
     }, 3000);
