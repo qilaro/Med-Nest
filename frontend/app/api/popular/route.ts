@@ -26,6 +26,7 @@ export async function GET() {
             b.dosage_form as "dosageForm",
             b.strength as strength,
             b.company_name as "companyName",
+            b.company_name as "company",
             b.medicine_type as "medicineType",
             MIN(b.slug) as slug,
             'brand' as type
@@ -50,6 +51,7 @@ export async function GET() {
         b.dosage_form as "dosageForm",
         b.strength as strength,
         b.company_name as "companyName",
+        b.company_name as "company",
         b.medicine_type as "medicineType",
         MIN(b.slug) as slug,
         'brand' as type
