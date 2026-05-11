@@ -3,7 +3,7 @@ import { db } from '../lib/db';
 import { brands, generics } from '../lib/db/schema';
 import { sql } from 'drizzle-orm';
 
-function norm(s) { return (s||'').toLowerCase().replace(/[^a-z0-9]/g,''); }
+function norm(s: string): string { return (s||'').toLowerCase().replace(/[^a-z0-9]/g,''); }
 function normCo(s: string) { return norm(s).replace(/limited|ltd|pvt|plc|pharmaceuticals|pharma|lab|laboratories|industries|international|healthcare|inc|company|co|corp|corporation|enterprise|group|life.?science|bio.?pharma|formulations/gi,'').replace(/\.|\,/g,'').trim(); }
 
 async function main() {
@@ -26,7 +26,7 @@ async function main() {
     if (!key.endsWith('_prices') || !Array.isArray(value)) continue;
     for (const p of value) {
       if (!p.brand||!p.company||!p.unitPrice) continue;
-      let co = p.company.replace(/\(Mfg\. by:\s*(.+?)\)/g, (_,g) => g).replace(/\.$/,'').trim();
+      let co = p.company.replace(/\(Mfg\. by:\s*(.+?)\)/g, (_: string, g: string) => g).replace(/\.$/,'').trim();
       let cands = (byBrandCo.get(norm(p.brand)+'|'+normCo(co))||[]);
       if(!cands.length) cands = (byBrand.get(norm(p.brand))||[]);
       if(!cands.length) {

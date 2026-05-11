@@ -164,7 +164,7 @@ export async function GET(request: Request) {
       }
     };
     add(strengthBrands);         // Strength-matched first (most precise)
-    add(brands);                 // Fuzzy-matched brands
+    add(brands.rows);            // Fuzzy-matched brands
     add(generics.rows);          // Generics
     add(classes.rows);           // Classes
     add(recentSearches);         // Recent searches (if relevant)
