@@ -28,9 +28,19 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const drug = await getDrugDetail(slug);
+  if (!drug) return { title: 'Medicine Not Found' };
   return {
-    title: drug ? `${drug.brandName} - Price in Bangladesh | ${drug.strength}` : "Medicine Not Found",
-    description: drug ? `Price and detailed information for ${drug.brandName} (${drug.genericName}) in Bangladesh.` : "Medicine details not found.",
+    title: `${drug.brandName} ${drug.strength} - Price in Bangladesh | Med-Nest`,
+    description: `Find ${drug.brandName} ${drug.strength} price in Bangladesh. ${drug.genericName} by ${drug.company}. Uses, side effects, dosage, interactions and more.`,
+    openGraph: {
+      title: `${drug.brandName} ${drug.strength} - Price, Uses & Side Effects`,
+      description: `${drug.brandName} (${drug.genericName}) - Complete medicine information with price in Bangladesh.`,
+      type: 'article',
+      locale: 'en_US',
+      siteName: 'Med-Nest',
+    },
+    robots: { index: true, follow: true },
+    alternates: { canonical: `https://mednest.com.bd/drugs/${slug}` },
   };
 }
 
@@ -42,6 +52,24 @@ export default async function DrugDetailPage({ params }: PageProps) {
   ]);
 
   if (!drug) notFound();
+
+  // JSON-LD structured data for SEO
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Drug',
+    name: drug.brandName,
+    description: `${drug.brandName} ${drug.strength} - ${drug.genericName}. Manufactured by ${drug.company}.`,
+    activeIngredient: drug.genericName,
+    manufacturer: drug.company,
+    dosageForm: drug.dosageForm,
+    url: `https://mednest.com.bd/drugs/${slug}`,
+    offers: {
+      '@type': 'Offer',
+      price: drug.price?.replace(/[^0-9.]/g, '') || '',
+      priceCurrency: 'BDT',
+      availability: 'https://schema.org/InStock',
+    },
+  };
 
   const unitPrice = parseFloat(String(drug.price).replace(/[^0-9.]/g, '')) || 0;
   const stripPrice = (unitPrice * 10).toFixed(2);
@@ -58,6 +86,7 @@ export default async function DrugDetailPage({ params }: PageProps) {
 
   return (
     <main className="container-medq py-6">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       {/* Header */}
       <section className="mb-8 border-b border-gray-100 pb-8">
         <div className="flex flex-col gap-1">

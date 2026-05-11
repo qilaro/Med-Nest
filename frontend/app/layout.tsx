@@ -14,6 +14,16 @@ const notoSans = Noto_Sans({subsets:['latin'],variable:'--font-sans'});
 export const metadata: Metadata = {
   title: "Med-Nest - Learn more. Live better.",
   description: "Med-Nest is your trusted source for comprehensive drug information, interaction checking, and medication guidance.",
+  openGraph: {
+    title: 'Med-Nest - Bangladesh Medicine Index',
+    description: 'Complete medicine information for Bangladesh including prices, generics, dosage forms, and therapeutic classes.',
+    type: 'website',
+    locale: 'en_US',
+    siteName: 'Med-Nest',
+    url: 'https://mednest.com.bd',
+  },
+  robots: { index: true, follow: true },
+  alternates: { canonical: 'https://mednest.com.bd' },
 };
 
 export default function RootLayout({
