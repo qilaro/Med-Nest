@@ -104,7 +104,7 @@ export default function Home() {
       <section className="py-4 text-gray-900">
         {/* Outer Container with Mint Background and Symmetric 24px Padding */}
         <div 
-        className="container-medq relative overflow-hidden mx-auto" 
+        className="container-medq relative mx-auto" 
         style={{ 
           backgroundColor: '#D5E9E7', 
           borderRadius: '2rem', 
