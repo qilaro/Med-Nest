@@ -6,19 +6,17 @@ import { searchQuerySchema } from '@/lib/validators';
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const parsed = searchQuerySchema.safeParse(Object.fromEntries(searchParams));
-  if (!parsed.success) {
-    return NextResponse.json({ results: [] });
-  }
+  if (!parsed.success) return NextResponse.json({ results: [] });
 
   const q = parsed.data.q.trim();
   if (!q) return NextResponse.json({ results: [] });
 
-  const threshold = q.length <= 3 ? 0.2 : 0.3; // Lower threshold for short queries
+  const isShort = q.length < 3;
 
   try {
-    // === BRANDS with weighted fuzzy ranking ===
-    const brands = await db.execute(sql`
-      WITH ranked AS (
+    // Single combined query for brands + generics + classes
+    const results = await db.execute(sql`
+      WITH brand_matches AS (
         SELECT 
           b.brand_name as "brandName",
           b.generic_name as "genericName",
@@ -30,138 +28,62 @@ export async function GET(request: Request) {
           b.slug as slug,
           'brand' as type,
           CASE 
-            WHEN LOWER(b.brand_name) = LOWER(${q}) THEN 100
-            WHEN LOWER(b.brand_name) LIKE LOWER(${q + '%'}) THEN 80
-            WHEN LOWER(b.brand_name) ILIKE ${'%' + q + '%'} THEN 60
-            WHEN similarity(LOWER(b.brand_name), LOWER(${q})) > ${threshold} THEN 40
-            WHEN LOWER(b.generic_name) LIKE LOWER(${q + '%'}) THEN 35
-            WHEN LOWER(b.generic_name) ILIKE ${'%' + q + '%'} THEN 25
-            WHEN similarity(LOWER(b.generic_name), LOWER(${q})) > ${threshold} THEN 15
+            WHEN LOWER(b.brand_name) = LOWER(${q}) THEN 10
+            WHEN LOWER(b.brand_name) LIKE LOWER(${q + '%'}) THEN 8
+            WHEN LOWER(b.brand_name) ILIKE ${'%' + q + '%'} THEN 5
+            WHEN LOWER(b.generic_name) LIKE LOWER(${q + '%'}) THEN 4
+            WHEN LOWER(b.generic_name) ILIKE ${'%' + q + '%'} THEN 2
             ELSE 0
-          END as relevance
+          END as rank
         FROM brands b
         WHERE 
-          LOWER(b.brand_name) ILIKE ${'%' + q + '%'}
-          OR LOWER(b.generic_name) ILIKE ${'%' + q + '%'}
-          OR similarity(LOWER(b.brand_name), LOWER(${q})) > ${threshold}
-          OR similarity(LOWER(b.generic_name), LOWER(${q})) > ${threshold}
+          ${isShort 
+            ? sql`LOWER(b.brand_name) ILIKE ${'%' + q + '%'} OR LOWER(b.generic_name) ILIKE ${'%' + q + '%'}`
+            : sql`LOWER(b.brand_name) ILIKE ${'%' + q + '%'} OR LOWER(b.generic_name) ILIKE ${'%' + q + '%'}
+               OR similarity(LOWER(b.brand_name), LOWER(${q})) > 0.4
+               OR similarity(LOWER(b.generic_name), LOWER(${q})) > 0.3`
+          }
       ),
       deduped AS (
         SELECT *, ROW_NUMBER() OVER (
-          PARTITION BY "brandName", "companyName", COALESCE(strength,''), COALESCE("dosageForm",'')
-          ORDER BY relevance DESC
+          PARTITION BY LOWER("brandName"), LOWER(COALESCE("companyName",'')), LOWER(COALESCE(strength,'')), LOWER(COALESCE("dosageForm",''))
+          ORDER BY rank DESC
         ) as rn
-        FROM ranked
-        WHERE relevance > 0
+        FROM brand_matches
+        WHERE rank > 0
+      ),
+      generics_matches AS (
+        SELECT 
+          g.name as "brandName", g.name as "genericName",
+          '' as "dosageForm", '' as strength, '' as "companyName", '' as company,
+          g.medicine_type as "medicineType", g.slug as slug, 'generic' as type,
+          CASE WHEN LOWER(g.name) LIKE LOWER(${q + '%'}) THEN 3 ELSE 1 END as rank
+        FROM generics g
+        WHERE ${isShort 
+          ? sql`LOWER(g.name) ILIKE ${'%' + q + '%'}`
+          : sql`LOWER(g.name) ILIKE ${'%' + q + '%'} OR similarity(LOWER(g.name), LOWER(${q})) > 0.3`
+        }
       )
-      SELECT "brandName", "genericName", "dosageForm", strength, "companyName", "company", "medicineType", slug, type
-      FROM deduped
-      WHERE rn = 1
-      ORDER BY relevance DESC, "brandName" ASC
+      SELECT * FROM (
+        SELECT "brandName", "genericName", "dosageForm", strength, "companyName", "company", "medicineType", slug, type
+        FROM deduped WHERE rn = 1
+        ORDER BY rank DESC, "brandName" ASC
+        LIMIT 8
+      ) brands
+      UNION ALL
+      SELECT * FROM (
+        SELECT "brandName", "genericName", "dosageForm", strength, "companyName", "company", "medicineType", slug, type
+        FROM generics_matches
+        ORDER BY rank DESC, "brandName" ASC
+        LIMIT 2
+      ) generics
       LIMIT 10
     `);
 
-    // === SMART STRENGTH SEARCH: "Napa 500" → brand Napa + strength 500 ===
-    const strengthMatch = q.match(/^(.*?)\s+(\d+(?:\.\d+)?)$/);
-    let strengthBrands: any[] = [];
-    if (strengthMatch) {
-      const brandPart = strengthMatch[1];
-      const numPart = strengthMatch[2];
-      if (brandPart.length >= 2) {
-        strengthBrands = (await db.execute(sql`
-          SELECT 
-            b.brand_name as "brandName",
-            b.generic_name as "genericName",
-            b.dosage_form as "dosageForm",
-            b.strength as strength,
-            b.company_name as "companyName",
-            b.medicine_type as "medicineType",
-            MIN(b.slug) as slug,
-            'brand' as type
-          FROM brands b
-          WHERE (LOWER(b.brand_name) ILIKE ${'%' + brandPart + '%'} OR similarity(LOWER(b.brand_name), LOWER(${brandPart})) > ${threshold})
-            AND b.strength ILIKE ${'%' + numPart + '%'}
-          GROUP BY b.brand_name, b.generic_name, b.dosage_form, b.strength, b.company_name, b.medicine_type
-          ORDER BY similarity(LOWER(b.brand_name), LOWER(${brandPart})) DESC
-          LIMIT 5
-        `)).rows;
-      }
-    }
-
-    // === GENERICS ===
-    const generics = await db.execute(sql`
-      SELECT 
-        g.name as "brandName",
-        g.name as "genericName",
-        '' as "dosageForm", '' as strength, '' as "companyName", '' as company,
-        g.medicine_type as "medicineType",
-        g.slug as slug, 'generic' as type
-      FROM generics g
-      WHERE LOWER(g.name) ILIKE ${'%' + q + '%'} OR similarity(LOWER(g.name), LOWER(${q})) > ${threshold * 0.8}
-      ORDER BY 
-        CASE WHEN LOWER(g.name) LIKE LOWER(${q + '%'}) THEN 3 ELSE 2 END,
-        similarity(LOWER(g.name), LOWER(${q})) DESC
-      LIMIT 3
-    `);
-
-    // === DRUG CLASSES ===
-    const classes = await db.execute(sql`
-      SELECT DISTINCT
-        b.therapeutic_class as "brandName",
-        b.therapeutic_class as "genericName",
-        '' as "dosageForm", '' as strength, '' as "companyName", '' as company,
-        b.medicine_type as "medicineType", '' as slug, 'class' as type
-      FROM brands b
-      WHERE b.therapeutic_class IS NOT NULL 
-        AND (LOWER(b.therapeutic_class) ILIKE ${'%' + q + '%'} OR similarity(LOWER(b.therapeutic_class), LOWER(${q})) > ${threshold * 0.7})
-      ORDER BY b.therapeutic_class
-      LIMIT 3
-    `);
-
-    // === RECENT SEARCHES (when query is short or empty-ish) ===
-    let recentSearches: any[] = [];
-    if (q.length <= 3) {
-      const recent = await db.execute(sql`
-        SELECT query, COUNT(*) as cnt
-        FROM search_log
-        WHERE query ILIKE ${q + '%'}
-        GROUP BY query ORDER BY cnt DESC LIMIT 5
-      `);
-      if (recent.rows.length > 1) {
-        for (const row of recent.rows) {
-          const r = row as any;
-          if (r.query.toLowerCase() !== q.toLowerCase()) {
-            recentSearches.push({
-              brandName: r.query,
-              genericName: '',
-              dosageForm: '', strength: '', companyName: '', company: '',
-              medicineType: null, slug: '', type: 'brand',
-              _recent: true,
-            });
-          }
-        }
-      }
-    }
-
-    // === MERGE & DEDUPLICATE ===
-    const seen = new Set<string>();
-    const combined: any[] = [];
-    const add = (items: any[]) => {
-      for (const item of items) {
-        const key = item.type + '|' + (item.slug || item.brandName).toLowerCase();
-        if (!seen.has(key) && combined.length < 15) {
-          seen.add(key);
-          combined.push(item);
-        }
-      }
-    };
-    add(strengthBrands);         // Strength-matched first (most precise)
-    add(brands.rows);            // Fuzzy-matched brands
-    add(generics.rows);          // Generics
-    add(classes.rows);           // Classes
-    add(recentSearches);         // Recent searches (if relevant)
-
-    return NextResponse.json({ results: combined });
+    return NextResponse.json(
+      { results: results.rows },
+      { headers: { 'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=10' } }
+    );
   } catch (error) {
     console.error('Search error:', error);
     return NextResponse.json({ error: 'Search failed' }, { status: 500 });
