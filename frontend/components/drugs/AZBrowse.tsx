@@ -30,13 +30,14 @@ function AZBrowseContent({ showAdvancedSearch = true }: { showAdvancedSearch?: b
             <div key={tab} className="relative">
               <button
                 onClick={() => { setActiveTab(tab); setOpenDropdown(openDropdown === tab ? null : tab); }}
-                className={`px-4 py-2.5 rounded-lg font-medium text-sm whitespace-nowrap transition-colors cursor-pointer shadow-lg ${
+                className={`px-4 py-2.5 rounded-lg font-medium text-sm whitespace-nowrap transition-colors cursor-pointer shadow-lg inline-flex items-center gap-1 ${
                   openDropdown === tab
                     ? "bg-[#0D261E] text-white"
                     : "bg-white text-blue-600 hover:bg-gray-100 border border-gray-200"
                 }`}
               >
                 {tab}
+                <svg className={`transition-transform ${openDropdown === tab ? 'rotate-180' : ''}`} width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
               </button>
               {openDropdown === tab && (
                 <div className="absolute top-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50 left-1/2 -translate-x-1/2">
