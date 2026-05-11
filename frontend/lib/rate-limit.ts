@@ -1,18 +1,19 @@
-const rateMap = new Map<string, { count: number; resetAt: number }>();
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
 
-export function rateLimit(ip: string, limit = 30, windowMs = 60000): boolean {
-  const now = Date.now();
-  const entry = rateMap.get(ip);
+const redis = Redis.fromEnv();
 
-  if (!entry || now > entry.resetAt) {
-    rateMap.set(ip, { count: 1, resetAt: now + windowMs });
-    return true;
+const ratelimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(30, "10 s"),
+  analytics: true,
+});
+
+export async function rateLimit(ip: string): Promise<boolean> {
+  try {
+    const { success } = await ratelimit.limit(ip);
+    return success;
+  } catch {
+    return true; // Allow on failure
   }
-
-  if (entry.count >= limit) {
-    return false;
-  }
-
-  entry.count++;
-  return true;
 }

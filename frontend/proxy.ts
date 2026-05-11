@@ -10,13 +10,13 @@ const BOT_PATTERNS = [
   'phantomjs', 'mechanize', 'htmlunit',
 ]
 
-export default clerkMiddleware((auth, req) => {
+export default clerkMiddleware(async (auth, req) => {
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
     || req.headers.get('x-real-ip')
     || 'unknown'
 
-  // Rate limiting
-  if (!rateLimit(ip, 60, 60000)) {
+  // Rate limiting (Upstash Redis, multi-instance safe)
+  if (!(await rateLimit(ip))) {
     return NextResponse.json(
       { error: 'Too many requests. Please try again later.' },
       { status: 429, headers: securityHeaders() }
@@ -26,7 +26,6 @@ export default clerkMiddleware((auth, req) => {
   // Bot detection
   const ua = req.headers.get('user-agent') || ''
   if (ua.length < 20 || BOT_PATTERNS.some(p => ua.toLowerCase().includes(p))) {
-    // Allow known search engines
     if (!ua.includes('Googlebot') && !ua.includes('Bingbot') && !ua.includes('Slurp')) {
       return NextResponse.json(
         { error: 'Access denied' },
@@ -36,6 +35,14 @@ export default clerkMiddleware((auth, req) => {
   }
 
   const response = NextResponse.next()
+
+  // Cache static API responses for 5 minutes
+  const pathname = req.nextUrl.pathname;
+  const staticApis = ['/api/stats', '/api/drug-classes', '/api/drugs/companies', '/api/dosage-forms', '/api/popular'];
+  if (staticApis.includes(pathname)) {
+    response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=60');
+  }
+
   Object.entries(securityHeaders()).forEach(([key, value]) => {
     response.headers.set(key, value)
   })
