@@ -25,7 +25,7 @@ function AZBrowseContent({ showAdvancedSearch = true }: { showAdvancedSearch?: b
     <div className="w-full max-w-4xl my-8">
       {/* Tabs */}
       <div className="flex justify-between items-center mb-6">
-        <div className="flex gap-2 flex-nowrap overflow-x-auto">
+        <div className="flex gap-2 flex-nowrap">
           {TABS.map((tab) => (
             <div key={tab} className="relative">
               <button
