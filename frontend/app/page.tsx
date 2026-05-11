@@ -148,7 +148,7 @@ export default function Home() {
 
               {/* Search Bar - Centered */}
               <form ref={searchRef} onSubmit={handleSearchSubmit} className="max-w-4xl mx-auto mb-4 relative">
-                <div className="flex gap-2 bg-white rounded-2xl py-1.5 pl-1.5 pr-4 shadow-sm border border-gray-200">
+                <div className="flex gap-2 bg-white rounded-2xl py-1.5 pl-1.5 pr-4 shadow-sm border-2 border-sky-200">
                   <div className="flex-1 relative flex items-center">
                     <img src="/icons/pill.svg" alt="search" className="absolute left-5 h-9 w-9" />
                     <Input 

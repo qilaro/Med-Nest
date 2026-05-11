@@ -218,7 +218,7 @@ function DrugsContent() {
               onChange={(e) => setQuery(e.target.value)}
               onFocus={handleFocus}
               placeholder="Search medications..."
-              className="pl-16 h-14 rounded-xl text-base shadow-sm"
+              className="pl-16 h-14 rounded-xl text-base shadow-sm border-2 border-sky-200 focus-visible:border-sky-400"
             />
             <SearchSuggestions 
               suggestions={suggestions} 
