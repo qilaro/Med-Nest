@@ -94,7 +94,7 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
   const isEmpty = suggestions.length === 0 && !isLoading;
 
   return (
-    <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-lg border border-gray-200 z-[100] max-h-[70vh] overflow-y-auto" ref={listRef}>
+    <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-lg border border-gray-200 z-[100] max-h-[70vh] overflow-y-auto" ref={listRef} onMouseLeave={() => setHighlightedIndex(-1)}>
       {/* Loading state */}
       {isLoading && (
         <div className="flex items-center gap-3 px-5 py-6 text-gray-400 text-sm">
