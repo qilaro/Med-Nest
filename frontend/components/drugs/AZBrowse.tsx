@@ -50,7 +50,7 @@ function AZBrowseContent({ showTabs = true }: { showTabs?: boolean }) {
                 className={`px-4 py-2.5 rounded-lg font-medium text-sm whitespace-nowrap transition-colors cursor-pointer shadow-lg inline-flex items-center gap-1 ${
                   openDropdown === tab
                     ? "bg-[#0D261E] text-white"
-                    : "bg-white text-blue-600 hover:bg-gray-100 border border-gray-200"
+                    : "bg-white text-blue-600 hover:bg-gray-100 border border-sky-200"
                 }`}
               >
                 {tab}
@@ -77,7 +77,7 @@ function AZBrowseContent({ showTabs = true }: { showTabs?: boolean }) {
           ))}
           <Link
             href="/indications"
-            className="px-4 py-2.5 rounded-lg font-medium text-sm whitespace-nowrap transition-colors cursor-pointer shadow-lg bg-white text-blue-600 hover:bg-gray-100 border border-gray-200 inline-flex items-center"
+            className="px-4 py-2.5 rounded-lg font-medium text-sm whitespace-nowrap transition-colors cursor-pointer shadow-lg bg-white text-blue-600 hover:bg-gray-100 border border-sky-200 inline-flex items-center"
           >
             Indications
           </Link>
