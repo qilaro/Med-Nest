@@ -21,7 +21,7 @@ const BASE_PATHS: Record<string, string> = {
   "Dosage Form": "/dosage-forms",
 };
 
-function AZBrowseContent({}: { showAdvancedSearch?: boolean }) {
+function AZBrowseContent({ showTabs = true }: { showTabs?: boolean }) {
   const searchParams = useSearchParams();
   const currentLetter = searchParams.get("letter");
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
@@ -40,6 +40,7 @@ function AZBrowseContent({}: { showAdvancedSearch?: boolean }) {
 
   return (
     <div className="w-full max-w-4xl my-8" ref={containerRef}>
+      {showTabs && (
       <div className="flex justify-between items-center mb-6">
         <div className="flex gap-2 flex-nowrap">
           {TABS.map((tab) => (
@@ -82,6 +83,7 @@ function AZBrowseContent({}: { showAdvancedSearch?: boolean }) {
           </Link>
         </div>
       </div>
+      )}
 
       {/* A-Z Grid */}
       <div className="bg-teal-50/50 p-4 rounded-xl border border-teal-100 shadow-sm">
@@ -115,10 +117,10 @@ function AZBrowseContent({}: { showAdvancedSearch?: boolean }) {
   );
 }
 
-export default function AZBrowse({ showAdvancedSearch }: { showAdvancedSearch?: boolean }) {
+export default function AZBrowse({ showTabs }: { showTabs?: boolean }) {
   return (
     <Suspense fallback={<div className="h-40 w-full animate-pulse bg-gray-100 rounded-2xl" />}>
-      <AZBrowseContent showAdvancedSearch={showAdvancedSearch} />
+      <AZBrowseContent showTabs={showTabs} />
     </Suspense>
   );
 }

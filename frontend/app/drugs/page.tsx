@@ -310,7 +310,7 @@ function DrugsContent() {
           )}
         </form>
 
-        <AZBrowse showAdvancedSearch={false} />
+        <AZBrowse showTabs={false} />
         <hr className="my-8 border-t border-gray-200" />
 
         {loading ? (

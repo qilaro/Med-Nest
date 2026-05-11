@@ -186,7 +186,7 @@ export default function Home() {
 
               {/* AZBrowse included directly in hero for maximum visibility */}
               <div className="max-w-4xl mx-auto">
-                <AZBrowse showAdvancedSearch={true} />
+                <AZBrowse />
                 <p className="text-sm text-gray-700 font-semibold italic">
                   Can't remember? Just type what you can remember with our phonetic search.
                 </p>
