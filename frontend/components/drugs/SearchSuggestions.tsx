@@ -56,6 +56,7 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
   isFeatured = false,
   query = "",
   isLoading = false,
+  total,
 }) => {
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const listRef = useRef<HTMLDivElement>(null);
@@ -172,7 +173,7 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
         </button>
       ))}
 
-      {total && total > suggestions.length && (
+      {total !== undefined && total > suggestions.length && (
         <div className="px-4 py-2.5 bg-gray-50 border-t border-gray-100">
           <Link href={`/drugs?search=${encodeURIComponent(query || '')}`} className="block text-center text-xs font-semibold text-teal-600 hover:text-teal-700 transition-colors">
             View All {total} Results →
