@@ -68,7 +68,7 @@ const Header = () => {
       </header>
 
       {/* Mobile: Floating Action Bar */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 lg:hidden">
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] lg:hidden">
         <div className="flex items-center gap-1 bg-white/95 border border-gray-200/70 rounded-2xl px-2 py-1.5 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
           <Link href="/" className={`flex items-center justify-center w-11 h-11 rounded-xl transition-all duration-200 ${pathname === '/' ? 'bg-teal-50 text-teal-600' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'}`}>
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
