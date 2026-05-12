@@ -40,15 +40,14 @@ const EmergencyBanner = () => {
         {/* Collapsed: thin red indicator bar */}
         <button
           onClick={() => setExpanded(!expanded)}
-          className="w-full bg-gradient-to-r from-red-600 via-red-500 to-rose-600 text-white flex items-center justify-center gap-2 py-1.5 text-[11px] font-semibold cursor-pointer hover:from-red-700 hover:via-red-600 transition-all duration-200 z-50 shadow-sm"
+          className="w-full bg-gradient-to-r from-red-600 via-red-500 to-rose-600 text-white flex items-center justify-center gap-1.5 py-1 text-[11px] font-semibold cursor-pointer hover:from-red-700 hover:via-red-600 transition-all duration-200 z-50 shadow-sm"
           aria-label={expanded ? 'Hide emergency info' : 'Show emergency info'}
         >
-          <span className="w-4 h-4 rounded-full bg-white/25 flex items-center justify-center animate-pulse shrink-0">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-2.5 w-2.5"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>
+          <span className="w-3.5 h-3.5 rounded-full bg-white/25 flex items-center justify-center animate-pulse shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-2 w-2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>
           </span>
           <span>Medical Emergency?</span>
-          <span className="text-white/80">999</span>
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`h-3 w-3 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`}><path d="m6 9 6 6 6-6"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={`h-3 w-3 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`}><path d="m6 9 6 6 6-6"/></svg>
         </button>
 
         {/* Expanded content */}
