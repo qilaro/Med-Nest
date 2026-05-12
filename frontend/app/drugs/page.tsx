@@ -307,7 +307,22 @@ function DrugsContent() {
                 <div key={f.label} className="relative shrink-0" style={{ width: '120px' }}>
                   <select
                     value={f.value}
-                    onChange={(e) => { f.set(e.target.value); if (e.target.value) { const p = new URLSearchParams(); p.set(f.param, e.target.value); router.push(`/drugs?${p.toString()}`); } else clearFilters(); }}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      f.set(val);
+                      const p = new URLSearchParams();
+                      const s = activeSearch || searchQ;
+                      if (s) p.set('search', s);
+                      if (f.param === 'type' ? val : selectedType) p.set('type', f.param === 'type' ? val : selectedType);
+                      if (f.param === 'drug_class' ? val : selectedClass) p.set('drug_class', f.param === 'drug_class' ? val : selectedClass);
+                      if (f.param === 'company' ? val : selectedCompany) p.set('company', f.param === 'company' ? val : selectedCompany);
+                      if (f.param === 'generic' ? val : selectedGeneric) p.set('generic', f.param === 'generic' ? val : selectedGeneric);
+                      if (f.param === 'dosage_form' ? val : selectedDosageForm) p.set('dosage_form', f.param === 'dosage_form' ? val : selectedDosageForm);
+                      if (selectedRatings.length) p.set('rating', selectedRatings.join(','));
+                      if (letterFilter) p.set('letter', letterFilter);
+                      const qs = p.toString();
+                      router.push(qs ? `/drugs?${qs}` : '/drugs');
+                    }}
                     className={`appearance-none rounded-full px-3 py-1.5 pr-4 text-xs font-semibold w-full text-center shadow-sm transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-teal-300 border-2 [&>option]:cursor-pointer ${
                       isActive
                         ? 'bg-teal-500 text-white border-teal-500'
