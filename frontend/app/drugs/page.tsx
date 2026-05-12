@@ -289,7 +289,7 @@ function DrugsContent() {
                   <select
                     value={f.value}
                     onChange={(e) => { f.set(e.target.value); if (e.target.value) { const p = new URLSearchParams(); p.set(f.param, e.target.value); router.push(`/drugs?${p.toString()}`); } else clearFilters(); }}
-                    className={`appearance-none rounded-full px-3 py-1.5 pr-4 text-xs font-semibold w-full text-center shadow-sm transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-teal-300 border-2 ${
+                    className={`appearance-none rounded-full px-3 py-1.5 pr-4 text-xs font-semibold w-full text-center shadow-sm transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-teal-300 border-2 [&>option]:cursor-pointer ${
                       isActive
                         ? 'bg-teal-500 text-white border-teal-500'
                         : 'bg-gray-50 text-gray-700 border-sky-200 hover:border-teal-400 hover:bg-teal-50'
