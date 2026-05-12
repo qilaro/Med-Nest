@@ -52,104 +52,11 @@ function DrugsContent() {
   const [searchTotal, setSearchTotal] = useState(0);
   const [isSearching, setIsSearching] = useState(false);
   const searchRef = useRef<HTMLFormElement>(null);
-
-  // Close suggestions when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
-        setShowSuggestions(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  // Close rating dropdown on outside click
-  useEffect(() => {
-    if (!showRatingDropdown) return;
-    const handler = (e: MouseEvent) => {
-      if (ratingRef.current && !ratingRef.current.contains(e.target as Node)) {
-        setShowRatingDropdown(false);
-      }
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, [showRatingDropdown]);
-
-  // Fetch data when filters change
-  useEffect(() => {
-    async function fetchData() {
-      setLoading(true);
-      try {
-        const [drugsData, classesData, companiesData, formsData] = await Promise.all([
-          drugService.getDrugs({ 
-            drug_class: drugClassFilter || undefined,
-            medicine_type: typeFilter || undefined,
-            letter: letterFilter || undefined
-          }),
-          drugService.getDrugClasses(),
-          drugService.getCompanies(),
-          drugService.getDosageForms(),
-        ]);
-
-        let filteredDrugs = drugsData.drugs;
-        
-        // Extract unique generic names for filter
-        const uniqueGenerics: string[] = Array.from(new Set(drugsData.drugs.map((d: DrugSummary) => d.genericName))).filter((g): g is string => typeof g === 'string').sort();
-        setGenerics(uniqueGenerics);
-        
-        const uniqueForms: string[] = formsData.map((f: any) => f.name).filter(Boolean).sort();
-        setDosageForms(uniqueForms);
-        
-        // Local filtering
-        if (searchQ) {
-          const trimmedLowerQuery = query.trim().toLowerCase();
-          filteredDrugs = filteredDrugs.filter(
-            (dr: DrugSummary) =>
-              dr.brandName.toLowerCase().includes(trimmedLowerQuery) ||
-              dr.genericName.toLowerCase().includes(trimmedLowerQuery) ||
-              (dr.drugClass?.toLowerCase()?.includes(trimmedLowerQuery) ?? false) ||
-              (dr.company?.toLowerCase()?.includes(trimmedLowerQuery) ?? false)
-          );
-        }
-
-        if (companyFilter) {
-          filteredDrugs = filteredDrugs.filter((dr: DrugSummary) => dr.company === companyFilter);
-        }
-        
-        if (genericFilter) {
-          filteredDrugs = filteredDrugs.filter((dr: DrugSummary) => dr.genericName === genericFilter);
-        }
-        
-        if (dosageFilter) {
-          filteredDrugs = filteredDrugs.filter((dr: DrugSummary) => dr.dosageForm === dosageFilter);
-        }
-        
-        if (ratingFilter) {
-          const ratings = ratingFilter.split(',').map(Number);
-          filteredDrugs = filteredDrugs.filter((dr: DrugSummary) => {
-            const drugRating = dr.averageRating || 0;
-            return ratings.some((r: number) => drugRating >= r);
-          });
-        }
-
-        setDrugs(filteredDrugs);
-        setClasses(classesData);
-        setCompanies(companiesData);
-        setDosageForms(uniqueForms);
-      } catch (error) {
-        console.error("Failed to fetch drugs:", error);
-        setWarning("Failed to load medicines. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchData();
-  }, [searchQ, typeFilter, drugClassFilter, companyFilter, genericFilter, dosageFilter, ratingFilter, letterFilter]);
+  const hasUrlQuery = useRef(!!searchQ);
 
   // Handle suggestion filtering
   useEffect(() => {
+    if (hasUrlQuery.current) { hasUrlQuery.current = false; return; }
     if (query.trim().length === 0) {
       setShowSuggestions(false);
       setSearchTotal(0);
