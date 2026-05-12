@@ -19,6 +19,7 @@ export default function Home() {
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<DrugSummary[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [searchTotal, setSearchTotal] = useState(0);
   const [stats, setStats] = useState({ drugs: 0, generics: 0, classes: 0, companies: 0 });
   const [isSearching, setIsSearching] = useState(false);
   const searchRef = useRef<HTMLFormElement>(null);
@@ -42,14 +43,16 @@ export default function Home() {
   useEffect(() => {
     if (query.trim().length === 0) {
       setShowSuggestions(false);
+      setSearchTotal(0);
       return;
     }
 
     const fetchFuzzySuggestions = async () => {
       try {
         setIsSearching(true);
-        const { results } = await drugService.searchDrugs(query.trim());
+        const { results, total } = await drugService.searchDrugs(query.trim());
         setSuggestions(results.slice(0, 10));
+        setSearchTotal(total);
         setShowSuggestions(true);
       } catch (error) {
         console.error("Failed to fetch fuzzy suggestions:", error);
@@ -164,13 +167,14 @@ export default function Home() {
                     Search
                   </Button>
                 </div>
-                 <SearchSuggestions 
+                  <SearchSuggestions 
                   suggestions={suggestions} 
                   isVisible={showSuggestions} 
                   onSelect={handleSuggestionSelect} 
                   isFeatured={query.trim().length === 0}
                   query={query}
                   isLoading={isSearching}
+                  total={searchTotal}
                 />
               </form>
 

@@ -81,8 +81,20 @@ export async function GET(request: Request) {
       LIMIT 10
     `);
 
+    // Get total count for "View All"
+    const countResult = await db.execute(sql`
+      SELECT COUNT(*) as total FROM (
+        SELECT b.brand_name FROM brands b
+        WHERE LOWER(b.brand_name) ILIKE ${'%' + q + '%'} 
+           OR LOWER(b.generic_name) ILIKE ${'%' + q + '%'}
+           OR LOWER(b.company_name) ILIKE ${'%' + q + '%'}
+        LIMIT 100
+      ) sub
+    `);
+    const total = Number(countResult.rows[0]?.total) || 0;
+
     return NextResponse.json(
-      { results: results.rows },
+      { results: results.rows, total },
       { headers: { 'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=10' } }
     );
   } catch (error) {

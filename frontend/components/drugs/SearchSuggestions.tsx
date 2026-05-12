@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import { Tag, Clock, FlaskConical } from "lucide-react";
 import { DrugSummary } from "@/types/drug";
 import { getDosageIcon } from "@/components/dosage-icons";
@@ -10,6 +11,7 @@ interface SearchSuggestionsProps {
   isFeatured?: boolean;
   query?: string;
   isLoading?: boolean;
+  total?: number;
 }
 
 const TYPE_COLORS: Record<string, string> = {
@@ -170,9 +172,11 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
         </button>
       ))}
 
-      {suggestions.length >= 10 && (
-        <div className="px-4 py-2.5 bg-gray-50 text-xs text-center text-gray-500 font-medium border-t border-gray-100">
-          Keep typing for more specific results...
+      {total && total > suggestions.length && (
+        <div className="px-4 py-2.5 bg-gray-50 border-t border-gray-100">
+          <Link href={`/drugs?search=${encodeURIComponent(query || '')}`} className="block text-center text-xs font-semibold text-teal-600 hover:text-teal-700 transition-colors">
+            View All {total} Results →
+          </Link>
         </div>
       )}
     </div>

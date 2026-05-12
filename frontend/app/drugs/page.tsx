@@ -49,6 +49,7 @@ function DrugsContent() {
   // Suggestion state
   const [suggestions, setSuggestions] = useState<DrugSummary[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [searchTotal, setSearchTotal] = useState(0);
   const [isSearching, setIsSearching] = useState(false);
   const searchRef = useRef<HTMLFormElement>(null);
 
@@ -151,14 +152,16 @@ function DrugsContent() {
   useEffect(() => {
     if (query.trim().length === 0) {
       setShowSuggestions(false);
+      setSearchTotal(0);
       return;
     }
 
     const fetchFuzzySuggestions = async () => {
       try {
         setIsSearching(true);
-        const { results } = await drugService.searchDrugs(query.trim());
+        const { results, total } = await drugService.searchDrugs(query.trim());
         setSuggestions(results.slice(0, 10));
+        setSearchTotal(total);
         setShowSuggestions(true);
       } catch (error) {
         console.error("Failed to fetch fuzzy suggestions:", error);
@@ -266,6 +269,7 @@ function DrugsContent() {
                 isFeatured={query.trim().length === 0}
                 query={query}
                 isLoading={isSearching}
+                total={searchTotal}
               />
             </div>
 
