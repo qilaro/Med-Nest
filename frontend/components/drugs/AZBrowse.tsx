@@ -88,22 +88,22 @@ function AZBrowseContent({ showTabs = true }: { showTabs?: boolean }) {
       )}
 
       {/* A-Z Grid */}
-      <div className="bg-teal-50/50 p-4 rounded-xl border border-teal-100 shadow-sm">
+      <div className="bg-teal-50/50 p-3 sm:p-4 rounded-xl border border-teal-100 shadow-sm">
         {expandedLetter ? (
           <div>
             <button
               onClick={() => setExpandedLetter(null)}
-              className="flex items-center gap-1 text-sm text-teal-600 font-semibold mb-3 hover:text-teal-800 cursor-pointer"
+              className="flex items-center gap-1 text-xs sm:text-sm text-teal-600 font-semibold mb-2 sm:mb-3 hover:text-teal-800 cursor-pointer"
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
               Back
             </button>
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(50px,1fr))] gap-2">
+            <div className="grid grid-cols-[repeat(9,1fr)] sm:grid-cols-[repeat(auto-fill,minmax(50px,1fr))] gap-1.5 sm:gap-2">
               {"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map((second) => (
                 <Link
                   key={second}
                   href={`/drugs?letter=${expandedLetter}${second.toLowerCase()}`}
-                  className={`flex items-center justify-center h-12 rounded-lg font-semibold border transition-all cursor-pointer ${
+                  className={`flex items-center justify-center h-9 sm:h-12 rounded-lg font-semibold text-xs sm:text-sm border transition-all cursor-pointer ${
                     currentLetter === `${expandedLetter}${second.toLowerCase()}`
                       ? "bg-primary text-white border-primary shadow-md"
                       : "bg-white text-teal-700 border-teal-200 hover:bg-teal-100 hover:border-teal-400 hover:text-teal-900"
@@ -115,12 +115,12 @@ function AZBrowseContent({ showTabs = true }: { showTabs?: boolean }) {
             </div>
           </div>
         ) : (
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(50px,1fr))] gap-2">
+        <div className="grid grid-cols-[repeat(9,1fr)] sm:grid-cols-[repeat(auto-fill,minmax(50px,1fr))] gap-1.5 sm:gap-2">
           {LETTERS.map((letter) => (
             <button
               key={letter}
               onClick={() => setExpandedLetter(letter)}
-              className={`flex items-center justify-center h-12 rounded-lg font-semibold border transition-all cursor-pointer ${
+              className={`flex items-center justify-center h-9 sm:h-12 rounded-lg font-semibold text-xs sm:text-sm border transition-all cursor-pointer ${
                 currentLetter?.startsWith(letter)
                   ? "bg-primary text-white border-primary shadow-md"
                   : "bg-white text-teal-700 border-teal-200 hover:bg-teal-100 hover:border-teal-400 hover:text-teal-900"
@@ -131,7 +131,7 @@ function AZBrowseContent({ showTabs = true }: { showTabs?: boolean }) {
           ))}
           <Link
             href="/drugs?letter=0-9"
-            className={`flex items-center justify-center h-12 rounded-lg font-semibold border transition-all cursor-pointer ${
+            className={`flex items-center justify-center h-9 sm:h-12 rounded-lg font-semibold text-xs sm:text-sm border transition-all cursor-pointer ${
               currentLetter === "0-9"
                 ? "bg-primary text-white border-primary shadow-md"
                 : "bg-white text-teal-700 border-teal-200 hover:bg-teal-100 hover:border-teal-400 hover:text-teal-900"
