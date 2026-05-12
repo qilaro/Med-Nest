@@ -1,6 +1,6 @@
 # Med-Nest — Session Source of Truth
 
-**Last Updated**: May 11, 2026 | **Branch**: feature/az-navigation
+**Last Updated**: May 12, 2026 | **Branch**: feature/az-navigation
 
 ## Database State
 
@@ -95,3 +95,24 @@
 - **Search**: pg_trgm similarity + ILIKE + weighted ranking
 - **Caching**: Cache-Control headers on static endpoints
 - **Slugs**: Human-readable pattern (readable for SEO)
+
+## Drug Directory Page (`/drugs`)
+- **Search + Enter**: Filters in-place via `activeSearch` state, no URL navigation (homepage Enter navigates to `/drugs?search=` and resets suggestions)
+- **Suggestions**: Debounced 300ms, exact-match highlight with ArrowDown/Up, Enter picks highlighted suggestion, click picks any. Suggestions reset on `searchQ` change. `keyboardNavRef` prevents mouse-hover interception. `type="button"` on suggestion buttons prevents form submit on Enter.
+- **Dropdown suppression**: `hasUrlQuery` ref skips suggestions on mount with search param. `reqIdRef` cancels in-flight stale fetches. `submittedRef` blocks `handleFocus` after Enter.
+- **A-Z Browse**: Expandable sub-keyboard — click "A" shows "Aa Ab Ac Ad...". "Back" button returns to main keyboard. Outside-click collapses.
+- **Filters**: 6 pill selects (Type, Class, Generic, Company, Form, Rating dropdown). "All" option clears only that filter, preserves others. Teal active state. Rating uses checkbox multi-select dropdown.
+- **Clear button**: Red pill with ✕ icon on heading line, resets all filters + navigates to `/drugs`.
+- **Pagination**: Prev/Next + page numbers with ellipsis at bottom. Only shows when `isFiltered && totalPages > 1`. Resets to page 1 on new search.
+- **Heading**: Dynamic — "Showing all X results for 'search'" or "Filtered Drugs" or "Popular Drug Searches".
+- **Heading**: Shows count from API (`drugsData.total`) for search results.
+- **Drug Card**: Premium design with left teal accent bar (hover), gradient icon bg (scale on hover), verified star + checkmark badge, rating as `4.5★` amber badge, strength in teal pill below dosage form icon, price with `৳` in gray pill, drug class uppercase. All truncated fields show full text on `title` hover tooltip. Price tooltip shows unit info. Border lifts on hover with teal shadow.
+- **Responsive**: Filter pills wrap (`flex-wrap sm:flex-nowrap`), pills use `calc(50% - 6px)` width on mobile (max 120px). Search button full-width on mobile. Pagination wraps (`flex-wrap`). Headings scale down on mobile. A-Z browse tabs wrap. Homepage search stacks vertically on mobile.
+- **Empty state**: No console error when 0 results — returns empty array gracefully.
+- **Ranked results**: API sorts by exact match → prefix → contains → generic/company match (JS-side sort after DB fetch).
+
+## Search API (`/api/search`)
+- pg_trgm fuzzy + ILIKE + weighted ranking (exact=10, prefix=8, contains=5, generic prefix=4, generic contains=2, company=3)
+- Generics included in results with "generic" type tag
+- View All link shows total count
+- Cache-Control: 30s
