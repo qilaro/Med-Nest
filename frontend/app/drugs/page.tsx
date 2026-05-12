@@ -263,7 +263,7 @@ function DrugsContent() {
               { value: selectedCompany, set: setSelectedCompany, param: "company", label: "Company", opts: companies.map((c: string) => [c, c]) },
               { value: selectedGeneric, set: setSelectedGeneric, param: "generic", label: "Generic", opts: generics.map((g: string) => [g, g]) },
               { value: selectedDosageForm, set: setSelectedDosageForm, param: "dosage_form", label: "Form", opts: dosageForms.map((f: string) => [f, f]) },
-              { value: selectedRating, set: setSelectedRating, param: "rating", label: "★", width: 65, opts: [["5","★★★★★"],["4","★★★★"],["3","★★★"],["2","★★"]] },
+              { value: selectedRating, set: setSelectedRating, param: "rating", label: "★", width: 65, opts: [["5","5 ★★★★★"],["4","4 ★★★★"],["3","3 ★★★"],["2","2 ★★"]] },
             ].map((f: any) => {
               const isActive = !!f.value;
               return (
