@@ -45,7 +45,7 @@ export default function DrugCard({ drug }: DrugCardProps) {
                 <div className="flex items-center gap-1.5 shrink-0">
                   {(drug as any).brandVerified && (
                     <span className="text-teal-600" title="Verified brand">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="0.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/><path d="M9 12l2 2 4-4" stroke="white" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>
                     </span>
                   )}
                 </div>
@@ -74,23 +74,23 @@ export default function DrugCard({ drug }: DrugCardProps) {
               )}
             </div>
 
-            <div className="min-w-0 flex-1 flex items-center justify-between">
+            <div className="min-w-0 flex-1 flex items-center justify-between gap-3">
               <p className="text-[10px] text-gray-500 uppercase tracking-wider font-medium truncate">
                 {drug.drugClass}
               </p>
-              <div className="flex items-center gap-2 shrink-0 ml-2">
+              <div className="flex items-center justify-center flex-1">
                 {drug.averageRating !== undefined && (
                   <span className="text-[10px] font-bold text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-300 flex items-center gap-0.5">
                     <svg width="9" height="9" viewBox="0 0 24 24" fill="#D97706" stroke="#D97706" strokeWidth="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                     {drug.averageRating.toFixed(1)}
                   </span>
                 )}
-                {drug.price && (
-                  <span className="text-sm font-bold text-gray-800 bg-gray-100 px-2 py-0.5 rounded-md border border-gray-200">
-                    <span className="text-teal-600">৳</span> {drug.price}
-                  </span>
-                )}
               </div>
+              {drug.price && (
+                <span className="shrink-0 text-sm font-bold text-gray-800 bg-gray-100 px-2 py-0.5 rounded-md border border-gray-200">
+                  <span className="text-teal-600">৳</span> {drug.price}
+                </span>
+              )}
             </div>
           </div>
         </CardContent>
