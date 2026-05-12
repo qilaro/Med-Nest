@@ -26,7 +26,6 @@ function DrugsContent() {
   const dosageFilter = searchParams.get("dosage_form") || "";
   const ratingFilter = searchParams.get("rating") || "";
   const letterFilter = searchParams.get("letter") || "";
-  const isFiltered = !!(searchQ || typeFilter || drugClassFilter || companyFilter || genericFilter || dosageFilter || ratingFilter || letterFilter);
 
   const [drugs, setDrugs] = useState<DrugSummary[]>([]);
   const [classes, setClasses] = useState<DrugClass[]>([]);
@@ -34,6 +33,7 @@ function DrugsContent() {
   const [generics, setGenerics] = useState<string[]>([]);
   const [dosageForms, setDosageForms] = useState<string[]>([]);
   const [query, setQuery] = useState(searchQ);
+  const [activeSearch, setActiveSearch] = useState("");
   const [selectedType, setSelectedType] = useState(typeFilter);
   const [selectedClass, setSelectedClass] = useState(drugClassFilter);
   const [selectedCompany, setSelectedCompany] = useState(companyFilter);
@@ -50,9 +50,15 @@ function DrugsContent() {
   const [suggestions, setSuggestions] = useState<DrugSummary[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [searchTotal, setSearchTotal] = useState(0);
+  const [totalResults, setTotalResults] = useState(0);
   const [isSearching, setIsSearching] = useState(false);
   const searchRef = useRef<HTMLFormElement>(null);
   const hasUrlQuery = useRef(!!searchQ);
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const submittedRef = useRef(false);
+  const reqIdRef = useRef(0);
+
+  const isFiltered = !!(activeSearch || searchQ || typeFilter || drugClassFilter || companyFilter || genericFilter || dosageFilter || ratingFilter || letterFilter);
 
   // Close suggestions when clicking outside
   useEffect(() => {
@@ -74,7 +80,8 @@ function DrugsContent() {
           drugService.getDrugs({ 
             drug_class: drugClassFilter || undefined,
             medicine_type: typeFilter || undefined,
-            letter: letterFilter || undefined
+            letter: letterFilter || undefined,
+            search: (activeSearch || searchQ) || undefined,
           }),
           drugService.getDrugClasses(),
           drugService.getCompanies(),
@@ -82,6 +89,7 @@ function DrugsContent() {
         ]);
 
         let filteredDrugs = drugsData.drugs;
+        setTotalResults(drugsData.total);
         
         const uniqueGenerics: string[] = Array.from(new Set(drugsData.drugs.map((d: DrugSummary) => d.genericName))).filter((g): g is string => typeof g === 'string').sort();
         setGenerics(uniqueGenerics);
@@ -90,13 +98,13 @@ function DrugsContent() {
         setDosageForms(uniqueForms);
         
         if (searchQ) {
-          const trimmedLowerQuery = query.trim().toLowerCase();
+          const q = searchQ.trim().toLowerCase();
           filteredDrugs = filteredDrugs.filter(
             (dr: DrugSummary) =>
-              dr.brandName.toLowerCase().includes(trimmedLowerQuery) ||
-              dr.genericName.toLowerCase().includes(trimmedLowerQuery) ||
-              (dr.drugClass?.toLowerCase()?.includes(trimmedLowerQuery) ?? false) ||
-              (dr.company?.toLowerCase()?.includes(trimmedLowerQuery) ?? false)
+              dr.brandName.toLowerCase().includes(q) ||
+              dr.genericName.toLowerCase().includes(q) ||
+              dr.company?.toLowerCase().includes(q) ||
+              dr.drugClass?.toLowerCase()?.includes(q)
           );
         }
 
@@ -135,7 +143,7 @@ function DrugsContent() {
     }
 
     fetchData();
-  }, [searchQ, typeFilter, drugClassFilter, companyFilter, genericFilter, dosageFilter, ratingFilter, letterFilter]);
+  }, [activeSearch, searchQ, typeFilter, drugClassFilter, companyFilter, genericFilter, dosageFilter, ratingFilter, letterFilter]);
 
   // Handle suggestion filtering
   useEffect(() => {
@@ -147,41 +155,43 @@ function DrugsContent() {
     }
 
     const fetchFuzzySuggestions = async () => {
+      const myReqId = ++reqIdRef.current;
       try {
         setIsSearching(true);
         const { results, total } = await drugService.searchDrugs(query.trim());
+        if (reqIdRef.current !== myReqId) return;
         setSuggestions(results.slice(0, 10));
         setSearchTotal(total);
         setShowSuggestions(true);
       } catch (error) {
         console.error("Failed to fetch fuzzy suggestions:", error);
       } finally {
-        setIsSearching(false);
+        if (reqIdRef.current === myReqId) setIsSearching(false);
       }
     };
 
     const timer = setTimeout(fetchFuzzySuggestions, 300);
-    return () => clearTimeout(timer);
+    debounceRef.current = timer;
+    return () => { clearTimeout(timer); debounceRef.current = null; };
   }, [query]);
 
   const handleSearch = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
+    reqIdRef.current++;
     if (!query.trim()) {
       setWarning("No medicine searched");
       setTimeout(() => setWarning(null), 3000);
       return;
     }
 
-    const params = new URLSearchParams();
-    if (query) { params.set("search", query); fetch('/api/search/log', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: query.trim() }) }).catch(() => {}); }
-    if (selectedType) params.set("type", selectedType);
-    if (selectedClass) params.set("drug_class", selectedClass);
-    if (selectedCompany) params.set("company", selectedCompany);
-    if (selectedGeneric) params.set("generic", selectedGeneric);
-    if (selectedDosageForm) params.set("dosage_form", selectedDosageForm);
-    if (selectedRatings.length) params.set("rating", selectedRatings.join(','));
-    router.push(`/drugs?${params.toString()}`);
     setShowSuggestions(false);
+    setSuggestions([]);
+    setSearchTotal(0);
+    setIsSearching(false);
+    submittedRef.current = true;
+    if (debounceRef.current) { clearTimeout(debounceRef.current); debounceRef.current = null; }
+    setActiveSearch(query.trim());
+    fetch('/api/search/log', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: query.trim() }) }).catch(() => {});
   };
 
   const handleSuggestionSelect = (drug: DrugSummary) => {
@@ -194,6 +204,7 @@ function DrugsContent() {
   };
 
   const handleFocus = async () => {
+    if (activeSearch || searchQ || submittedRef.current) { submittedRef.current = false; return; }
     if (query.trim().length === 0) {
       try {
         setIsSearching(true);
@@ -213,6 +224,7 @@ function DrugsContent() {
 
   const clearFilters = () => {
     setQuery("");
+    setActiveSearch("");
     setSelectedType("");
     setSelectedClass("");
     setSelectedCompany("");
@@ -220,7 +232,6 @@ function DrugsContent() {
     setSelectedDosageForm("");
     setSelectedRatings([]);
     setSelectedRating("");
-    router.push("/drugs");
   };
 
   return (
@@ -247,7 +258,12 @@ function DrugsContent() {
               <Input
                 type="text"
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  submittedRef.current = false;
+                  if (searchQ) { router.replace('/drugs'); }
+                  else if (activeSearch) { setActiveSearch(""); }
+                }}
                 onFocus={handleFocus}
                 placeholder="Search medications..."
                 className="pl-16 h-14 rounded-xl text-base shadow-sm border-2 border-sky-200 focus-visible:border-sky-400"
@@ -332,13 +348,9 @@ function DrugsContent() {
                 </div>
               )}
             </div>
-
-            {isFiltered && (
-              <button onClick={clearFilters} className="text-sm text-gray-500 hover:text-red-600 font-semibold transition-colors shrink-0 ml-1 cursor-pointer">✕</button>
-            )}
           </div>
 
-          <AZBrowse showTabs={false} />
+          {!searchQ && !isFiltered && <AZBrowse showTabs={false} />}
 
           <div className="mt-8">
             {loading ? (
@@ -361,7 +373,12 @@ function DrugsContent() {
               </div>
             ) : (
               <div>
-                <h2 className="text-xl font-bold text-navy mb-6">Popular Drug Searches</h2>
+                <h2 className="text-xl font-bold text-navy mb-6">
+                  {(activeSearch || searchQ) ? <>Showing all <span className="text-teal-600">{totalResults}</span> results for "<span className="text-teal-600">{activeSearch || searchQ}</span>"</>
+                    : isFiltered ? 'Filtered Drugs'
+                    : 'Popular Drug Searches'}
+                  {isFiltered && <button onClick={clearFilters} className="text-sm text-gray-400 hover:text-red-500 font-semibold ml-3 cursor-pointer align-middle">✕</button>}
+                </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {isFiltered ? drugs.map((drug) => <DrugCard key={drug.id} drug={drug} />) : drugs.slice(0, 12).map((drug) => <DrugCard key={drug.id} drug={drug} />)}
                 </div>

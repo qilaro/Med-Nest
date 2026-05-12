@@ -23,6 +23,7 @@ export default function Home() {
   const [stats, setStats] = useState({ drugs: 0, generics: 0, classes: 0, companies: 0 });
   const [isSearching, setIsSearching] = useState(false);
   const searchRef = useRef<HTMLFormElement>(null);
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     fetch('/api/stats').then(r => r.json()).then(setStats).catch(() => {});
@@ -62,15 +63,20 @@ export default function Home() {
     };
 
     const timer = setTimeout(fetchFuzzySuggestions, 300);
-    return () => clearTimeout(timer);
+    debounceRef.current = timer;
+    return () => { clearTimeout(timer); debounceRef.current = null; };
   }, [query]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
+      setShowSuggestions(false);
+      setSuggestions([]);
+      setSearchTotal(0);
+      setIsSearching(false);
+      if (debounceRef.current) { clearTimeout(debounceRef.current); debounceRef.current = null; }
       fetch('/api/search/log', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: query.trim() }) }).catch(() => {});
       router.push(`/drugs?search=${encodeURIComponent(query)}`);
-      setShowSuggestions(false);
     }
   };
 

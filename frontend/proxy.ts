@@ -16,7 +16,7 @@ export default clerkMiddleware((auth, req) => {
     || 'unknown'
 
   // Rate limiting
-  if (!rateLimit(ip, 30, 10000)) {
+  if (!rateLimit(ip, 100, 10000)) {
     return NextResponse.json(
       { error: 'Too many requests. Please try again later.' },
       { status: 429, headers: securityHeaders() }

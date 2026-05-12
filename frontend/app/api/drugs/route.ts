@@ -10,7 +10,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Invalid query parameters' }, { status: 400 });
   }
 
-  const { drug_class: drugClass, medicine_type: medicineType, letter, page, limit } = parsed.data;
+  const { drug_class: drugClass, medicine_type: medicineType, letter, search: searchQuery, page, limit } = parsed.data;
   const offset = (page - 1) * limit;
 
   try {
@@ -61,6 +61,13 @@ export async function GET(request: Request) {
         countQuery = sql`${countQuery}${filter}`;
         dataQuery = sql`${dataQuery}${filter}`;
       }
+    }
+
+    if (searchQuery) {
+      const like = '%' + searchQuery + '%';
+      const filter = sql` AND (b.brand_name ILIKE ${like} OR b.generic_name ILIKE ${like} OR b.company_name ILIKE ${like})`;
+      countQuery = sql`${countQuery}${filter}`;
+      dataQuery = sql`${dataQuery}${filter}`;
     }
 
     const countResult = await db.execute(countQuery);

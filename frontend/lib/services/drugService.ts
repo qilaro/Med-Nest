@@ -39,13 +39,14 @@ export const drugService = {
   /**
    * Get a list of drugs with optional filtering
    */
-  getDrugs: async (params?: { page?: number; limit?: number; drug_class?: string; medicine_type?: string; letter?: string }) => {
+  getDrugs: async (params?: { page?: number; limit?: number; drug_class?: string; medicine_type?: string; letter?: string; search?: string }) => {
     const q = new URLSearchParams();
     if (params?.page) q.set("page", String(params.page));
     if (params?.limit) q.set("limit", String(params.limit));
     if (params?.drug_class) q.set("drug_class", params.drug_class);
     if (params?.medicine_type) q.set("medicine_type", params.medicine_type);
     if (params?.letter) q.set("letter", params.letter);
+    if (params?.search) q.set("search", params.search);
     
     try {
       const data = await apiFetch<DrugsResponse>(`/drugs?${q}`);

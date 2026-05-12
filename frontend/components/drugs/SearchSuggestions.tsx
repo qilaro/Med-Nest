@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import Link from "next/link";
 import { Tag, Clock, FlaskConical } from "lucide-react";
 import { DrugSummary } from "@/types/drug";
@@ -62,9 +62,21 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
 }) => {
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const listRef = useRef<HTMLDivElement>(null);
+  const highlightedRef = useRef(-1);
+  const keyboardNavRef = useRef(false);
+  highlightedRef.current = highlightedIndex;
 
-  // Reset highlight when suggestions change
-  useEffect(() => { setHighlightedIndex(-1); }, [suggestions]);
+  // Reset highlight when query changes
+  useLayoutEffect(() => {
+    highlightedRef.current = -1;
+    keyboardNavRef.current = false;
+    setHighlightedIndex(-1);
+  }, [query]);
+
+  // Reset highlight when dropdown closes
+  useEffect(() => {
+    if (!isVisible) { keyboardNavRef.current = false; }
+  }, [isVisible]);
 
   // Scroll highlighted item into view
   useEffect(() => {
@@ -82,18 +94,31 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
       if (!isVisible) return;
       if (e.key === 'ArrowDown') {
         e.preventDefault();
-        setHighlightedIndex(prev => Math.min(prev + 1, suggestions.length - 1));
+        keyboardNavRef.current = true;
+        setHighlightedIndex(prev => {
+          const next = Math.min(prev + 1, suggestions.length - 1);
+          highlightedRef.current = next;
+          return next;
+        });
       } else if (e.key === 'ArrowUp') {
         e.preventDefault();
-        setHighlightedIndex(prev => Math.max(prev - 1, 0));
-      } else if (e.key === 'Enter' && highlightedIndex >= 0 && suggestions[highlightedIndex]) {
-        e.preventDefault();
-        onSelect(suggestions[highlightedIndex]);
+        keyboardNavRef.current = true;
+        setHighlightedIndex(prev => {
+          const next = Math.max(prev - 1, 0);
+          highlightedRef.current = next;
+          return next;
+        });
+      } else if (e.key === 'Enter') {
+        const idx = highlightedRef.current;
+        if (keyboardNavRef.current && idx >= 0 && suggestions[idx]) {
+          e.preventDefault();
+          onSelect(suggestions[idx]);
+        }
       }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [isVisible, highlightedIndex, suggestions, onSelect]);
+    }, [isVisible, suggestions, onSelect]);
 
   if (!isVisible && !isLoading) return null;
 
@@ -129,6 +154,7 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
       {/* Suggestions */}
       {suggestions.map((drug, index) => (
         <button
+          type="button"
           key={`${drug.type}-${drug.slug || drug.brandName}-${index}`}
           data-index={index}
           onClick={() => onSelect(drug)}

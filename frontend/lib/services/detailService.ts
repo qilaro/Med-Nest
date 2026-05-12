@@ -74,7 +74,7 @@ export async function getDrugDetail(slug: string): Promise<DrugDetailResult | nu
         b.image_url as image_url,
         b.average_rating,
         b.review_count,
-        b.indications,
+        g.indications,
         g.side_effects,
         g.interactions,
         g.contraindications,
