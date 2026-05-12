@@ -270,7 +270,7 @@ function DrugsContent() {
                       router.push(`/drugs?${p.toString()}`);
                     } else clearFilters();
                   }}
-                  className="appearance-none bg-white border border-sky-200 rounded-full px-3 py-1.5 pr-4 text-xs font-medium text-gray-700 cursor-pointer hover:border-teal-300 hover:bg-teal-50 transition-colors focus:outline-none focus:ring-1 focus:ring-teal-200 w-full text-center"
+                  className="appearance-none bg-white border border-sky-200 rounded-full px-3 py-1.5 pr-4 text-xs font-medium text-gray-700 cursor-pointer hover:border-teal-300 hover:bg-teal-50 transition-colors focus:outline-none focus:ring-1 focus:ring-teal-200 w-full text-center shadow-sm"
                 >
                   <option value="">{filter.label}</option>
                   {filter.options.map((opt: string) => (
