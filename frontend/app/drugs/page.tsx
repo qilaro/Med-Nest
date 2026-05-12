@@ -256,85 +256,34 @@ function DrugsContent() {
           </form>
 
           {/* Inline Filter Bar */}
-          <div className="flex items-center gap-1.5 mb-5 flex-nowrap justify-center">
-            <div className="relative w-[130px]">
-              <select
-                value={selectedType}
-                onChange={(e) => { setSelectedType(e.target.value); if (e.target.value) router.push(`/drugs?type=${e.target.value}`); else clearFilters(); }}
-                className="appearance-none bg-gray-50 border-2 border-sky-300 rounded-full px-3 py-1.5 pr-4 text-xs font-semibold text-gray-800 cursor-pointer hover:border-teal-400 hover:bg-teal-50 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-300 w-full text-center shadow-md"
-              >
-                <option value="">Type</option>
-                <option value="allopathic">Pharmaceutical</option>
-                <option value="herbal">Herbal</option>
-                <option value="unani">Unani</option>
-                <option value="homeopathic">Homeopathic</option>
-                <option value="ayurvedic">Ayurvedic</option>
-              </select>
-              <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-            </div>
-
-            <div className="relative w-[130px]">
-              <select
-                value={selectedClass}
-                onChange={(e) => { setSelectedClass(e.target.value); if (e.target.value) router.push(`/drugs?drug_class=${encodeURIComponent(e.target.value)}`); else clearFilters(); }}
-                className="appearance-none bg-gray-50 border-2 border-sky-300 rounded-full px-3 py-1.5 pr-4 text-xs font-semibold text-gray-800 cursor-pointer hover:border-teal-400 hover:bg-teal-50 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-300 w-full text-center shadow-md"
-              >
-                <option value="">Class</option>
-                {classes.map((c: any) => <option key={c.name} value={c.name}>{c.name}</option>)}
-              </select>
-              <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-            </div>
-
-            <div className="relative w-[130px]">
-              <select
-                value={selectedCompany}
-                onChange={(e) => { setSelectedCompany(e.target.value); if (e.target.value) router.push(`/drugs?company=${encodeURIComponent(e.target.value)}`); else clearFilters(); }}
-                className="appearance-none bg-gray-50 border-2 border-sky-300 rounded-full px-3 py-1.5 pr-4 text-xs font-semibold text-gray-800 cursor-pointer hover:border-teal-400 hover:bg-teal-50 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-300 w-full text-center shadow-md"
-              >
-                <option value="">Company</option>
-                {companies.map((c) => <option key={c} value={c}>{c}</option>)}
-              </select>
-              <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-            </div>
-
-            <div className="relative w-[130px]">
-              <select
-                value={selectedGeneric}
-                onChange={(e) => { setSelectedGeneric(e.target.value); if (e.target.value) router.push(`/drugs?generic=${encodeURIComponent(e.target.value)}`); else clearFilters(); }}
-                className="appearance-none bg-gray-50 border-2 border-sky-300 rounded-full px-3 py-1.5 pr-4 text-xs font-semibold text-gray-800 cursor-pointer hover:border-teal-400 hover:bg-teal-50 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-300 w-full text-center shadow-md"
-              >
-                <option value="">Generic</option>
-                {generics.map((g) => <option key={g} value={g}>{g}</option>)}
-              </select>
-              <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-            </div>
-
-            <div className="relative w-[130px]">
-              <select
-                value={selectedDosageForm}
-                onChange={(e) => { setSelectedDosageForm(e.target.value); if (e.target.value) router.push(`/drugs?dosage_form=${encodeURIComponent(e.target.value)}`); else clearFilters(); }}
-                className="appearance-none bg-gray-50 border-2 border-sky-300 rounded-full px-3 py-1.5 pr-4 text-xs font-semibold text-gray-800 cursor-pointer hover:border-teal-400 hover:bg-teal-50 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-300 w-full text-center shadow-md"
-              >
-                <option value="">Form</option>
-                {dosageForms.map((f) => <option key={f} value={f}>{f}</option>)}
-              </select>
-              <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-            </div>
-
-            <div className="relative w-[130px]">
-              <select
-                value={selectedRating}
-                onChange={(e) => { setSelectedRating(e.target.value); if (e.target.value) router.push(`/drugs?rating=${e.target.value}`); else clearFilters(); }}
-                className="appearance-none bg-gray-50 border-2 border-sky-300 rounded-full px-3 py-1.5 pr-4 text-xs font-semibold text-gray-800 cursor-pointer hover:border-teal-400 hover:bg-teal-50 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-300 w-full text-center shadow-md"
-              >
-                <option value="">Rating</option>
-                <option value="5">5 ★★★★★</option>
-                <option value="4">4 ★★★★☆</option>
-                <option value="3">3 ★★★☆☆</option>
-                <option value="2">2 ★★☆☆☆</option>
-              </select>
-              <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-            </div>
+          <div className="flex items-center gap-1.5 mb-5 flex-nowrap overflow-x-auto pb-1">
+            {[
+              { value: selectedType, set: setSelectedType, param: "type", label: "Type", opts: [["allopathic","Pharmaceutical"],["herbal","Herbal"],["unani","Unani"],["homeopathic","Homeopathic"],["ayurvedic","Ayurvedic"]] },
+              { value: selectedClass, set: setSelectedClass, param: "drug_class", label: "Class", opts: classes.map((c: any) => [c.name, c.name]) },
+              { value: selectedCompany, set: setSelectedCompany, param: "company", label: "Company", opts: companies.map((c: string) => [c, c]) },
+              { value: selectedGeneric, set: setSelectedGeneric, param: "generic", label: "Generic", opts: generics.map((g: string) => [g, g]) },
+              { value: selectedDosageForm, set: setSelectedDosageForm, param: "dosage_form", label: "Form", opts: dosageForms.map((f: string) => [f, f]) },
+              { value: selectedRating, set: setSelectedRating, param: "rating", label: "Rating", opts: [["5","5 ★★★★★"],["4","4 ★★★★☆"],["3","3 ★★★☆☆"],["2","2 ★★☆☆☆"]] },
+            ].map((f) => {
+              const isActive = !!f.value;
+              return (
+                <div key={f.label} className="relative shrink-0" style={{ width: '120px' }}>
+                  <select
+                    value={f.value}
+                    onChange={(e) => { f.set(e.target.value); if (e.target.value) { const p = new URLSearchParams(); p.set(f.param, e.target.value); router.push(`/drugs?${p.toString()}`); } else clearFilters(); }}
+                    className={`appearance-none rounded-full px-3 py-1.5 pr-4 text-xs font-semibold w-full text-center shadow-sm transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-teal-300 border-2 ${
+                      isActive
+                        ? 'bg-teal-500 text-white border-teal-500'
+                        : 'bg-gray-50 text-gray-700 border-sky-200 hover:border-teal-400 hover:bg-teal-50'
+                    }`}
+                  >
+                    <option value="">{f.label}</option>
+                    {f.opts.map(([val, display]: string[]) => <option key={val} value={val}>{display}</option>)}
+                  </select>
+                  <svg className={`absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none transition-colors ${isActive ? 'text-white' : 'text-gray-500'}`} width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </div>
+              );
+            })}
 
             {isFiltered && (
               <button onClick={clearFilters} className="text-sm text-gray-500 hover:text-red-600 font-semibold transition-colors shrink-0 ml-1">✕</button>
