@@ -24,7 +24,7 @@ const EmergencyBanner = () => {
           </svg>
           999
         </a>
-        <span className="text-white/90"> — for medical emergencies. Med-Nest provides information only, not emergency advice.</span>
+        <span className="text-white/90"> Med-Nest provides information only, not emergency advice.</span>
       </div>
       <button 
         onClick={() => setIsVisible(false)}
