@@ -151,6 +151,15 @@ function DrugsContent() {
     fetchData();
   }, [activeSearch, searchQ, currentPage, typeFilter, drugClassFilter, companyFilter, genericFilter, dosageFilter, ratingFilter, letterFilter]);
 
+  // Reset suggestions when URL has active search (e.g. from homepage navigation)
+  useEffect(() => {
+    if (searchQ) {
+      setShowSuggestions(false);
+      setSuggestions([]);
+      setSearchTotal(0);
+    }
+  }, [searchQ]);
+
   // Handle suggestion filtering
   useEffect(() => {
     if (hasUrlQuery.current) { hasUrlQuery.current = false; return; }
