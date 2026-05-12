@@ -68,7 +68,7 @@ const Header = () => {
       </header>
 
       {/* Mobile: Floating Action Bar */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 lg:hidden">
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 lg:hidden pointer-events-auto">
         {/* Glass pill container */}
         <div className="flex items-center gap-1 bg-white/90 backdrop-blur-lg border border-gray-200/70 rounded-2xl px-2 py-1.5 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
           <Link href="/" className={`flex items-center justify-center w-11 h-11 rounded-xl transition-all duration-200 ${pathname === '/' ? 'bg-teal-50 text-teal-600' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'}`}>
