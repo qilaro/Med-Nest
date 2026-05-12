@@ -108,7 +108,7 @@ function DrugsContent() {
             (dr: DrugSummary) =>
               dr.brandName.toLowerCase().includes(trimmedLowerQuery) ||
               dr.genericName.toLowerCase().includes(trimmedLowerQuery) ||
-              dr.drugClass.toLowerCase().includes(trimmedLowerQuery) ||
+              (dr.drugClass?.toLowerCase()?.includes(trimmedLowerQuery) ?? false) ||
               (dr.company?.toLowerCase()?.includes(trimmedLowerQuery) ?? false)
           );
         }
