@@ -33,13 +33,14 @@ export async function GET(request: Request) {
             WHEN LOWER(b.brand_name) ILIKE ${'%' + q + '%'} THEN 5
             WHEN LOWER(b.generic_name) LIKE LOWER(${q + '%'}) THEN 4
             WHEN LOWER(b.generic_name) ILIKE ${'%' + q + '%'} THEN 2
+            WHEN LOWER(b.company_name) ILIKE ${'%' + q + '%'} THEN 3
             ELSE 0
           END as rank
         FROM brands b
         WHERE 
           ${isShort 
-            ? sql`LOWER(b.brand_name) ILIKE ${'%' + q + '%'} OR LOWER(b.generic_name) ILIKE ${'%' + q + '%'}`
-            : sql`LOWER(b.brand_name) ILIKE ${'%' + q + '%'} OR LOWER(b.generic_name) ILIKE ${'%' + q + '%'}
+            ? sql`LOWER(b.brand_name) ILIKE ${'%' + q + '%'} OR LOWER(b.generic_name) ILIKE ${'%' + q + '%'} OR LOWER(b.company_name) ILIKE ${'%' + q + '%'}`
+            : sql`LOWER(b.brand_name) ILIKE ${'%' + q + '%'} OR LOWER(b.generic_name) ILIKE ${'%' + q + '%'} OR LOWER(b.company_name) ILIKE ${'%' + q + '%'}
                OR similarity(LOWER(b.brand_name), LOWER(${q})) > 0.4
                OR similarity(LOWER(b.generic_name), LOWER(${q})) > 0.3`
           }
