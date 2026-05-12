@@ -295,7 +295,7 @@ function DrugsContent() {
                         : 'bg-gray-50 text-gray-700 border-sky-200 hover:border-teal-400 hover:bg-teal-50'
                     }`}
                   >
-                    <option value="">{f.label}</option>
+                    <option value="">All</option>
                     {f.opts.map(([val, display]: string[]) => <option key={val} value={val}>{display}</option>)}
                   </select>
                   <svg className={`absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none transition-colors ${isActive ? 'text-white' : 'text-gray-500'}`} width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
