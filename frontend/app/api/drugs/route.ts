@@ -73,13 +73,46 @@ export async function GET(request: Request) {
     const countResult = await db.execute(countQuery);
     const total = Number(countResult.rows[0]?.total) || 0;
 
-    dataQuery = sql`${dataQuery} ORDER BY 
-      b.brand_verified DESC, b.price_verified DESC, b.generic_verified DESC, b.brand_name ASC 
-      LIMIT ${limit} OFFSET ${offset}`;
+    if (searchQuery) {
+      const like = '%' + searchQuery + '%';
+      const prefix = searchQuery + '%';
+      dataQuery = sql`SELECT * FROM (${dataQuery}) sub ORDER BY 
+        CASE
+          WHEN LOWER(sub."brandName") = LOWER(${searchQuery}) THEN 0
+          WHEN LOWER(sub."brandName") LIKE LOWER(${prefix}) THEN 1
+          WHEN sub."brandName" ILIKE ${like} THEN 2
+          WHEN sub."genericName" ILIKE ${like} THEN 3
+          WHEN sub."companyName" ILIKE ${like} THEN 4
+          ELSE 5
+        END, sub."brandName" ASC
+        LIMIT ${limit} OFFSET ${offset}`;
+    } else {
+      dataQuery = sql`${dataQuery} ORDER BY 
+        b.brand_verified DESC, b.price_verified DESC, b.generic_verified DESC, b.brand_name ASC 
+        LIMIT ${limit} OFFSET ${offset}`;
+    }
     const result = await db.execute(dataQuery);
+    let rows = result.rows;
+
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      rows.sort((a: any, b: any) => {
+        const aName = (a.brandName || '').toLowerCase();
+        const bName = (b.brandName || '').toLowerCase();
+        const aGen = (a.genericName || '').toLowerCase();
+        const bGen = (b.genericName || '').toLowerCase();
+        const aCo = (a.company || '').toLowerCase();
+        const bCo = (b.company || '').toLowerCase();
+
+        const rankA = aName === q ? 0 : aName.startsWith(q) ? 1 : aName.includes(q) ? 2 : aGen.includes(q) ? 3 : aCo.includes(q) ? 4 : 5;
+        const rankB = bName === q ? 0 : bName.startsWith(q) ? 1 : bName.includes(q) ? 2 : bGen.includes(q) ? 3 : bCo.includes(q) ? 4 : 5;
+        if (rankA !== rankB) return rankA - rankB;
+        return aName.localeCompare(bName);
+      });
+    }
 
     return NextResponse.json({
-      drugs: result.rows,
+      drugs: rows,
       total,
       page,
       limit,
