@@ -155,7 +155,7 @@ export default function Home() {
               {/* Search Bar */}
               <form ref={searchRef} onSubmit={handleSearchSubmit} className="max-w-2xl mx-auto mb-4 relative px-0">
                 <div className="flex flex-col sm:flex-row gap-2 sm:gap-0 sm:bg-white sm:rounded-2xl sm:py-1.5 sm:pl-1.5 sm:pr-4 sm:shadow-sm sm:border-2 sm:border-sky-200">
-                  <div className="relative flex items-center flex-1 bg-white rounded-2xl sm:rounded-none border-2 sm:border-0 border-sky-200 sm:shadow-none">
+                  <div className="relative flex items-center flex-1 bg-white rounded-2xl sm:rounded-none border-2 sm:border-0 border-sky-200 sm:shadow-none focus-within:shadow-[0_0_0_3px_rgba(45,138,120,0.3)] transition-shadow duration-200">
                     <img src="/icons/pill.svg" alt="search" className="absolute left-4 h-7 w-7 sm:h-9 sm:w-9" />
                     <Input 
                       type="text" 

@@ -286,7 +286,7 @@ function DrugsContent() {
                 }}
                 onFocus={handleFocus}
                 placeholder="Search medications..."
-                className="pl-16 h-14 rounded-xl text-base shadow-sm border-2 border-sky-200 focus-visible:border-sky-400"
+                className="pl-16 h-14 rounded-xl text-base shadow-sm border-2 border-sky-200 focus-visible:border-sky-400 focus-visible:shadow-[0_0_0_3px_rgba(45,138,120,0.25)] transition-shadow duration-200"
               />
               <SearchSuggestions 
                 suggestions={suggestions} 
