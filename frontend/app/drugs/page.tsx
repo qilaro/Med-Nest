@@ -256,7 +256,7 @@ function DrugsContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#D5E9E7] via-white to-white py-6">
-      <div className="max-w-[800px] mx-auto">
+      <div className="max-w-[960px] mx-auto">
         <div className="bg-white rounded-2xl border border-sky-200 shadow-[8px_16px_40px_rgba(0,0,0,0.15),0_20px_60px_-12px_rgba(0,0,0,0.25)] p-6 md:p-8">
           <header className="mb-6">
             <h1 className="text-3xl font-bold text-navy mb-1">Drug Directory</h1>
@@ -410,6 +410,7 @@ function DrugsContent() {
               <div>
                 <h2 className="text-xl font-bold text-navy mb-6">
                   {(activeSearch || searchQ) ? <>Showing all <span className="text-teal-600">{totalResults}</span> results for "<span className="text-teal-600">{activeSearch || searchQ}</span>"</>
+                    : letterFilter ? <>Showing all <span className="text-teal-600">{totalResults}</span> results for "<span className="text-teal-600">{letterFilter}</span>"</>
                     : isFiltered ? 'Filtered Drugs'
                     : 'Popular Drug Searches'}
                   {isFiltered && (
