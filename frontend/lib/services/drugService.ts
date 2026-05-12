@@ -50,9 +50,6 @@ export const drugService = {
     
     try {
       const data = await apiFetch<DrugsResponse>(`/drugs?${q}`);
-      if (data.drugs.length === 0) {
-        throw new Error("Empty API response");
-      }
       return data;
     } catch (error) {
       console.error("API error, entering fallback logic:", error);
