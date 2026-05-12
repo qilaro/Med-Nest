@@ -102,13 +102,13 @@ export function FeaturesCarousel() {
     <section className="py-12">
       {/* Container - Matching reference 1:1 */}
       <div 
-        className="container-medq py-16 relative overflow-hidden mx-auto" 
+        className="py-16 relative overflow-hidden mx-auto" 
         onKeyDownCapture={handleKeyDown}
         tabIndex={0}
         style={{ 
           backgroundColor: '#E4F1F0', 
-          borderRadius: '3rem', 
-          maxWidth: '80rem', 
+          borderRadius: 'clamp(1.5rem, 4vw, 3rem)', 
+          maxWidth: '960px', 
           boxShadow: '20px 50px 80px -20px rgba(0, 0, 0, 0.25), 10px 30px 40px -15px rgba(0, 0, 0, 0.15)',
           outline: 'none'
         }}

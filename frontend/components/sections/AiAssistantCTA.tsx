@@ -4,11 +4,11 @@ export function AiAssistantCTA() {
   return (
     <section className="py-16">
       <div 
-      className="container-medq py-16 px-4 text-center text-gray-900 mx-auto" 
+      className="py-16 px-4 text-center text-gray-900 mx-auto" 
       style={{ 
         backgroundColor: '#efdcf2', 
-        borderRadius: '3rem', 
-        maxWidth: '80rem',
+        borderRadius: 'clamp(1.5rem, 4vw, 3rem)', 
+        maxWidth: '960px',
         boxShadow: '20px 50px 80px -20px rgba(0, 0, 0, 0.25), 10px 30px 40px -15px rgba(0, 0, 0, 0.15)' 
       }}
       >
