@@ -390,7 +390,7 @@ function DrugsContent() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {isFiltered ? drugs.map((drug) => <DrugCard key={drug.id} drug={drug} />) : drugs.slice(0, 12).map((drug) => <DrugCard key={drug.id} drug={drug} />)}
                 </div>
-                {totalPages > 1 && (
+                {isFiltered && totalPages > 1 && (
                   <div className="flex items-center justify-center gap-2 mt-8">
                     <button
                       onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
