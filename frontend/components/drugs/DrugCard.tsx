@@ -27,7 +27,7 @@ export default function DrugCard({ drug }: DrugCardProps) {
       <Card className="h-full transition-all duration-300 hover:border-teal-300 hover:shadow-[0_8px_25px_-5px_rgba(0,150,136,0.2)] overflow-hidden bg-white shadow-md border border-gray-100 hover:-translate-y-0.5">
         <CardContent className="p-4 flex items-start gap-4">
           {/* Icon */}
-          <div className="flex flex-col items-center gap-1 shrink-0">
+          <div className="flex flex-col items-center gap-1 shrink-0 w-14">
             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-teal-50 to-teal-100 flex items-center justify-center text-teal-600 group-hover:from-teal-100 group-hover:to-teal-200 group-hover:text-teal-700 transition-all duration-300 shadow-sm">
               {(() => { const Icon = getDosageIcon(drug.dosageForm); return <Icon className="w-6 h-6" />; })()}
             </div>
@@ -66,22 +66,19 @@ export default function DrugCard({ drug }: DrugCardProps) {
               </p>
             )}
 
-            {/* Strength | Price */}
-            <div className="flex items-center justify-between mt-2.5">
-              <div className="flex items-center gap-2 text-xs">
-                {drug.strength && (
-                  <span className="text-gray-500 font-medium">
-                    {drug.strength}
-                  </span>
-                )}
-              </div>
-              <div className="text-right">
-                {drug.price && (
-                  <span className="text-sm font-bold text-gray-800">
-                    <span className="text-teal-600">৳</span> {drug.price}
-                  </span>
-                )}
-              </div>
+            {/* Strength + Price */}
+            <div className="flex items-center justify-between mt-2">
+              {drug.strength && (
+                <span className="text-xs font-bold text-teal-800 bg-teal-50 px-2 py-0.5 rounded-md border border-teal-100/60">
+                  {drug.strength}
+                </span>
+              )}
+              {!drug.strength && <span />}
+              {drug.price && (
+                <span className="text-sm font-bold text-gray-800">
+                  <span className="text-teal-600">৳</span> {drug.price}
+                </span>
+              )}
             </div>
 
             {/* Drug Class */}
