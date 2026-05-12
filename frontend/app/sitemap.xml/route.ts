@@ -1,6 +1,8 @@
 import { db } from '@/lib/db';
 import { sql } from 'drizzle-orm';
 
+export const dynamic = 'force-dynamic';
+
 const BASE_URL = 'https://mednest.com.bd';
 
 export async function GET() {
