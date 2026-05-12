@@ -78,12 +78,6 @@ function AZBrowseContent({ showTabs = true }: { showTabs?: boolean }) {
             </div>
           ))}
           </div>
-          <Link
-            href="/indications"
-            className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg font-medium text-xs sm:text-sm whitespace-nowrap transition-colors cursor-pointer shadow-lg bg-white text-blue-600 hover:bg-gray-100 border border-sky-200 inline-flex items-center"
-          >
-            Indications
-          </Link>
         </div>
       )}
 
