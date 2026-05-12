@@ -79,8 +79,8 @@ const Header = () => {
           <div
             role="button"
             tabIndex={0}
-            onTouchEnd={(e) => { e.preventDefault(); setMenuOpen(true); }}
-            onClick={(e) => { e.preventDefault(); setMenuOpen(true); }}
+            onTouchEnd={(e) => { e.preventDefault(); setMenuOpen(v => !v); }}
+            onClick={(e) => { e.preventDefault(); setMenuOpen(v => !v); }}
             className="flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-br from-teal-400 to-teal-600 text-white shadow-md hover:shadow-lg active:scale-95 transition-all duration-200 hover:from-teal-500 hover:to-teal-700 cursor-pointer select-none touch-manipulation"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
