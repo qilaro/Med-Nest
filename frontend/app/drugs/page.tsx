@@ -90,8 +90,8 @@ function DrugsContent() {
         }
 
         if (companyFilter) {
-          const companies = companyFilter.split(',');
-          filteredDrugs = filteredDrugs.filter((dr: DrugSummary) => companies.includes(dr.company));
+          const comps = companyFilter.split(',');
+          filteredDrugs = filteredDrugs.filter((dr: DrugSummary) => dr.company && comps.includes(dr.company));
         }
         
         if (genericFilter) {
@@ -99,8 +99,8 @@ function DrugsContent() {
         }
         
         if (dosageFilter) {
-          const forms = dosageFilter.split(',');
-          filteredDrugs = filteredDrugs.filter((dr: DrugSummary) => forms.includes(dr.dosageForm));
+          const dForms = dosageFilter.split(',');
+          filteredDrugs = filteredDrugs.filter((dr: DrugSummary) => dForms.includes(dr.dosageForm));
         }
         
         if (ratingFilter) {
