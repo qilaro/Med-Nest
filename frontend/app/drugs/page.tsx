@@ -40,6 +40,9 @@ function DrugsContent() {
   const [selectedGeneric, setSelectedGeneric] = useState(genericFilter);
   const [selectedDosageForm, setSelectedDosageForm] = useState(dosageFilter);
   const [selectedRating, setSelectedRating] = useState(ratingFilter);
+  const [selectedRatings, setSelectedRatings] = useState<string[]>(ratingFilter ? ratingFilter.split(',') : []);
+  const [showRatingDropdown, setShowRatingDropdown] = useState(false);
+  const ratingRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
   const [warning, setWarning] = useState<string | null>(null);
   
@@ -59,6 +62,18 @@ function DrugsContent() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Close rating dropdown on outside click
+  useEffect(() => {
+    if (!showRatingDropdown) return;
+    const handler = (e: MouseEvent) => {
+      if (ratingRef.current && !ratingRef.current.contains(e.target as Node)) {
+        setShowRatingDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [showRatingDropdown]);
 
   // Fetch data when filters change
   useEffect(() => {
@@ -110,8 +125,11 @@ function DrugsContent() {
         }
         
         if (ratingFilter) {
-          const minRating = parseFloat(ratingFilter);
-          filteredDrugs = filteredDrugs.filter((dr: DrugSummary) => (dr.averageRating || 0) >= minRating);
+          const ratings = ratingFilter.split(',').map(Number);
+          filteredDrugs = filteredDrugs.filter((dr: DrugSummary) => {
+            const drugRating = dr.averageRating || 0;
+            return ratings.some((r: number) => drugRating >= r);
+          });
         }
 
         setDrugs(filteredDrugs);
@@ -168,7 +186,7 @@ function DrugsContent() {
     if (selectedCompany) params.set("company", selectedCompany);
     if (selectedGeneric) params.set("generic", selectedGeneric);
     if (selectedDosageForm) params.set("dosage_form", selectedDosageForm);
-    if (selectedRating) params.set("rating", selectedRating);
+    if (selectedRatings.length) params.set("rating", selectedRatings.join(','));
     router.push(`/drugs?${params.toString()}`);
     setShowSuggestions(false);
   };
@@ -207,6 +225,7 @@ function DrugsContent() {
     setSelectedCompany("");
     setSelectedGeneric("");
     setSelectedDosageForm("");
+    setSelectedRatings([]);
     setSelectedRating("");
     router.push("/drugs");
   };
@@ -263,11 +282,10 @@ function DrugsContent() {
               { value: selectedCompany, set: setSelectedCompany, param: "company", label: "Company", opts: companies.map((c: string) => [c, c]) },
               { value: selectedGeneric, set: setSelectedGeneric, param: "generic", label: "Generic", opts: generics.map((g: string) => [g, g]) },
               { value: selectedDosageForm, set: setSelectedDosageForm, param: "dosage_form", label: "Form", opts: dosageForms.map((f: string) => [f, f]) },
-              { value: selectedRating, set: setSelectedRating, param: "rating", label: "★", width: 65, opts: [["5","5 ★★★★★"],["4","4 ★★★★"],["3","3 ★★★"],["2","2 ★★"]] },
             ].map((f: any) => {
               const isActive = !!f.value;
               return (
-                <div key={f.label} className="relative shrink-0" style={{ width: (f.width || 120) + 'px' }}>
+                <div key={f.label} className="relative shrink-0" style={{ width: '120px' }}>
                   <select
                     value={f.value}
                     onChange={(e) => { f.set(e.target.value); if (e.target.value) { const p = new URLSearchParams(); p.set(f.param, e.target.value); router.push(`/drugs?${p.toString()}`); } else clearFilters(); }}
@@ -284,6 +302,40 @@ function DrugsContent() {
                 </div>
               );
             })}
+
+            {/* Rating checkbox dropdown */}
+            <div className="relative shrink-0" ref={ratingRef}>
+              <button
+                onClick={() => setShowRatingDropdown(!showRatingDropdown)}
+                className={`rounded-full px-3 py-1.5 text-xs font-semibold shadow-sm transition-all border-2 flex items-center gap-1 ${
+                  selectedRatings.length
+                    ? 'bg-teal-500 text-white border-teal-500'
+                    : 'bg-gray-50 text-gray-700 border-sky-200 hover:border-teal-400 hover:bg-teal-50'
+                }`}
+              >
+                ★
+                {selectedRatings.length > 0 && <span className="text-[10px]">({selectedRatings.join(',')})</span>}
+                <svg className={`transition-colors ${selectedRatings.length ? 'text-white' : 'text-gray-500'}`} width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+              </button>
+              {showRatingDropdown && (
+                <div className="absolute top-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50 min-w-[140px] right-0">
+                  {[["5","5 ★★★★★"],["4","4 ★★★★"],["3","3 ★★★"],["2","2 ★★"]].map(([val, display]) => {
+                    const checked = selectedRatings.includes(val);
+                    return (
+                      <label key={val} className="flex items-center gap-2 px-3 py-2 text-xs cursor-pointer hover:bg-teal-50 whitespace-nowrap">
+                        <input type="checkbox" checked={checked} onChange={() => {
+                          const next = checked ? selectedRatings.filter(r => r !== val) : [...selectedRatings, val];
+                          setSelectedRatings(next);
+                          if (next.length) router.push(`/drugs?rating=${next.join(',')}`); else clearFilters();
+                          setShowRatingDropdown(false);
+                        }} className="accent-teal-500" />
+                        {display}
+                      </label>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
 
             {isFiltered && (
               <button onClick={clearFilters} className="text-sm text-gray-500 hover:text-red-600 font-semibold transition-colors shrink-0 ml-1">✕</button>
