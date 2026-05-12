@@ -32,7 +32,7 @@ export default function DrugCard({ drug }: DrugCardProps) {
               <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-teal-100 to-teal-200 flex items-center justify-center text-teal-600 shadow-sm group-hover:shadow-md group-hover:from-teal-200 group-hover:to-teal-300 group-hover:text-teal-700 group-hover:scale-105 transition-all duration-300">
                 {(() => { const Icon = getDosageIcon(drug.dosageForm); return <Icon className="w-5 h-5" />; })()}
               </div>
-              <span className="text-[9px] font-bold text-teal-600 uppercase tracking-wider">
+              <span className="text-[9px] font-bold text-teal-600 uppercase tracking-wider" title={drug.dosageForm}>
                 {getDosageLabel(drug.dosageForm)}
               </span>
             </div>
@@ -50,11 +50,11 @@ export default function DrugCard({ drug }: DrugCardProps) {
                   )}
                 </div>
               </div>
-              <p className="text-sm text-gray-500 truncate mt-0.5">
+              <p className="text-sm text-gray-500 truncate mt-0.5" title={drug.genericName}>
                 {drug.genericName}
               </p>
               {drug.company && (
-                <p className="text-[11px] text-gray-500 truncate font-medium mt-0.5">
+                <p className="text-[11px] text-gray-500 truncate font-medium mt-0.5" title={drug.company}>
                   {drug.company}
                 </p>
               )}
@@ -68,27 +68,27 @@ export default function DrugCard({ drug }: DrugCardProps) {
           <div className="flex items-start gap-3.5">
             <div className="w-14 shrink-0 flex flex-col items-center">
               {drug.strength && (
-                <span className="text-[9px] font-bold text-teal-800 bg-teal-100 px-1.5 py-0.5 rounded border border-teal-200 text-center leading-tight w-full truncate">
+                <span className="text-[9px] font-bold text-teal-800 bg-teal-100 px-1.5 py-0.5 rounded border border-teal-200 text-center leading-tight w-full truncate" title={drug.strength}>
                   {drug.strength}
                 </span>
               )}
             </div>
 
             <div className="min-w-0 flex-1 flex items-center justify-between gap-3">
-              <p className="text-[10px] text-gray-500 uppercase tracking-wider font-medium truncate">
+              <p className="text-[10px] text-gray-500 uppercase tracking-wider font-medium truncate" title={drug.drugClass || undefined}>
                 {drug.drugClass}
               </p>
               <div className="flex items-center justify-center flex-1">
-                {drug.averageRating !== undefined && (
-                  <span className="text-[10px] font-bold text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-300 flex items-center gap-0.5">
-                    <svg width="9" height="9" viewBox="0 0 24 24" fill="#D97706" stroke="#D97706" strokeWidth="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                    {drug.averageRating.toFixed(1)}
+                {drug.price && (
+                  <span className="text-sm font-bold text-gray-800 bg-gray-100 px-2 py-0.5 rounded-md border border-gray-200" title={(drug as any).packSize ? `৳ ${drug.price} / ${(drug as any).packSize}` : `৳ ${drug.price} per unit`}>
+                    <span className="text-teal-600">৳</span> {drug.price}
                   </span>
                 )}
               </div>
-              {drug.price && (
-                <span className="shrink-0 text-sm font-bold text-gray-800 bg-gray-100 px-2 py-0.5 rounded-md border border-gray-200">
-                  <span className="text-teal-600">৳</span> {drug.price}
+              {drug.averageRating !== undefined && (
+                <span className="shrink-0 text-[10px] font-bold text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-300 flex items-center gap-0.5">
+                  <svg width="9" height="9" viewBox="0 0 24 24" fill="#D97706" stroke="#D97706" strokeWidth="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  {drug.averageRating.toFixed(1)}
                 </span>
               )}
             </div>
