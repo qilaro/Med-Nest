@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 
 const BOTTOM_TABS = [
   { name: 'Home', href: '/', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
@@ -30,7 +30,6 @@ const TabIcon = ({ d, className = "h-5 w-5" }: { d: string; className?: string }
 const Header = () => {
   const [moreOpen, setMoreOpen] = useState(false);
   const pathname = usePathname();
-  const router = useRouter();
 
   return (
     <>
@@ -78,11 +77,7 @@ const Header = () => {
       <nav className="fixed bottom-0 left-0 right-0 lg:hidden bg-white border-t border-gray-200 z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.07)] safe-area-bottom">
         <div className="flex items-center justify-around h-16 px-1 max-w-lg mx-auto">
           {BOTTOM_TABS.map((tab) => {
-            const isActive = tab.search
-              ? false
-              : tab.more
-              ? moreOpen
-              : pathname === tab.href;
+            const isActive = tab.more ? moreOpen : pathname === tab.href;
             const isSearch = tab.search;
 
             return isSearch ? (
@@ -91,24 +86,32 @@ const Header = () => {
                 href={tab.href}
                 className="relative -mt-3"
               >
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-400 to-teal-600 text-white shadow-lg flex items-center justify-center active:scale-95 transition-transform">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-400 to-teal-600 text-white shadow-lg flex items-center justify-center active:scale-95 transition-transform hover:from-teal-500 hover:to-teal-700">
                   <TabIcon d={tab.icon} className="h-5 w-5" />
                 </div>
               </Link>
-            ) : (
+            ) : tab.more ? (
               <button
                 key={tab.name}
-                onClick={() => {
-                  if (tab.more) { setMoreOpen(!moreOpen); return; }
-                  setMoreOpen(false);
-                  if (tab.href !== '#') router.push(tab.href);
-                }}
-                className={`flex flex-col items-center gap-0.5 px-3 py-1 transition-colors ${isActive ? 'text-teal-600' : 'text-gray-400 hover:text-gray-600'}`}
+                onClick={() => setMoreOpen(!moreOpen)}
+                className={`flex flex-col items-center justify-center gap-0.5 w-16 h-full transition-colors cursor-pointer ${
+                  isActive ? 'text-teal-600' : 'text-gray-400 hover:text-gray-600'
+                }`}
               >
                 <TabIcon d={tab.icon} className={`h-5 w-5 ${isActive ? 'stroke-[2.5]' : ''}`} />
-                <span className={`text-[10px] font-semibold ${isActive ? 'text-teal-600' : 'text-gray-400'}`}>{tab.name}</span>
-                {isActive && <div className="absolute bottom-1 w-4 h-0.5 rounded-full bg-teal-500" />}
+                <span className="text-[10px] font-semibold">{tab.name}</span>
               </button>
+            ) : (
+              <Link
+                key={tab.name}
+                href={tab.href}
+                className={`flex flex-col items-center justify-center gap-0.5 w-16 h-full transition-colors ${
+                  isActive ? 'text-teal-600' : 'text-gray-400 hover:text-gray-600'
+                }`}
+              >
+                <TabIcon d={tab.icon} className={`h-5 w-5 ${isActive ? 'stroke-[2.5]' : ''}`} />
+                <span className="text-[10px] font-semibold">{tab.name}</span>
+              </Link>
             );
           })}
         </div>
