@@ -295,6 +295,7 @@ function DrugsContent() {
                         : 'bg-gray-50 text-gray-700 border-sky-200 hover:border-teal-400 hover:bg-teal-50'
                     }`}
                   >
+                    <option value="" hidden>{f.label}</option>
                     <option value="">All</option>
                     {f.opts.map(([val, display]: string[]) => <option key={val} value={val}>{display}</option>)}
                   </select>
