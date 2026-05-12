@@ -343,7 +343,7 @@ function DrugsContent() {
             </div>
 
             {isFiltered && (
-              <button onClick={clearFilters} className="text-sm text-gray-500 hover:text-red-600 font-semibold transition-colors shrink-0 ml-1">✕</button>
+              <button onClick={clearFilters} className="text-sm text-gray-500 hover:text-red-600 font-semibold transition-colors shrink-0 ml-1 cursor-pointer">✕</button>
             )}
           </div>
 
