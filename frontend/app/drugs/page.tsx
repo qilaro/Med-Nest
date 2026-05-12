@@ -251,6 +251,7 @@ function DrugsContent() {
     setSelectedDosageForm("");
     setSelectedRatings([]);
     setSelectedRating("");
+    router.push("/drugs");
   };
 
   return (
