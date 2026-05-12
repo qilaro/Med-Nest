@@ -256,18 +256,18 @@ function DrugsContent() {
           </form>
 
           {/* Inline Filter Bar */}
-          <div className="flex items-center gap-1.5 mb-5 flex-nowrap overflow-x-auto pb-1">
+          <div className="flex items-center gap-1.5 mb-5 flex-nowrap justify-center">
             {[
               { value: selectedType, set: setSelectedType, param: "type", label: "Type", opts: [["allopathic","Pharmaceutical"],["herbal","Herbal"],["unani","Unani"],["homeopathic","Homeopathic"],["ayurvedic","Ayurvedic"]] },
               { value: selectedClass, set: setSelectedClass, param: "drug_class", label: "Class", opts: classes.map((c: any) => [c.name, c.name]) },
               { value: selectedCompany, set: setSelectedCompany, param: "company", label: "Company", opts: companies.map((c: string) => [c, c]) },
               { value: selectedGeneric, set: setSelectedGeneric, param: "generic", label: "Generic", opts: generics.map((g: string) => [g, g]) },
               { value: selectedDosageForm, set: setSelectedDosageForm, param: "dosage_form", label: "Form", opts: dosageForms.map((f: string) => [f, f]) },
-              { value: selectedRating, set: setSelectedRating, param: "rating", label: "Rating", opts: [["5","5 ★★★★★"],["4","4 ★★★★☆"],["3","3 ★★★☆☆"],["2","2 ★★☆☆☆"]] },
-            ].map((f) => {
+              { value: selectedRating, set: setSelectedRating, param: "rating", label: "★", width: 65, opts: [["5","★★★★★"],["4","★★★★"],["3","★★★"],["2","★★"]] },
+            ].map((f: any) => {
               const isActive = !!f.value;
               return (
-                <div key={f.label} className="relative shrink-0" style={{ width: '120px' }}>
+                <div key={f.label} className="relative shrink-0" style={{ width: (f.width || 120) + 'px' }}>
                   <select
                     value={f.value}
                     onChange={(e) => { f.set(e.target.value); if (e.target.value) { const p = new URLSearchParams(); p.set(f.param, e.target.value); router.push(`/drugs?${p.toString()}`); } else clearFilters(); }}
