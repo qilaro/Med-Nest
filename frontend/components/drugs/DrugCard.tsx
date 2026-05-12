@@ -59,7 +59,7 @@ export default function DrugCard({ drug }: DrugCardProps) {
             {/* Strength under icon */}
             <div className="w-16 shrink-0 flex flex-col items-center">
               {drug.strength && (
-                <span className="text-[9px] font-bold text-teal-800 bg-teal-50 px-1.5 py-0.5 rounded border border-teal-100/60 text-center leading-tight w-full">
+                <span className="text-[9px] font-bold text-teal-800 bg-teal-50 px-1.5 py-0.5 rounded border border-teal-100/60 text-center leading-tight w-full truncate">
                   {drug.strength}
                 </span>
               )}
@@ -77,7 +77,7 @@ export default function DrugCard({ drug }: DrugCardProps) {
                   </span>
                 )}
               </div>
-              <p className="text-[10px] text-gray-400 uppercase tracking-wider font-medium mt-1.5">
+              <p className="text-[10px] text-gray-400 uppercase tracking-wider font-medium mt-1.5 truncate">
                 {drug.drugClass}
               </p>
             </div>
