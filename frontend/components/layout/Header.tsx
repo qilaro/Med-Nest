@@ -68,22 +68,23 @@ const Header = () => {
       </header>
 
       {/* Mobile: Floating Action Bar */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 lg:hidden pointer-events-auto">
-        {/* Glass pill container */}
-        <div className="flex items-center gap-1 bg-white/90 backdrop-blur-lg border border-gray-200/70 rounded-2xl px-2 py-1.5 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 lg:hidden">
+        <div className="flex items-center gap-1 bg-white/95 border border-gray-200/70 rounded-2xl px-2 py-1.5 shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
           <Link href="/" className={`flex items-center justify-center w-11 h-11 rounded-xl transition-all duration-200 ${pathname === '/' ? 'bg-teal-50 text-teal-600' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'}`}>
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
           </Link>
           <Link href="/drugs" className={`flex items-center justify-center w-11 h-11 rounded-xl transition-all duration-200 ${pathname === '/drugs' ? 'bg-teal-50 text-teal-600' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'}`}>
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M10.5 20.5 20.5 10.5a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z M8.5 8.5 15.5 15.5"/></svg>
           </Link>
-          <a
-            href="#"
+          <div
+            role="button"
+            tabIndex={0}
+            onTouchEnd={(e) => { e.preventDefault(); setMenuOpen(true); }}
             onClick={(e) => { e.preventDefault(); setMenuOpen(true); }}
-            className="flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-br from-teal-400 to-teal-600 text-white shadow-md hover:shadow-lg active:scale-95 transition-all duration-200 hover:from-teal-500 hover:to-teal-700 cursor-pointer select-none"
+            className="flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-br from-teal-400 to-teal-600 text-white shadow-md hover:shadow-lg active:scale-95 transition-all duration-200 hover:from-teal-500 hover:to-teal-700 cursor-pointer select-none touch-manipulation"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
-          </a>
+          </div>
         </div>
       </div>
 
