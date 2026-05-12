@@ -46,7 +46,7 @@ export default function DrugCard({ drug }: DrugCardProps) {
               >
                 {drug.brandName}
               </h3>
-              {drug.averageRating !== undefined && drug.averageRating > 0 && (
+              {drug.averageRating !== undefined && (
                 <span className="shrink-0 text-[11px] font-bold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-md border border-amber-200/60 flex items-center gap-0.5">
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="#D97706" stroke="#D97706" strokeWidth="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                   {drug.averageRating.toFixed(1)}
@@ -66,12 +66,9 @@ export default function DrugCard({ drug }: DrugCardProps) {
               </p>
             )}
 
-            {/* Dosage Form + Strength | Price */}
+            {/* Strength | Price */}
             <div className="flex items-center justify-between mt-2.5">
               <div className="flex items-center gap-2 text-xs">
-                <span className="font-semibold text-teal-700 bg-teal-50 px-2 py-0.5 rounded-md border border-teal-100/60">
-                  {drug.dosageForm}
-                </span>
                 {drug.strength && (
                   <span className="text-gray-500 font-medium">
                     {drug.strength}
