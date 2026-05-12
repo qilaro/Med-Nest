@@ -54,6 +54,17 @@ function DrugsContent() {
   const searchRef = useRef<HTMLFormElement>(null);
   const hasUrlQuery = useRef(!!searchQ);
 
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
   // Fetch main drug data
   useEffect(() => {
     async function fetchData() {
@@ -249,6 +260,7 @@ function DrugsContent() {
                 query={query}
                 isLoading={isSearching}
                 total={searchTotal}
+                onViewAll={() => setShowSuggestions(false)}
               />
             </div>
 

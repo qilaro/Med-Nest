@@ -12,6 +12,7 @@ interface SearchSuggestionsProps {
   query?: string;
   isLoading?: boolean;
   total?: number;
+  onViewAll?: () => void;
 }
 
 const TYPE_COLORS: Record<string, string> = {
@@ -57,6 +58,7 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
   query = "",
   isLoading = false,
   total,
+  onViewAll,
 }) => {
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const listRef = useRef<HTMLDivElement>(null);
@@ -175,7 +177,7 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
 
       {total !== undefined && total > suggestions.length && (
         <div className="px-4 py-2.5 bg-gray-50 border-t border-gray-100">
-          <Link href={`/drugs?search=${encodeURIComponent(query || '')}`} className="block text-center text-xs font-semibold text-teal-600 hover:text-teal-700 transition-colors">
+          <Link href={`/drugs?search=${encodeURIComponent(query || '')}`} onClick={onViewAll} className="block text-center text-xs font-semibold text-teal-600 hover:text-teal-800 hover:bg-teal-50 rounded-lg py-2 transition-colors">
             View All {total} Results →
           </Link>
         </div>
