@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 const BOTTOM_TABS = [
   { name: 'Home', href: '/', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
@@ -30,6 +30,7 @@ const TabIcon = ({ d, className = "h-5 w-5" }: { d: string; className?: string }
 const Header = () => {
   const [moreOpen, setMoreOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
 
   return (
     <>
@@ -100,7 +101,7 @@ const Header = () => {
                 onClick={() => {
                   if (tab.more) { setMoreOpen(!moreOpen); return; }
                   setMoreOpen(false);
-                  if (tab.href !== '#') window.location.href = tab.href;
+                  if (tab.href !== '#') router.push(tab.href);
                 }}
                 className={`flex flex-col items-center gap-0.5 px-3 py-1 transition-colors ${isActive ? 'text-teal-600' : 'text-gray-400 hover:text-gray-600'}`}
               >
