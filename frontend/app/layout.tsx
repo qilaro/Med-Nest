@@ -63,7 +63,7 @@ setInterval(function(){
 `}} />
           <EmergencyBanner />
           <Header />
-          <main className="flex-1 relative z-10">
+          <main className="flex-1 relative z-10 pb-16 lg:pb-0">
             {children}
           </main>
           <Footer />
