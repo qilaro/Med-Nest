@@ -54,6 +54,78 @@ function DrugsContent() {
   const searchRef = useRef<HTMLFormElement>(null);
   const hasUrlQuery = useRef(!!searchQ);
 
+  // Fetch main drug data
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true);
+      try {
+        const [drugsData, classesData, companiesData, formsData] = await Promise.all([
+          drugService.getDrugs({ 
+            drug_class: drugClassFilter || undefined,
+            medicine_type: typeFilter || undefined,
+            letter: letterFilter || undefined
+          }),
+          drugService.getDrugClasses(),
+          drugService.getCompanies(),
+          drugService.getDosageForms(),
+        ]);
+
+        let filteredDrugs = drugsData.drugs;
+        
+        const uniqueGenerics: string[] = Array.from(new Set(drugsData.drugs.map((d: DrugSummary) => d.genericName))).filter((g): g is string => typeof g === 'string').sort();
+        setGenerics(uniqueGenerics);
+        
+        const uniqueForms: string[] = formsData.map((f: any) => f.name).filter(Boolean).sort();
+        setDosageForms(uniqueForms);
+        
+        if (searchQ) {
+          const trimmedLowerQuery = query.trim().toLowerCase();
+          filteredDrugs = filteredDrugs.filter(
+            (dr: DrugSummary) =>
+              dr.brandName.toLowerCase().includes(trimmedLowerQuery) ||
+              dr.genericName.toLowerCase().includes(trimmedLowerQuery) ||
+              (dr.drugClass?.toLowerCase()?.includes(trimmedLowerQuery) ?? false) ||
+              (dr.company?.toLowerCase()?.includes(trimmedLowerQuery) ?? false)
+          );
+        }
+
+        if (companyFilter) {
+          const companies = companyFilter.split(',');
+          filteredDrugs = filteredDrugs.filter((dr: DrugSummary) => companies.includes(dr.company));
+        }
+        
+        if (genericFilter) {
+          filteredDrugs = filteredDrugs.filter((dr: DrugSummary) => dr.genericName === genericFilter);
+        }
+        
+        if (dosageFilter) {
+          const forms = dosageFilter.split(',');
+          filteredDrugs = filteredDrugs.filter((dr: DrugSummary) => forms.includes(dr.dosageForm));
+        }
+        
+        if (ratingFilter) {
+          const ratings = ratingFilter.split(',').map(Number);
+          filteredDrugs = filteredDrugs.filter((dr: DrugSummary) => {
+            const drugRating = dr.averageRating || 0;
+            return ratings.some((r: number) => drugRating >= r);
+          });
+        }
+
+        setDrugs(filteredDrugs);
+        setClasses(classesData);
+        setCompanies(companiesData);
+        setDosageForms(uniqueForms);
+      } catch (error) {
+        console.error("Failed to fetch drugs:", error);
+        setWarning("Failed to load medicines. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchData();
+  }, [searchQ, typeFilter, drugClassFilter, companyFilter, genericFilter, dosageFilter, ratingFilter, letterFilter]);
+
   // Handle suggestion filtering
   useEffect(() => {
     if (hasUrlQuery.current) { hasUrlQuery.current = false; return; }
