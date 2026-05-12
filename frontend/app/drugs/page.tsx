@@ -259,7 +259,7 @@ function DrugsContent() {
       <div className="max-w-[960px] mx-auto">
         <div className="bg-white rounded-2xl border border-sky-200 shadow-[8px_16px_40px_rgba(0,0,0,0.15),0_20px_60px_-12px_rgba(0,0,0,0.25)] p-6 md:p-8">
           <header className="mb-6">
-            <h1 className="text-3xl font-bold text-navy mb-1">Drug Directory</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-navy mb-1">Drug Directory</h1>
             <p className="text-sm text-gray-500">
               Browse our complete database of medications, verified by pharmacists.
             </p>
@@ -273,7 +273,7 @@ function DrugsContent() {
           )}
 
           <form ref={searchRef} onSubmit={(e) => handleSearch(e)} className="flex flex-wrap gap-4 mb-6 items-start">
-            <div className="relative flex-1 min-w-[280px]">
+            <div className="relative flex-1 min-w-0 w-full sm:min-w-[280px]">
               <img src="/icons/pill.svg" alt="search" className="absolute left-4 top-1/2 -translate-y-1/2 h-9 w-9" />
               <Input
                 type="text"
@@ -300,13 +300,13 @@ function DrugsContent() {
               />
             </div>
 
-            <Button type="submit" className="h-14 px-8 rounded-xl font-bold bg-primary hover:bg-primary-dark cursor-pointer">
+            <Button type="submit" className="h-14 w-full sm:w-auto px-8 rounded-xl font-bold bg-primary hover:bg-primary-dark cursor-pointer">
               Find Medicine
             </Button>
           </form>
 
           {/* Inline Filter Bar */}
-          <div className="flex items-center gap-1.5 mb-5 flex-nowrap justify-center">
+          <div className="flex items-center gap-1.5 mb-5 flex-wrap sm:flex-nowrap justify-center">
             {[
               { value: selectedType, set: setSelectedType, param: "type", label: "Type", opts: [["allopathic","Pharmaceutical"],["herbal","Herbal"],["unani","Unani"],["homeopathic","Homeopathic"],["ayurvedic","Ayurvedic"]] },
               { value: selectedClass, set: setSelectedClass, param: "drug_class", label: "Class", opts: classes.map((c: any) => [c.name, c.name]) },
@@ -316,7 +316,7 @@ function DrugsContent() {
             ].map((f: any) => {
               const isActive = !!f.value;
               return (
-                <div key={f.label} className="relative shrink-0" style={{ width: '120px' }}>
+                <div key={f.label} className="relative shrink-0" style={{ width: 'calc(50% - 6px)', maxWidth: '120px' }}>
                   <select
                     value={f.value}
                     onChange={(e) => {
@@ -408,7 +408,7 @@ function DrugsContent() {
               </div>
             ) : (
               <div>
-                <h2 className="text-xl font-bold text-navy mb-6">
+                <h2 className="text-lg sm:text-xl font-bold text-navy mb-6">
                   {(activeSearch || searchQ) ? <>Showing all <span className="text-teal-600">{totalResults}</span> results for "<span className="text-teal-600">{activeSearch || searchQ}</span>"</>
                     : letterFilter ? <>Showing all <span className="text-teal-600">{totalResults}</span> results for "<span className="text-teal-600">{letterFilter}</span>"</>
                     : isFiltered ? 'Filtered Drugs'
@@ -430,7 +430,7 @@ function DrugsContent() {
                   {isFiltered ? drugs.map((drug) => <DrugCard key={drug.id} drug={drug} />) : drugs.slice(0, 12).map((drug) => <DrugCard key={drug.id} drug={drug} />)}
                 </div>
                 {isFiltered && totalPages > 1 && (
-                  <div className="flex items-center justify-center gap-2 mt-8">
+                  <div className="flex items-center justify-center gap-1.5 sm:gap-2 mt-6 sm:mt-8 flex-wrap">
                     <button
                       onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                       disabled={currentPage <= 1}

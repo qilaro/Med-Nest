@@ -157,7 +157,7 @@ export default function Home() {
 
               {/* Search Bar - Centered */}
               <form ref={searchRef} onSubmit={handleSearchSubmit} className="max-w-4xl mx-auto mb-4 relative">
-                <div className="flex gap-2 bg-white rounded-2xl py-1.5 pl-1.5 pr-4 shadow-sm border-2 border-sky-200">
+                <div className="flex flex-col sm:flex-row gap-2 bg-white rounded-2xl py-1.5 pl-1.5 pr-4 shadow-sm border-2 border-sky-200">
                   <div className="flex-1 relative flex items-center">
                     <img src="/icons/pill.svg" alt="search" className="absolute left-5 h-9 w-9" />
                     <Input 
@@ -169,7 +169,7 @@ export default function Home() {
                       className="pl-16 h-14 text-base border-none shadow-none focus-visible:ring-0" 
                     />
                   </div>
-                  <Button type="submit" className="h-14 px-8 rounded-xl font-semibold text-base cursor-pointer transition-all hover:opacity-90 active:scale-95" style={{ backgroundColor: 'var(--primary)' }}>
+                  <Button type="submit" className="h-14 w-full sm:w-auto px-8 rounded-xl font-semibold text-base cursor-pointer transition-all hover:opacity-90 active:scale-95" style={{ backgroundColor: 'var(--primary)' }}>
                     Search
                   </Button>
                 </div>

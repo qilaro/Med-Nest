@@ -43,8 +43,8 @@ function AZBrowseContent({ showTabs = true }: { showTabs?: boolean }) {
   return (
     <div className="w-full max-w-4xl my-8" ref={containerRef}>
       {showTabs && (
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex gap-2 flex-nowrap">
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex gap-2 flex-wrap sm:flex-nowrap">
           {TABS.map((tab) => (
             <div key={tab} className="relative">
               <button
