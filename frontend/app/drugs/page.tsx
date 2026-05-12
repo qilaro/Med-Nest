@@ -51,6 +51,8 @@ function DrugsContent() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [searchTotal, setSearchTotal] = useState(0);
   const [totalResults, setTotalResults] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [isSearching, setIsSearching] = useState(false);
   const searchRef = useRef<HTMLFormElement>(null);
   const hasUrlQuery = useRef(!!searchQ);
@@ -78,6 +80,8 @@ function DrugsContent() {
       try {
         const [drugsData, classesData, companiesData, formsData] = await Promise.all([
           drugService.getDrugs({ 
+            page: currentPage,
+            limit: 50,
             drug_class: drugClassFilter || undefined,
             medicine_type: typeFilter || undefined,
             letter: letterFilter || undefined,
@@ -90,6 +94,8 @@ function DrugsContent() {
 
         let filteredDrugs = drugsData.drugs;
         setTotalResults(drugsData.total);
+        setCurrentPage(drugsData.page || 1);
+        setTotalPages(drugsData.totalPages || 1);
         
         const uniqueGenerics: string[] = Array.from(new Set(drugsData.drugs.map((d: DrugSummary) => d.genericName))).filter((g): g is string => typeof g === 'string').sort();
         setGenerics(uniqueGenerics);
@@ -143,7 +149,7 @@ function DrugsContent() {
     }
 
     fetchData();
-  }, [activeSearch, searchQ, typeFilter, drugClassFilter, companyFilter, genericFilter, dosageFilter, ratingFilter, letterFilter]);
+  }, [activeSearch, searchQ, currentPage, typeFilter, drugClassFilter, companyFilter, genericFilter, dosageFilter, ratingFilter, letterFilter]);
 
   // Handle suggestion filtering
   useEffect(() => {
@@ -191,6 +197,7 @@ function DrugsContent() {
     submittedRef.current = true;
     if (debounceRef.current) { clearTimeout(debounceRef.current); debounceRef.current = null; }
     setActiveSearch(query.trim());
+    setCurrentPage(1);
     fetch('/api/search/log', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: query.trim() }) }).catch(() => {});
   };
 
@@ -225,6 +232,7 @@ function DrugsContent() {
   const clearFilters = () => {
     setQuery("");
     setActiveSearch("");
+    setCurrentPage(1);
     setSelectedType("");
     setSelectedClass("");
     setSelectedCompany("");
@@ -382,6 +390,43 @@ function DrugsContent() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {isFiltered ? drugs.map((drug) => <DrugCard key={drug.id} drug={drug} />) : drugs.slice(0, 12).map((drug) => <DrugCard key={drug.id} drug={drug} />)}
                 </div>
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-center gap-2 mt-8">
+                    <button
+                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                      disabled={currentPage <= 1}
+                      className="px-3 py-1.5 text-sm font-semibold rounded-lg border border-gray-200 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-gray-50 cursor-pointer"
+                    >Prev</button>
+                    {(() => {
+                      const pages: (number | string)[] = [];
+                      for (let i = 1; i <= totalPages; i++) {
+                        if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                          pages.push(i);
+                        } else if (pages[pages.length - 1] !== '...') {
+                          pages.push('...');
+                        }
+                      }
+                      return pages.map((p, idx) =>
+                        p === '...' ? (
+                          <span key={`e${idx}`} className="px-1 text-gray-400 text-sm">...</span>
+                        ) : (
+                          <button
+                            key={p}
+                            onClick={() => setCurrentPage(p as number)}
+                            className={`w-8 h-8 text-sm font-semibold rounded-lg cursor-pointer ${
+                              p === currentPage ? 'bg-teal-500 text-white' : 'border border-gray-200 hover:bg-gray-50'
+                            }`}
+                          >{p}</button>
+                        )
+                      );
+                    })()}
+                    <button
+                      onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                      disabled={currentPage >= totalPages}
+                      className="px-3 py-1.5 text-sm font-semibold rounded-lg border border-gray-200 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-gray-50 cursor-pointer"
+                    >Next</button>
+                  </div>
+                )}
               </div>
             )}
           </div>
