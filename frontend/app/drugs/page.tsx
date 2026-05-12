@@ -166,6 +166,8 @@ function DrugsContent() {
         setIsSearching(true);
         const { results, total } = await drugService.searchDrugs(query.trim());
         if (reqIdRef.current !== myReqId) return;
+        if (searchQ && query.trim() === searchQ) return;
+        if (activeSearch && query.trim() === activeSearch) return;
         setSuggestions(results.slice(0, 10));
         setSearchTotal(total);
         setShowSuggestions(true);
@@ -400,7 +402,18 @@ function DrugsContent() {
                   {(activeSearch || searchQ) ? <>Showing all <span className="text-teal-600">{totalResults}</span> results for "<span className="text-teal-600">{activeSearch || searchQ}</span>"</>
                     : isFiltered ? 'Filtered Drugs'
                     : 'Popular Drug Searches'}
-                  {isFiltered && <button onClick={clearFilters} className="text-sm text-gray-400 hover:text-red-500 font-semibold ml-3 cursor-pointer align-middle">✕</button>}
+                  {isFiltered && (
+                    <button
+                      onClick={clearFilters}
+                      className="ml-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold text-red-500 bg-red-50 border border-red-200 hover:bg-red-100 hover:text-red-600 hover:border-red-300 active:scale-95 transition-all duration-150 cursor-pointer align-middle"
+                    >
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                      </svg>
+                      Clear
+                    </button>
+                  )}
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {isFiltered ? drugs.map((drug) => <DrugCard key={drug.id} drug={drug} />) : drugs.slice(0, 12).map((drug) => <DrugCard key={drug.id} drug={drug} />)}
