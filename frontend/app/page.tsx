@@ -110,66 +110,63 @@ export default function Home() {
   return (
     <div className="flex flex-col flex-1">
       {/* Hero Section */}
-      <section className="py-4 text-gray-900">
-        {/* Outer Container with Mint Background and Symmetric 24px Padding */}
+      <section className="py-2 sm:py-4 text-gray-900">
+        {/* Outer Container with Mint Background */}
         <div 
-        className="container-medq relative z-10 mx-auto" 
+        className="container-medq relative z-10 mx-auto p-4 sm:p-6" 
         style={{ 
           backgroundColor: '#D5E9E7', 
           borderRadius: '2rem', 
           maxWidth: '80rem',
-          padding: '24px',
           boxShadow: '20px 50px 80px -20px rgba(0, 0, 0, 0.25), 10px 30px 40px -15px rgba(0, 0, 0, 0.15)'
         }}
         >
-          {/* Glass Hero Box - Symmetric 24px padding with soft highlight border */}
+          {/* Glass Hero Box */}
           <div
-            className="relative flex flex-col items-center justify-center text-center"
+            className="relative flex flex-col items-center justify-center text-center p-4 sm:p-6 pt-4 sm:pt-4 pb-8 sm:pb-8"
             style={{
-          padding: '24px',
-          paddingTop: '16px',
-          paddingBottom: '32px',
-              borderRadius: '2rem',
+              borderRadius: '1.5rem',
               background: 'rgba(255, 255, 255, 0.4)',
               backdropFilter: 'blur(12px)',
               border: '1px solid rgba(180, 210, 225, 0.6)',
               boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.15)'
             }}
           >
-            <div className="relative max-w-3xl text-center">
+            <div className="relative w-full max-w-3xl text-center px-2 sm:px-0">
               {/* Badge */}
-              <div className="inline-flex items-center gap-2 bg-white/65 border border-gray-300 rounded-full px-4 py-2 text-sm mb-2 mt-1 text-gray-800">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-yellow-400" aria-hidden="true">
+              <div className="inline-flex items-center gap-2 bg-white/65 border border-gray-300 rounded-full px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-sm mb-2 mt-1 text-gray-800">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-400" aria-hidden="true">
                   <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path>
                 </svg>
-                Trusted by millions of patients & caregivers
+                <span className="hidden sm:inline">Trusted by millions of patients & caregivers</span>
+                <span className="sm:hidden">Trusted by millions</span>
               </div>
 
               {/* Title */}
-              <h1 className="text-4xl md:text-6xl font-bold mb-3 leading-tight text-gray-900">
+              <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-3 leading-tight text-gray-900">
                 Learn more. <span style={{ color: 'var(--primary)' }}>Live better.</span>
               </h1>
 
               {/* Subtitle */}
-              <p className="text-xl text-gray-700 mb-5 max-w-2xl mx-auto font-normal">
+              <p className="text-sm sm:text-base md:text-xl text-gray-700 mb-5 max-w-2xl mx-auto font-normal px-2 sm:px-0">
                 Your comprehensive source for drug information you can trust.
               </p>
 
-              {/* Search Bar - Centered */}
-              <form ref={searchRef} onSubmit={handleSearchSubmit} className="max-w-4xl mx-auto mb-4 relative">
+              {/* Search Bar */}
+              <form ref={searchRef} onSubmit={handleSearchSubmit} className="max-w-4xl mx-auto mb-4 relative px-0 sm:px-2">
                 <div className="flex flex-col sm:flex-row gap-2 bg-white rounded-2xl py-1.5 pl-1.5 pr-4 shadow-sm border-2 border-sky-200">
                   <div className="flex-1 relative flex items-center">
-                    <img src="/icons/pill.svg" alt="search" className="absolute left-5 h-9 w-9" />
+                    <img src="/icons/pill.svg" alt="search" className="absolute left-4 sm:left-5 h-7 w-7 sm:h-9 sm:w-9" />
                     <Input 
                       type="text" 
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
                       onFocus={handleFocus}
-                      placeholder="Search any drug name, ingredient, or condition..." 
-                      className="pl-16 h-14 text-base border-none shadow-none focus-visible:ring-0" 
+                      placeholder="Search drugs, ingredients, conditions..." 
+                      className="pl-12 sm:pl-16 h-12 sm:h-14 text-sm sm:text-base border-none shadow-none focus-visible:ring-0" 
                     />
                   </div>
-                  <Button type="submit" className="h-14 w-full sm:w-auto px-8 rounded-xl font-semibold text-base cursor-pointer transition-all hover:opacity-90 active:scale-95" style={{ backgroundColor: 'var(--primary)' }}>
+                  <Button type="submit" className="h-12 sm:h-14 w-full sm:w-auto px-6 sm:px-8 rounded-xl font-semibold text-sm sm:text-base cursor-pointer transition-all hover:opacity-90 active:scale-95" style={{ backgroundColor: 'var(--primary)' }}>
                     Search
                   </Button>
                 </div>
@@ -185,19 +182,21 @@ export default function Home() {
               </form>
 
               {/* Trending Searches */}
-              <div className="text-base text-gray-600 mb-12">
-                <span className="font-semibold text-gray-800 mr-3">Trending searches:</span>
-                {['Napa', 'Ace', 'Seclo', 'Sergel', 'Fexo', 'Monas', 'Orsaline-N'].map((term) => (
-                  <Link key={term} href={`/drugs?search=${term}`} className="hover:text-primary transition-colors underline decoration-gray-400 decoration-dotted underline-offset-4 font-medium mr-4">
-                    {term}
-                  </Link>
-                ))}
+              <div className="text-sm sm:text-base text-gray-600 mb-8 sm:mb-12 px-2 sm:px-0">
+                <span className="font-semibold text-gray-800 mr-2 sm:mr-3">Trending:</span>
+                <div className="inline flex-wrap gap-x-3 sm:gap-x-4">
+                  {['Napa', 'Ace', 'Seclo', 'Sergel', 'Fexo', 'Monas', 'Orsaline-N'].map((term) => (
+                    <Link key={term} href={`/drugs?search=${term}`} className="hover:text-primary transition-colors underline decoration-gray-400 decoration-dotted underline-offset-4 font-medium mr-3 sm:mr-4 whitespace-nowrap">
+                      {term}
+                    </Link>
+                  ))}
+                </div>
               </div>
 
-              {/* AZBrowse included directly in hero for maximum visibility */}
+              {/* AZBrowse */}
               <div className="max-w-4xl mx-auto">
                 <AZBrowse />
-                <p className="text-sm text-gray-700 font-semibold italic">
+                <p className="text-xs sm:text-sm text-gray-700 font-semibold italic mt-2 sm:mt-0">
                   Can't remember? Just type what you can remember with our phonetic search.
                 </p>
               </div>
@@ -210,8 +209,8 @@ export default function Home() {
       <section className="py-3 relative bg-gray-50">
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, var(--primary) 0%, transparent 50%, var(--primary) 100%)' }}></div>
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, var(--primary) 0%, transparent 50%, var(--primary) 100%)' }}></div>
-        <div className="container-medq">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+        <div className="container-medq px-3 sm:px-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 text-center">
             {[
               { label: 'Drugs Listed', value: stats.drugs.toLocaleString() },
               { label: 'Generics', value: stats.generics.toLocaleString() },
@@ -219,8 +218,8 @@ export default function Home() {
               { label: 'Companies', value: stats.companies.toLocaleString() },
             ].map((stat) => (
               <div key={stat.label}>
-                <div className="text-3xl font-bold text-primary">{stat.value}</div>
-                <div className="text-gray-600 text-sm mt-1">{stat.label}</div>
+                <div className="text-2xl sm:text-3xl font-bold text-primary">{stat.value}</div>
+                <div className="text-gray-600 text-xs sm:text-sm mt-1">{stat.label}</div>
               </div>
             ))}
           </div>
