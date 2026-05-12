@@ -77,7 +77,11 @@ const Header = () => {
           <Link href="/drugs" className={`flex items-center justify-center w-11 h-11 rounded-xl transition-all duration-200 ${pathname === '/drugs' ? 'bg-teal-50 text-teal-600' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'}`}>
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M10.5 20.5 20.5 10.5a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z M8.5 8.5 15.5 15.5"/></svg>
           </Link>
-          <button onClick={() => setMenuOpen(true)} className="flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-br from-teal-400 to-teal-600 text-white shadow-md hover:shadow-lg active:scale-95 transition-all duration-200 hover:from-teal-500 hover:to-teal-700 cursor-pointer">
+          <button
+            type="button"
+            onPointerDown={() => setMenuOpen(true)}
+            className="flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-br from-teal-400 to-teal-600 text-white shadow-md hover:shadow-lg active:scale-95 transition-all duration-200 hover:from-teal-500 hover:to-teal-700 cursor-pointer"
+          >
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
           </button>
         </div>
@@ -86,7 +90,7 @@ const Header = () => {
       {/* Full-screen Menu Overlay */}
       {menuOpen && (
         <div className="fixed inset-0 z-50 lg:hidden animate-slide-up">
-          <div className="absolute inset-0 bg-black/30" onClick={() => setMenuOpen(false)} />
+          <div className="absolute inset-0 bg-black/30" onPointerDown={() => setMenuOpen(false)} />
           <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl max-h-[85vh] overflow-y-auto pb-8">
             {/* Handle */}
             <div className="flex justify-center pt-3 pb-1 sticky top-0 bg-white z-10">
