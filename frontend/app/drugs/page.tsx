@@ -19,13 +19,14 @@ function DrugsContent() {
   const router = useRouter();
   
   const searchQ = searchParams.get("search") || "";
+  const typeFilter = searchParams.get("type") || "";
   const drugClassFilter = searchParams.get("drug_class") || "";
   const companyFilter = searchParams.get("company") || "";
   const genericFilter = searchParams.get("generic") || "";
   const dosageFilter = searchParams.get("dosage_form") || "";
   const ratingFilter = searchParams.get("rating") || "";
   const letterFilter = searchParams.get("letter") || "";
-  const isFiltered = !!(searchQ || drugClassFilter || companyFilter || genericFilter || dosageFilter || ratingFilter || letterFilter);
+  const isFiltered = !!(searchQ || typeFilter || drugClassFilter || companyFilter || genericFilter || dosageFilter || ratingFilter || letterFilter);
 
   const [drugs, setDrugs] = useState<DrugSummary[]>([]);
   const [classes, setClasses] = useState<DrugClass[]>([]);
@@ -33,6 +34,7 @@ function DrugsContent() {
   const [generics, setGenerics] = useState<string[]>([]);
   const [dosageForms, setDosageForms] = useState<string[]>([]);
   const [query, setQuery] = useState(searchQ);
+  const [selectedType, setSelectedType] = useState(typeFilter);
   const [selectedClass, setSelectedClass] = useState(drugClassFilter);
   const [selectedCompany, setSelectedCompany] = useState(companyFilter);
   const [selectedGeneric, setSelectedGeneric] = useState(genericFilter);
@@ -66,6 +68,7 @@ function DrugsContent() {
         const [drugsData, classesData, companiesData, formsData] = await Promise.all([
           drugService.getDrugs({ 
             drug_class: drugClassFilter || undefined,
+            medicine_type: typeFilter || undefined,
             letter: letterFilter || undefined
           }),
           drugService.getDrugClasses(),
@@ -124,7 +127,7 @@ function DrugsContent() {
     }
 
     fetchData();
-  }, [searchQ, drugClassFilter, companyFilter, genericFilter, dosageFilter, ratingFilter, letterFilter]);
+  }, [searchQ, typeFilter, drugClassFilter, companyFilter, genericFilter, dosageFilter, ratingFilter, letterFilter]);
 
   // Handle suggestion filtering
   useEffect(() => {
@@ -160,6 +163,7 @@ function DrugsContent() {
 
     const params = new URLSearchParams();
     if (query) { params.set("search", query); fetch('/api/search/log', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: query.trim() }) }).catch(() => {}); }
+    if (selectedType) params.set("type", selectedType);
     if (selectedClass) params.set("drug_class", selectedClass);
     if (selectedCompany) params.set("company", selectedCompany);
     if (selectedGeneric) params.set("generic", selectedGeneric);
@@ -198,6 +202,7 @@ function DrugsContent() {
 
   const clearFilters = () => {
     setQuery("");
+    setSelectedType("");
     setSelectedClass("");
     setSelectedCompany("");
     setSelectedGeneric("");
@@ -251,30 +256,31 @@ function DrugsContent() {
           </form>
 
           {/* Inline Filter Bar */}
-          <div className="flex items-center gap-1.5 mb-5 flex-nowrap justify-center">
+          <div className="flex items-center gap-1 mb-5 flex-nowrap justify-center">
             {[
+              { value: selectedType, set: setSelectedType, label: "Type", options: ["All", "Pharmaceutical", "Herbal", "Unani", "Homeopathic", "Ayurvedic"], param: "type", values: ["", "allopathic", "herbal", "unani", "homeopathic", "ayurvedic"] },
               { value: selectedClass, set: setSelectedClass, label: "Class", options: classes.map((c: any) => c.name), param: "drug_class" },
               { value: selectedCompany, set: setSelectedCompany, label: "Company", options: companies, param: "company" },
               { value: selectedGeneric, set: setSelectedGeneric, label: "Generic", options: generics, param: "generic" },
               { value: selectedDosageForm, set: setSelectedDosageForm, label: "Form", options: dosageForms, param: "dosage_form" },
-              { value: selectedRating, set: setSelectedRating, label: "Rating", options: ["5 ★★★★★", "4 ★★★★☆", "3 ★★★☆☆", "2 ★★☆☆☆"], param: "rating" },
-            ].map((filter) => (
-              <div key={filter.label} className="relative w-[130px]">
+              { value: selectedRating, set: setSelectedRating, label: "Rating", options: ["5 ★★★★★", "4 ★★★★☆", "3 ★★★☆☆", "2 ★★☆☆☆"], param: "rating", values: ["5", "4", "3", "2"] },
+            ].map((filter: any) => (
+              <div key={filter.label} className="relative w-[110px]">
                 <select
                   value={filter.value}
                   onChange={(e) => {
-                    filter.set(e.target.value);
-                    if (e.target.value) {
+                    const val = filter.values ? filter.values[e.target.selectedIndex] : e.target.value;
+                    filter.set(val || '');
+                    if (val) {
                       const p = new URLSearchParams();
-                      p.set(filter.param, encodeURIComponent(e.target.value));
+                      p.set(filter.param, encodeURIComponent(val));
                       router.push(`/drugs?${p.toString()}`);
                     } else clearFilters();
                   }}
                   className="appearance-none bg-gray-50 border-2 border-sky-300 rounded-full px-3 py-1.5 pr-4 text-xs font-semibold text-gray-800 cursor-pointer hover:border-teal-400 hover:bg-teal-50 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-300 w-full text-center shadow-md"
                 >
-                  <option value="">{filter.label}</option>
-                  {filter.options.map((opt: string) => (
-                    <option key={opt} value={filter.label === "Rating" ? opt.charAt(0) : opt}>{opt}</option>
+                  {filter.options.map((opt: string, i: number) => (
+                    <option key={opt} value={filter.values ? filter.values[i] : opt}>{opt}</option>
                   ))}
                 </select>
                 <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
