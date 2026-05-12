@@ -44,47 +44,49 @@ function AZBrowseContent({ showTabs = true }: { showTabs?: boolean }) {
     <div className="w-full max-w-4xl my-8" ref={containerRef}>
       {showTabs && (
         <div className="flex justify-center items-center mb-6">
-          <div className="flex gap-2 flex-wrap justify-center">
-          {TABS.map((tab) => (
-            <div key={tab} className="relative">
-              <button
-                onClick={() => setOpenDropdown(openDropdown === tab ? null : tab)}
-                className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg font-medium text-xs sm:text-sm whitespace-nowrap transition-colors cursor-pointer shadow-lg inline-flex items-center gap-1 ${
-                  openDropdown === tab
-                    ? "bg-[#0D261E] text-white"
-                    : "bg-white text-blue-600 hover:bg-gray-100 border border-sky-200"
-                }`}
-              >
-                {tab}
-                <svg className={`transition-transform ${openDropdown === tab ? 'rotate-180' : ''}`} width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-              </button>
-              {openDropdown === tab && (
-                <div className="absolute top-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50 left-1/2 -translate-x-1/2">
-                  {TYPE_ITEMS.map((item) => {
-                    const base = BASE_PATHS[tab];
-                    return (
-                      <Link
-                        key={item.name}
-                        href={item.type ? `${base}?type=${item.type}` : base}
-                        className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-700 whitespace-nowrap"
-                        onClick={() => setOpenDropdown(null)}
-                      >
-                        {item.name}
-                      </Link>
-                    );
-                  })}
-                </div>
-              )}
+          <div className="flex flex-col sm:flex-row items-center gap-2">
+            <div className="flex gap-2 flex-wrap justify-center">
+            {TABS.map((tab) => (
+              <div key={tab} className="relative">
+                <button
+                  onClick={() => setOpenDropdown(openDropdown === tab ? null : tab)}
+                  className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg font-medium text-xs sm:text-sm whitespace-nowrap transition-colors cursor-pointer shadow-lg inline-flex items-center gap-1 ${
+                    openDropdown === tab
+                      ? "bg-[#0D261E] text-white"
+                      : "bg-white text-blue-600 hover:bg-gray-100 border border-sky-200"
+                  }`}
+                >
+                  {tab}
+                  <svg className={`transition-transform ${openDropdown === tab ? 'rotate-180' : ''}`} width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                {openDropdown === tab && (
+                  <div className="absolute top-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50 left-1/2 -translate-x-1/2">
+                    {TYPE_ITEMS.map((item) => {
+                      const base = BASE_PATHS[tab];
+                      return (
+                        <Link
+                          key={item.name}
+                          href={item.type ? `${base}?type=${item.type}` : base}
+                          className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-700 whitespace-nowrap"
+                          onClick={() => setOpenDropdown(null)}
+                        >
+                          {item.name}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            ))}
             </div>
-          ))}
-          <Link
-            href="/indications"
-            className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg font-medium text-xs sm:text-sm whitespace-nowrap transition-colors cursor-pointer shadow-lg bg-white text-blue-600 hover:bg-gray-100 border border-sky-200 inline-flex items-center"
-          >
-            Indications
-          </Link>
+            <Link
+              href="/indications"
+              className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg font-medium text-xs sm:text-sm whitespace-nowrap transition-colors cursor-pointer shadow-lg bg-white text-blue-600 hover:bg-gray-100 border border-sky-200 inline-flex items-center"
+            >
+              Indications
+            </Link>
+          </div>
         </div>
-      </div>
       )}
 
       {/* A-Z Grid */}

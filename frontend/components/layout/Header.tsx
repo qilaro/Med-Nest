@@ -1,16 +1,17 @@
 "use client";
 
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
-const NAV_ITEMS = [
+const BOTTOM_TABS = [
   { name: 'Home', href: '/', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
   { name: 'Drugs', href: '/drugs', icon: 'M10.5 20.5 20.5 10.5a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z M8.5 8.5 15.5 15.5' },
-  { name: 'Search', href: '/drugs', icon: 'M21 21l-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0z', action: true },
+  { name: 'Search', href: '/drugs', icon: 'M21 21l-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0z', search: true },
   { name: 'AI', href: '#', icon: 'M12 8V4H8 M4 8h16v12H4z M2 14h2 M20 14h2 M15 13v2 M9 13v2' },
   { name: 'More', href: '#', icon: 'M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm0 7a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm0 7a1 1 0 1 1 0-2 1 1 0 0 1 0 2z', more: true },
 ];
+
 const MORE_ITEMS = [
   { name: 'Drug Interactions', href: '#', icon: 'M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z' },
   { name: 'Compare Drugs', href: '#', icon: 'M3 3h7v9H3z M14 3h7v5h-7z M14 12h7v9h-7z M3 16h7v5H3z' },
@@ -28,47 +29,8 @@ const TabIcon = ({ d, className = "h-5 w-5" }: { d: string; className?: string }
 
 const Header = () => {
   const [moreOpen, setMoreOpen] = useState(false);
-  const [activeNav, setActiveNav] = useState(0);
-  const touchStartX = useRef(0);
-  const isSwiping = useRef(false);
   const pathname = usePathname();
   const router = useRouter();
-
-  // Sync activeNav with pathname
-  React.useEffect(() => {
-    const idx = NAV_ITEMS.findIndex(i => !i.more && !i.action && pathname === i.href);
-    if (idx >= 0) setActiveNav(idx);
-  }, [pathname]);
-
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-    isSwiping.current = false;
-  }, []);
-
-  const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    if (Math.abs(e.touches[0].clientX - touchStartX.current) > 10) {
-      isSwiping.current = true;
-    }
-  }, []);
-
-  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
-    if (!isSwiping.current) return;
-    const diff = e.changedTouches[0].clientX - touchStartX.current;
-    if (Math.abs(diff) > 40) {
-      if (diff > 0) {
-        setActiveNav(prev => (prev - 1 + NAV_ITEMS.length) % NAV_ITEMS.length);
-      } else {
-        setActiveNav(prev => (prev + 1) % NAV_ITEMS.length);
-      }
-    }
-  }, []);
-
-  const handleNavTap = useCallback((item: typeof NAV_ITEMS[0], idx: number) => {
-    if (item.more) { setMoreOpen(v => !v); return; }
-    setMoreOpen(false);
-    if (idx !== activeNav) { setActiveNav(idx); return; }
-    if (item.href !== '#') router.push(item.href);
-  }, [activeNav, router]);
 
   return (
     <>
@@ -112,53 +74,40 @@ const Header = () => {
         </div>
       </header>
 
-      {/* Mobile 3D Ball Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 lg:hidden bg-white border-t border-gray-200 z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.07)] safe-area-bottom"
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      >
-        <div className="flex items-center justify-center h-20 gap-1 max-w-sm mx-auto relative">
-          {NAV_ITEMS.map((item, idx) => {
-            const offset = idx - activeNav;
-            const absOff = Math.abs(offset);
-            const isCenter = offset === 0;
-            const isVisible = absOff <= 2;
+      {/* Mobile Bottom Tab Bar */}
+      <nav className="fixed bottom-0 left-0 right-0 lg:hidden bg-white border-t border-gray-200 z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.07)] safe-area-bottom">
+        <div className="flex items-center justify-around h-16 px-1 max-w-lg mx-auto">
+          {BOTTOM_TABS.map((tab) => {
+            const isActive = tab.search
+              ? false
+              : tab.more
+              ? moreOpen
+              : pathname === tab.href;
+            const isSearch = tab.search;
 
-            if (!isVisible) return <div key={item.name} className="w-0" />;
-
-            return (
-              <button
-                key={item.name}
-                onClick={() => handleNavTap(item, idx)}
-                className={`relative flex flex-col items-center justify-center transition-all duration-300 ease-out cursor-pointer px-1
-                  ${isCenter ? 'z-10' : 'z-0'}`}
-                style={{
-                  transform: `translateY(${isCenter ? -8 : 0}px) scale(${isCenter ? 1 : 0.7})`,
-                  width: isCenter ? '64px' : '48px',
-                  height: isCenter ? '64px' : '48px',
-                }}
+            return isSearch ? (
+              <Link
+                key={tab.name}
+                href={tab.href}
+                className="relative -mt-3"
               >
-                {/* Center 3D Ball */}
-                {isCenter ? (
-                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-teal-300 via-teal-500 to-teal-700 text-white shadow-[0_8px_25px_-5px_rgba(45,138,120,0.4),inset_0_-3px_6px_rgba(0,0,0,0.15),inset_0_3px_6px_rgba(255,255,255,0.2)] flex items-center justify-center active:scale-95 transition-transform relative overflow-hidden">
-                    {/* 3D glare */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/25 to-transparent rounded-full pointer-events-none" style={{ clipPath: 'ellipse(80% 40% at 50% 25%)' }} />
-                    <TabIcon d={item.icon} className="h-6 w-6 relative z-10" />
-                  </div>
-                ) : (
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200
-                    ${item.action
-                      ? 'bg-gradient-to-br from-teal-400 to-teal-600 text-white shadow-md'
-                      : 'text-gray-400'}`}
-                  >
-                    <TabIcon d={item.icon} className="h-5 w-5" />
-                  </div>
-                )}
-                <span className={`absolute -bottom-4 text-[9px] font-semibold whitespace-nowrap transition-all duration-200
-                  ${isCenter ? 'text-teal-600 opacity-100' : 'text-gray-400 opacity-0'}`}>
-                  {item.name}
-                </span>
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-400 to-teal-600 text-white shadow-lg flex items-center justify-center active:scale-95 transition-transform">
+                  <TabIcon d={tab.icon} className="h-5 w-5" />
+                </div>
+              </Link>
+            ) : (
+              <button
+                key={tab.name}
+                onClick={() => {
+                  if (tab.more) { setMoreOpen(!moreOpen); return; }
+                  setMoreOpen(false);
+                  if (tab.href !== '#') router.push(tab.href);
+                }}
+                className={`flex flex-col items-center gap-0.5 px-3 py-1 transition-colors ${isActive ? 'text-teal-600' : 'text-gray-400 hover:text-gray-600'}`}
+              >
+                <TabIcon d={tab.icon} className={`h-5 w-5 ${isActive ? 'stroke-[2.5]' : ''}`} />
+                <span className={`text-[10px] font-semibold ${isActive ? 'text-teal-600' : 'text-gray-400'}`}>{tab.name}</span>
+                {isActive && <div className="absolute bottom-1 w-4 h-0.5 rounded-full bg-teal-500" />}
               </button>
             );
           })}
