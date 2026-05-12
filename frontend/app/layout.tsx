@@ -51,13 +51,6 @@ document.addEventListener('keydown',function(e){
     e.preventDefault();
   }
 });
-setInterval(function(){
-  var t=Date.now();
-  debugger;
-  if(Date.now()-t>100){
-    document.body.innerHTML='<div style="text-align:center;margin-top:40vh;padding:20px"><h1>DevTools Detected</h1><p>Please close Developer Tools.</p></div>';
-  }
-},5000);
 `}} />
           <EmergencyBanner />
           <Header />
