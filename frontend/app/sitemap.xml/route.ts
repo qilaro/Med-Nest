@@ -6,7 +6,7 @@ const BASE_URL = 'https://mednest.com.bd';
 export async function GET() {
   const brands = await db.execute(sql`
     SELECT slug, updated_at FROM brands 
-    WHERE brand_verified = true AND slug IS NOT NULL
+    WHERE slug IS NOT NULL
     ORDER BY slug LIMIT 45000
   `);
 
