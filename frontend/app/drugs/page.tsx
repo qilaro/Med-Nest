@@ -209,7 +209,7 @@ function DrugsContent() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#D5E9E7] via-white to-white py-6">
       <div className="max-w-[800px] mx-auto">
-        <div className="bg-white rounded-2xl border border-sky-200 shadow-[0_4px_16px_rgba(0,0,0,0.06),0_12px_32px_-8px_rgba(0,0,0,0.08)] p-6 md:p-8">
+        <div className="bg-white rounded-2xl border border-sky-200 shadow-[4px_8px_24px_rgba(0,0,0,0.08),0_12px_40px_-8px_rgba(0,0,0,0.12)] p-6 md:p-8">
           <header className="mb-6">
             <h1 className="text-3xl font-bold text-navy mb-1">Drug Directory</h1>
             <p className="text-sm text-gray-500">
