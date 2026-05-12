@@ -270,7 +270,7 @@ function DrugsContent() {
                       router.push(`/drugs?${p.toString()}`);
                     } else clearFilters();
                   }}
-                  className="appearance-none bg-white border border-sky-200 rounded-full px-3 py-1.5 pr-4 text-xs font-medium text-gray-700 cursor-pointer hover:border-teal-300 hover:bg-teal-50 transition-colors focus:outline-none focus:ring-1 focus:ring-teal-200 w-full text-center shadow-sm"
+                  className="appearance-none bg-gray-50 border-2 border-sky-300 rounded-full px-3 py-1.5 pr-4 text-xs font-semibold text-gray-800 cursor-pointer hover:border-teal-400 hover:bg-teal-50 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-300 w-full text-center shadow-md"
                 >
                   <option value="">{filter.label}</option>
                   {filter.options.map((opt: string) => (
@@ -282,7 +282,7 @@ function DrugsContent() {
             ))}
 
             {isFiltered && (
-              <button onClick={clearFilters} className="text-xs text-gray-500 hover:text-red-500 font-medium transition-colors shrink-0 ml-0.5">✕</button>
+              <button onClick={clearFilters} className="text-sm text-gray-500 hover:text-red-600 font-semibold transition-colors shrink-0 ml-1">✕</button>
             )}
           </div>
 
