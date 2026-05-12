@@ -182,10 +182,10 @@ export default function Home() {
               </form>
 
               {/* Trending Searches */}
-              <div className="text-sm sm:text-base text-gray-600 mb-8 sm:mb-12 px-2 sm:px-0">
-                <span className="font-semibold text-gray-800 mr-2 sm:mr-3">Trending:</span>
+              <div className="text-sm sm:text-base text-gray-600 mb-8 sm:mb-12 px-2 sm:px-0 text-center">
+                <span className="font-semibold text-gray-800">Trending: </span>
                 {['Napa', 'Ace', 'Seclo', 'Sergel', 'Fexo', 'Monas', 'Orsaline-N'].map((term) => (
-                  <Link key={term} href={`/drugs?search=${term}`} className="inline-block hover:text-primary transition-colors underline decoration-gray-400 decoration-dotted underline-offset-4 font-medium mr-2 sm:mr-3 leading-relaxed">
+                  <Link key={term} href={`/drugs?search=${term}`} className="inline-block hover:text-primary transition-colors underline decoration-gray-400 decoration-dotted underline-offset-4 font-medium mx-1 sm:mx-1.5 leading-relaxed">
                     {term}
                   </Link>
                 ))}
