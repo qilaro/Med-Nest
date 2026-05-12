@@ -43,13 +43,13 @@ function AZBrowseContent({ showTabs = true }: { showTabs?: boolean }) {
   return (
     <div className="w-full max-w-4xl my-8" ref={containerRef}>
       {showTabs && (
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex gap-2 flex-wrap sm:flex-nowrap">
+        <div className="flex justify-center items-center mb-6">
+          <div className="flex gap-2 flex-wrap justify-center">
           {TABS.map((tab) => (
             <div key={tab} className="relative">
               <button
                 onClick={() => setOpenDropdown(openDropdown === tab ? null : tab)}
-                className={`px-4 py-2.5 rounded-lg font-medium text-sm whitespace-nowrap transition-colors cursor-pointer shadow-lg inline-flex items-center gap-1 ${
+                className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg font-medium text-xs sm:text-sm whitespace-nowrap transition-colors cursor-pointer shadow-lg inline-flex items-center gap-1 ${
                   openDropdown === tab
                     ? "bg-[#0D261E] text-white"
                     : "bg-white text-blue-600 hover:bg-gray-100 border border-sky-200"
@@ -79,7 +79,7 @@ function AZBrowseContent({ showTabs = true }: { showTabs?: boolean }) {
           ))}
           <Link
             href="/indications"
-            className="px-4 py-2.5 rounded-lg font-medium text-sm whitespace-nowrap transition-colors cursor-pointer shadow-lg bg-white text-blue-600 hover:bg-gray-100 border border-sky-200 inline-flex items-center"
+            className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg font-medium text-xs sm:text-sm whitespace-nowrap transition-colors cursor-pointer shadow-lg bg-white text-blue-600 hover:bg-gray-100 border border-sky-200 inline-flex items-center"
           >
             Indications
           </Link>

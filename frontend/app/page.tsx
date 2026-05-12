@@ -116,7 +116,7 @@ export default function Home() {
         className="container-medq relative z-10 mx-auto p-4 sm:p-6" 
         style={{ 
           backgroundColor: '#D5E9E7', 
-          borderRadius: '2rem', 
+          borderRadius: 'clamp(1rem, 4vw, 2rem)', 
           maxWidth: '80rem',
           boxShadow: '20px 50px 80px -20px rgba(0, 0, 0, 0.25), 10px 30px 40px -15px rgba(0, 0, 0, 0.15)'
         }}
@@ -125,7 +125,7 @@ export default function Home() {
           <div
             className="relative flex flex-col items-center justify-center text-center p-4 sm:p-6 pt-4 sm:pt-4 pb-8 sm:pb-8"
             style={{
-              borderRadius: '1.5rem',
+              borderRadius: 'clamp(1rem, 3vw, 1.5rem)',
               background: 'rgba(255, 255, 255, 0.4)',
               backdropFilter: 'blur(12px)',
               border: '1px solid rgba(180, 210, 225, 0.6)',
@@ -153,24 +153,24 @@ export default function Home() {
               </p>
 
               {/* Search Bar */}
-              <form ref={searchRef} onSubmit={handleSearchSubmit} className="max-w-4xl mx-auto mb-4 relative px-0 sm:px-2">
-                <div className="flex flex-col sm:flex-row gap-2 bg-white rounded-2xl py-1.5 pl-1.5 pr-4 shadow-sm border-2 border-sky-200">
-                  <div className="flex-1 relative flex items-center">
-                    <img src="/icons/pill.svg" alt="search" className="absolute left-4 sm:left-5 h-7 w-7 sm:h-9 sm:w-9" />
+              <form ref={searchRef} onSubmit={handleSearchSubmit} className="max-w-2xl mx-auto mb-4 relative px-0">
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-0 sm:bg-white sm:rounded-2xl sm:py-1.5 sm:pl-1.5 sm:pr-4 sm:shadow-sm sm:border-2 sm:border-sky-200">
+                  <div className="relative flex items-center flex-1 bg-white rounded-2xl sm:rounded-none border-2 sm:border-0 border-sky-200 sm:shadow-none">
+                    <img src="/icons/pill.svg" alt="search" className="absolute left-4 h-7 w-7 sm:h-9 sm:w-9" />
                     <Input 
                       type="text" 
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
                       onFocus={handleFocus}
                       placeholder="Search drugs, ingredients, conditions..." 
-                      className="pl-12 sm:pl-16 h-12 sm:h-14 text-sm sm:text-base border-none shadow-none focus-visible:ring-0" 
+                      className="pl-12 sm:pl-16 h-12 sm:h-14 text-sm sm:text-base border-none shadow-none focus-visible:ring-0 rounded-2xl sm:rounded-none" 
                     />
                   </div>
-                  <Button type="submit" className="h-12 sm:h-14 w-full sm:w-auto px-6 sm:px-8 rounded-xl font-semibold text-sm sm:text-base cursor-pointer transition-all hover:opacity-90 active:scale-95" style={{ backgroundColor: 'var(--primary)' }}>
+                  <Button type="submit" className="h-12 sm:h-14 w-full sm:w-auto sm:px-8 rounded-2xl sm:rounded-xl font-semibold text-sm sm:text-base cursor-pointer transition-all hover:opacity-90 active:scale-95" style={{ backgroundColor: 'var(--primary)' }}>
                     Search
                   </Button>
                 </div>
-                  <SearchSuggestions 
+                <SearchSuggestions 
                   suggestions={suggestions} 
                   isVisible={showSuggestions} 
                   onSelect={handleSuggestionSelect} 
@@ -184,13 +184,11 @@ export default function Home() {
               {/* Trending Searches */}
               <div className="text-sm sm:text-base text-gray-600 mb-8 sm:mb-12 px-2 sm:px-0">
                 <span className="font-semibold text-gray-800 mr-2 sm:mr-3">Trending:</span>
-                <div className="inline flex-wrap gap-x-3 sm:gap-x-4">
-                  {['Napa', 'Ace', 'Seclo', 'Sergel', 'Fexo', 'Monas', 'Orsaline-N'].map((term) => (
-                    <Link key={term} href={`/drugs?search=${term}`} className="hover:text-primary transition-colors underline decoration-gray-400 decoration-dotted underline-offset-4 font-medium mr-3 sm:mr-4 whitespace-nowrap">
-                      {term}
-                    </Link>
-                  ))}
-                </div>
+                {['Napa', 'Ace', 'Seclo', 'Sergel', 'Fexo', 'Monas', 'Orsaline-N'].map((term) => (
+                  <Link key={term} href={`/drugs?search=${term}`} className="inline-block hover:text-primary transition-colors underline decoration-gray-400 decoration-dotted underline-offset-4 font-medium mr-2 sm:mr-3 leading-relaxed">
+                    {term}
+                  </Link>
+                ))}
               </div>
 
               {/* AZBrowse */}
@@ -206,7 +204,7 @@ export default function Home() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-3 relative bg-gray-50">
+      <section className="py-2 sm:py-3 relative bg-gray-50">
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, var(--primary) 0%, transparent 50%, var(--primary) 100%)' }}></div>
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, var(--primary) 0%, transparent 50%, var(--primary) 100%)' }}></div>
         <div className="container-medq px-3 sm:px-4">
