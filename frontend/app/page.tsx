@@ -117,7 +117,7 @@ export default function Home() {
         style={{ 
           backgroundColor: '#D5E9E7', 
           borderRadius: 'clamp(1rem, 4vw, 2rem)', 
-          maxWidth: '80rem',
+          maxWidth: '960px',
           boxShadow: '20px 50px 80px -20px rgba(0, 0, 0, 0.25), 10px 30px 40px -15px rgba(0, 0, 0, 0.15)'
         }}
         >

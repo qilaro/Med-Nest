@@ -2,9 +2,9 @@ import Link from "next/link"
 
 export function AiAssistantCTA() {
   return (
-    <section className="py-16">
+    <section className="py-16 px-4 sm:px-0">
       <div 
-      className="py-16 px-4 text-center text-gray-900 mx-auto" 
+      className="py-16 text-center text-gray-900 mx-auto" 
       style={{ 
         backgroundColor: '#efdcf2', 
         borderRadius: 'clamp(1.5rem, 4vw, 3rem)', 

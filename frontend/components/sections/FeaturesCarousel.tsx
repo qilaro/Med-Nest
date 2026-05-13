@@ -99,10 +99,9 @@ export function FeaturesCarousel() {
   )
 
   return (
-    <section className="py-12">
-      {/* Container - Matching reference 1:1 */}
+    <section className="py-6 sm:py-12 px-4 sm:px-0">
       <div 
-        className="py-16 relative overflow-hidden mx-auto" 
+        className="py-8 sm:py-16 relative overflow-hidden mx-auto" 
         onKeyDownCapture={handleKeyDown}
         tabIndex={0}
         style={{ 
@@ -116,25 +115,25 @@ export function FeaturesCarousel() {
         {/* Gradient Top Line */}
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, transparent 0%, #3b82f6 50%, transparent 100%)' }}></div>
         
-        <h2 className="text-center font-bold text-navy leading-tight font-serif" style={{ fontSize: '1.875rem', lineHeight: '2.25rem', marginBottom: '2rem', color: '#0D261E' }}>
-          Everything You Need to Know About Your Medications
+        <h2 className="text-center font-bold text-navy leading-tight font-serif text-2xl sm:text-4xl mb-6 sm:mb-8" style={{ color: '#0D261E' }}>
+          Your Nest
         </h2>
 
         {/* 1:1 Flex Structure from Reference for exact "Teal Arrow Gap" */}
-        <div className="flex items-center gap-4 px-4 md:px-8">
+        <div className="flex items-center gap-2 sm:gap-4 px-2 sm:px-8">
           {/* Custom Arrow - Matching Reference CSS */}
           <button 
             onClick={scrollPrev}
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#cfe1dc] bg-[#eef4f2] text-[#527a6d] hover:bg-[#e4f1f0] hover:text-[#0a5c55] transition-all cursor-pointer shadow-sm z-20"
+            className="flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-full border border-[#cfe1dc] bg-[#eef4f2] text-[#527a6d] hover:bg-[#e4f1f0] hover:text-[#0a5c55] transition-all cursor-pointer shadow-sm z-20"
             aria-label="Previous feature"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="m15 18-6-6 6-6"></path></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 sm:h-5 sm:w-5"><path d="m15 18-6-6 6-6"></path></svg>
           </button>
 
           {/* Viewport - flex: 1 */}
           <div className="flex-1 min-w-0 overflow-hidden" ref={emblaRef}>
             {/* Track - flex gap: 2rem */}
-            <div className="flex gap-8">
+            <div className="flex gap-4 sm:gap-8">
               {features.map((feature, index) => (
                 <div 
                   key={index} 
@@ -142,27 +141,20 @@ export function FeaturesCarousel() {
                 >
                   <Link 
                     href={feature.href}
-                    className="block bg-white border border-gray-200 transition-all duration-150 hover:border-primary group h-full"
-                    style={{ 
-                      borderRadius: '1rem', 
-                      padding: '2.5rem', 
-                      boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
-                      minHeight: '16rem',
-                      display: 'flex',
-                      flexDirection: 'column'
-                    }}
+                    className="block bg-white border border-gray-200 transition-all duration-150 hover:border-primary group h-full rounded-xl sm:rounded-2xl p-4 sm:p-10 min-h-[12rem] sm:min-h-[16rem] flex flex-col"
+                    style={{ boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)' }}
                   >
                     {/* Truth Design: Wide Pill Bar with Expansive Shadow */}
-                    <div className="flex justify-center mb-6 shrink-0">
-                      <div className="w-[260px] h-[40px] rounded-full bg-white flex items-center justify-center shadow-[0_12px_25px_rgba(0,0,0,0.12)] border border-gray-100/50 relative overflow-hidden">
+                    <div className="flex justify-center mb-4 sm:mb-6 shrink-0">
+                      <div className="w-[160px] sm:w-[260px] h-[32px] sm:h-[40px] rounded-full bg-white flex items-center justify-center shadow-[0_12px_25px_rgba(0,0,0,0.12)] border border-gray-100/50 relative overflow-hidden">
                         <div className="relative z-10 group-hover:scale-110 transition-transform duration-300 text-primary">
                           {feature.icon}
                         </div>
                       </div>
                     </div>
                     
-                    <h3 className="font-bold text-navy mb-3 leading-tight font-serif text-[24px]">{feature.title}</h3>
-                    <p className="text-gray-600 leading-relaxed text-[18px]">
+                    <h3 className="font-bold text-navy mb-2 sm:mb-3 leading-tight font-serif text-base sm:text-2xl">{feature.title}</h3>
+                    <p className="text-gray-600 leading-relaxed text-xs sm:text-lg">
                       {feature.description}
                     </p>
                   </Link>
@@ -171,13 +163,13 @@ export function FeaturesCarousel() {
             </div>
           </div>
 
-          {/* Next Arrow */}
+          {/* Custom Arrow - Right */}
           <button 
             onClick={scrollNext}
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#cfe1dc] bg-[#eef4f2] text-[#527a6d] hover:bg-[#e4f1f0] hover:text-[#0a5c55] transition-all cursor-pointer shadow-sm z-20"
+            className="flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-full border border-[#cfe1dc] bg-[#eef4f2] text-[#527a6d] hover:bg-[#e4f1f0] hover:text-[#0a5c55] transition-all cursor-pointer shadow-sm z-20"
             aria-label="Next feature"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="m9 18 6-6-6-6"></path></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 sm:h-5 sm:w-5"><path d="m9 18 6-6-6-6"></path></svg>
           </button>
         </div>
       </div>

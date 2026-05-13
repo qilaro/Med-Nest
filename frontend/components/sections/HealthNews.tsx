@@ -30,7 +30,7 @@ const newsItems = [
 export function HealthNews() {
   return (
     <section className="py-16">
-      <div className="container-medq mx-auto px-4">
+      <div className="mx-auto px-4 max-w-[960px]">
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-4xl md:text-[3.5rem] font-bold leading-tight">Latest Health News</h2>
           <Link href="#" className="text-sm font-medium flex items-center gap-1 text-primary hover:opacity-80 transition-opacity">
