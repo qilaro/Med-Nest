@@ -10,6 +10,19 @@ const BOT_PATTERNS = [
 ]
 
 export default function middleware(req: NextRequest) {
+  const pathname = req.nextUrl.pathname
+  const isApiOrTrpc = pathname.startsWith('/api/') || pathname.startsWith('/trpc')
+  const response = NextResponse.next()
+
+  // Avoid blocking page/RSC requests (can cause permanent Loading... fallbacks).
+  // Keep strict checks for API/trpc endpoints only.
+  if (!isApiOrTrpc) {
+    Object.entries(securityHeaders()).forEach(([key, value]) => {
+      response.headers.set(key, value)
+    })
+    return response
+  }
+
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
     || req.headers.get('x-real-ip')
     || 'unknown'
@@ -33,10 +46,7 @@ export default function middleware(req: NextRequest) {
     }
   }
 
-  const response = NextResponse.next()
-
   // Cache static API responses for 5 minutes
-  const pathname = req.nextUrl.pathname;
   const staticApis = ['/api/stats', '/api/drug-classes', '/api/drugs/companies', '/api/dosage-forms', '/api/popular'];
   if (staticApis.includes(pathname)) {
     response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=60');
@@ -57,7 +67,7 @@ function securityHeaders() {
     'Referrer-Policy': 'strict-origin-when-cross-origin',
     'Permissions-Policy': 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()',
     'Content-Security-Policy': process.env.NODE_ENV === 'production'
-      ? "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self'; frame-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"
+      ? "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self'; frame-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"
       : "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self'; frame-src 'self'; frame-ancestors 'self';",
   }
 }
