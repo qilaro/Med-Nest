@@ -63,6 +63,9 @@
   }
   body {
     background-color: #f9f9f9;
+    background-image: url('/images/tablets-bg.svg');
+    background-repeat: repeat;
+    background-size: 300px 173px;
     color: var(--foreground);
     font-family: var(--font-serif);
     min-height: 100vh;
