@@ -110,12 +110,11 @@ export default function Home() {
   return (
     <div className="flex flex-col flex-1">
       {/* Hero Section */}
-      <section className="py-2 sm:py-4 text-gray-900">
+      <section className="bg-gradient-to-b from-[#D5E9E7] via-white to-white py-6">
         <div className="mx-auto max-w-[1024px] px-3 sm:px-0">
-          <div
-            className="relative flex flex-col items-center justify-center text-center p-4 sm:p-6 pt-4 sm:pt-4 pb-8 sm:pb-8 rounded-2xl border border-sky-200 bg-gradient-to-b from-white via-white to-gray-50 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.25)]"
-          >
-            <div className="relative w-full max-w-3xl text-center px-2 sm:px-0">
+          <div className="bg-white rounded-2xl border border-sky-200 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.25)] p-4 sm:p-8">
+            <div className="flex flex-col items-center justify-center text-center">
+              <div className="w-full max-w-3xl px-2 sm:px-0">
               {/* Badge */}
               <div className="inline-flex items-center gap-2 bg-white/65 border border-gray-300 rounded-full px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-sm mb-2 mt-1 text-gray-800">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-400" aria-hidden="true">
@@ -182,27 +181,28 @@ export default function Home() {
                 </p>
               </div>
             </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Stats Section */}
-      <section className="py-2 sm:py-3 relative bg-gray-50 mt-6 sm:mt-10">
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, var(--primary) 0%, transparent 50%, var(--primary) 100%)' }}></div>
-        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, var(--primary) 0%, transparent 50%, var(--primary) 100%)' }}></div>
-        <div className="container-medq px-3 sm:px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 text-center">
-            {[
-              { label: 'Drugs Listed', value: stats.drugs.toLocaleString() },
-              { label: 'Generics', value: stats.generics.toLocaleString() },
-              { label: 'Drug Classes', value: stats.classes.toLocaleString() },
-              { label: 'Companies', value: stats.companies.toLocaleString() },
-            ].map((stat) => (
-              <div key={stat.label}>
-                <div className="text-2xl sm:text-3xl font-bold text-primary">{stat.value}</div>
-                <div className="text-gray-600 text-xs sm:text-sm mt-1">{stat.label}</div>
-              </div>
-            ))}
+      <section className="py-6 sm:py-8 bg-gray-50">
+        <div className="mx-auto max-w-[1024px] px-3 sm:px-0">
+          <div className="bg-white rounded-2xl border border-sky-200 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.25)] p-6 sm:p-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 text-center">
+              {[
+                { label: 'Drugs Listed', value: stats.drugs.toLocaleString() },
+                { label: 'Generics', value: stats.generics.toLocaleString() },
+                { label: 'Drug Classes', value: stats.classes.toLocaleString() },
+                { label: 'Companies', value: stats.companies.toLocaleString() },
+              ].map((stat) => (
+                <div key={stat.label}>
+                  <div className="text-2xl sm:text-3xl font-bold text-primary">{stat.value}</div>
+                  <div className="text-gray-600 text-xs sm:text-sm mt-1">{stat.label}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>

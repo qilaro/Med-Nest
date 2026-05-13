@@ -62,7 +62,7 @@
     border-color: var(--border);
   }
   body {
-    background: linear-gradient(180deg, #D5E9E7 0%, #ffffff 30%, #ffffff 100%);
+    background-color: #f9f9f9;
     color: var(--foreground);
     font-family: var(--font-serif);
     min-height: 100vh;
