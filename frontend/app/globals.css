@@ -62,10 +62,7 @@
     border-color: var(--border);
   }
   body {
-    background-color: #f9f9f9;
-    background-image: url('/images/tablets-bg.svg');
-    background-repeat: repeat;
-    background-size: 300px 173px;
+    background: linear-gradient(180deg, #f0f7f5 0%, #f9f9f9 15%, #ffffff 40%, #f9f9f9 100%);
     color: var(--foreground);
     font-family: var(--font-serif);
     min-height: 100vh;
