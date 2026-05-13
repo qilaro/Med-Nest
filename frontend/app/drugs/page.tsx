@@ -255,8 +255,8 @@ function DrugsContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#D5E9E7] via-white to-white py-6">
-      <div className="max-w-[960px] mx-auto px-3 sm:px-0">
+    <div className="bg-gradient-to-b from-[#D5E9E7] via-white to-white py-6">
+      <div className="max-w-[1024px] mx-auto px-3 sm:px-0">
         <div className="bg-white rounded-2xl border border-sky-200 shadow-[8px_16px_40px_rgba(0,0,0,0.15),0_20px_60px_-12px_rgba(0,0,0,0.25)] p-6 md:p-8">
           <header className="mb-6">
             <h1 className="text-2xl sm:text-3xl font-bold text-navy mb-1">Drug Directory</h1>
@@ -286,7 +286,7 @@ function DrugsContent() {
                 }}
                 onFocus={handleFocus}
                 placeholder="Search medications..."
-                className="pl-16 h-14 rounded-xl text-base shadow-sm border-2 border-sky-200 focus-visible:border-sky-400 focus-visible:shadow-[0_0_0_3px_rgba(45,138,120,0.25)] transition-shadow duration-200"
+                className="pl-16 h-14 rounded-xl text-base border-2 border-sky-200 focus-visible:border-sky-400 focus-visible:shadow-[0_0_0_3px_rgba(45,138,120,0.25)] transition-shadow duration-200"
               />
               <SearchSuggestions 
                 suggestions={suggestions} 

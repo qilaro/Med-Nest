@@ -63,9 +63,6 @@
   }
   body {
     background-color: #f9f9f9;
-    background-image: url('/images/medical-pattern.svg');
-    background-repeat: repeat;
-    background-attachment: fixed;
     color: var(--foreground);
     font-family: var(--font-serif);
     min-height: 100vh;

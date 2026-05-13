@@ -5,7 +5,6 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Noto_Sans, Playfair_Display } from "next/font/google";
 import { cn } from "@/lib/utils";
-import { ClerkProvider } from "@clerk/nextjs";
 
 const playfairDisplayHeading = Playfair_Display({subsets:['latin'],variable:'--font-heading'});
 
@@ -33,7 +32,6 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
       <html lang="en" className={cn("h-full antialiased", "font-sans", notoSans.variable, playfairDisplayHeading.variable)}>
         <body className="min-h-full flex flex-col font-serif relative" suppressHydrationWarning>
           <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
@@ -53,22 +51,15 @@ document.addEventListener('keydown',function(e){
     e.preventDefault();
   }
 });
-setInterval(function(){
-  var t=Date.now();
-  debugger;
-  if(Date.now()-t>100){
-    document.body.innerHTML='<div style="text-align:center;margin-top:40vh;padding:20px"><h1>DevTools Detected</h1><p>Please close Developer Tools.</p></div>';
-  }
-},5000);
 `}} />
           <EmergencyBanner />
           <Header />
+          <img src="/images/tablets-bg.svg" alt="" className="fixed bottom-0 right-0 w-[250px] sm:w-[350px] opacity-40 pointer-events-none z-0" />
           <main className="flex-1 relative z-10 pb-20 lg:pb-0">
             {children}
           </main>
           <Footer />
         </body>
       </html>
-    </ClerkProvider>
   );
 }

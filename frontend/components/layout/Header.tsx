@@ -71,6 +71,12 @@ const Header = () => {
               <Link className="text-sm text-gray-600 hover:text-gray-800 transition-colors font-medium" href="#">Register</Link>
               <Link className="text-sm text-gray-700 hover:text-gray-900 border border-gray-300 px-4 py-1.5 rounded-lg font-semibold transition-colors" href="#">Sign in</Link>
             </div>
+
+            {/* Mobile: Register/Sign in */}
+            <div className="flex lg:hidden items-center gap-2 ml-auto">
+              <Link className="text-xs text-gray-600 hover:text-gray-800 font-medium shrink-0" href="#">Register</Link>
+              <Link className="text-xs text-white bg-primary hover:bg-primary-dark px-3 py-1.5 rounded-lg font-semibold shrink-0 transition-colors" href="#">Sign in</Link>
+            </div>
           </div>
         </div>
       </header>

@@ -1,9 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // experimental: {
-  //   cacheComponents: true,
-  // },
+  allowedDevOrigins: ['192.168.0.102'],
 };
 
 export default nextConfig;

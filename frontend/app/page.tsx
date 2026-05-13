@@ -1,18 +1,18 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import Image from "next/image";
+import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FeaturesCarousel } from "@/components/sections/FeaturesCarousel";
-import { HealthNews } from "@/components/sections/HealthNews";
-import { AiAssistantCTA } from "@/components/sections/AiAssistantCTA";
 import AZBrowse from "@/components/drugs/AZBrowse";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { SearchSuggestions } from "@/components/drugs/SearchSuggestions";
 import { drugService } from "@/lib/services/drugService";
 import { DrugSummary } from "@/types/drug";
+
+const FeaturesCarousel = lazy(() => import("@/components/sections/FeaturesCarousel").then(m => ({ default: m.FeaturesCarousel })));
+const HealthNews = lazy(() => import("@/components/sections/HealthNews").then(m => ({ default: m.HealthNews })));
+const AiAssistantCTA = lazy(() => import("@/components/sections/AiAssistantCTA").then(m => ({ default: m.AiAssistantCTA })));
 
 export default function Home() {
   const router = useRouter();
@@ -111,26 +111,9 @@ export default function Home() {
     <div className="flex flex-col flex-1">
       {/* Hero Section */}
       <section className="py-2 sm:py-4 text-gray-900">
-        {/* Outer Container with Mint Background */}
-        <div 
-        className="container-medq relative z-10 mx-auto p-4 sm:p-6" 
-        style={{ 
-          backgroundColor: '#D5E9E7', 
-          borderRadius: 'clamp(1rem, 4vw, 2rem)', 
-          maxWidth: '960px',
-          boxShadow: '20px 50px 80px -20px rgba(0, 0, 0, 0.25), 10px 30px 40px -15px rgba(0, 0, 0, 0.15)'
-        }}
-        >
-          {/* Glass Hero Box */}
+        <div className="mx-auto max-w-[1024px] px-3 sm:px-0">
           <div
-            className="relative flex flex-col items-center justify-center text-center p-4 sm:p-6 pt-4 sm:pt-4 pb-8 sm:pb-8"
-            style={{
-              borderRadius: 'clamp(1rem, 3vw, 1.5rem)',
-              background: 'rgba(255, 255, 255, 0.4)',
-              backdropFilter: 'blur(12px)',
-              border: '1px solid rgba(180, 210, 225, 0.6)',
-              boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.15)'
-            }}
+            className="relative flex flex-col items-center justify-center text-center p-4 sm:p-6 pt-4 sm:pt-4 pb-8 sm:pb-8 rounded-2xl border border-sky-200 bg-gradient-to-b from-white via-white to-gray-50 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.25)]"
           >
             <div className="relative w-full max-w-3xl text-center px-2 sm:px-0">
               {/* Badge */}
@@ -153,9 +136,9 @@ export default function Home() {
               </p>
 
               {/* Search Bar */}
-              <form ref={searchRef} onSubmit={handleSearchSubmit} className="max-w-2xl mx-auto mb-4 relative px-0">
-                <div className="flex flex-col sm:flex-row gap-2 sm:gap-0 sm:bg-white sm:rounded-2xl sm:py-1.5 sm:pl-1.5 sm:pr-4 sm:shadow-sm sm:border-2 sm:border-sky-200">
-                  <div className="relative flex items-center flex-1 bg-white rounded-2xl sm:rounded-none border-2 sm:border-0 border-sky-200 sm:shadow-none focus-within:shadow-[0_0_0_3px_rgba(45,138,120,0.3)] transition-shadow duration-200">
+              <form ref={searchRef} onSubmit={handleSearchSubmit} className="max-w-4xl mx-auto mb-4 relative px-0">
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-0 sm:bg-white sm:rounded-2xl sm:py-1.5 sm:pl-1.5 sm:pr-4 sm:border-2 sm:border-sky-200 focus-within:sm:shadow-[0_0_0_3px_rgba(45,138,120,0.3)] sm:transition-shadow sm:duration-200">
+                  <div className="relative flex items-center flex-1 bg-white rounded-2xl sm:rounded-none border-2 sm:border-0 border-sky-200 sm:shadow-none">
                     <img src="/icons/pill.svg" alt="search" className="absolute left-4 h-7 w-7 sm:h-9 sm:w-9" />
                     <Input 
                       type="text" 
@@ -225,13 +208,13 @@ export default function Home() {
       </section>
 
       {/* Features Carousel Section */}
-      <FeaturesCarousel />
+      <Suspense fallback={<div className="h-40 sm:h-80" />}><FeaturesCarousel /></Suspense>
 
       {/* Latest Health News Section */}
-      <HealthNews />
+      <Suspense fallback={<div className="h-40" />}><HealthNews /></Suspense>
 
       {/* AI Assistant CTA Section */}
-      <AiAssistantCTA />
+      <Suspense fallback={<div className="h-40" />}><AiAssistantCTA /></Suspense>
     </div>
   );
 }

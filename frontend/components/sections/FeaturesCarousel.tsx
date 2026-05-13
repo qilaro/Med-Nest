@@ -107,8 +107,8 @@ export function FeaturesCarousel() {
         style={{ 
           backgroundColor: '#E4F1F0', 
           borderRadius: 'clamp(1.5rem, 4vw, 3rem)', 
-          maxWidth: '960px', 
-          boxShadow: '20px 50px 80px -20px rgba(0, 0, 0, 0.25), 10px 30px 40px -15px rgba(0, 0, 0, 0.15)',
+          maxWidth: "1024px", 
+          boxShadow: '0 8px 30px -12px rgba(0, 0, 0, 0.25)',
           outline: 'none'
         }}
       >

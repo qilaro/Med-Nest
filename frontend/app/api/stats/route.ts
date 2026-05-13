@@ -16,6 +16,8 @@ export async function GET() {
       generics: generics.rows[0].count,
       classes: classes.rows[0].count,
       companies: companies.rows[0].count,
+    }, {
+      headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=60' },
     });
   } catch {
     return NextResponse.json({ drugs: 0, generics: 0, classes: 0, companies: 0 }, { status: 500 });
