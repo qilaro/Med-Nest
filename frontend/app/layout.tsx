@@ -42,16 +42,6 @@ export default function RootLayout({
             description: 'Bangladesh medicine index with prices, generics, and medical information.',
             publisher: { '@type': 'Organization', name: 'Med-Nest' },
           }) }} />
-          <script dangerouslySetInnerHTML={{ __html: `
-document.addEventListener('contextmenu',function(e){e.preventDefault()});
-document.addEventListener('copy',function(e){e.preventDefault()});
-document.addEventListener('dragstart',function(e){e.preventDefault()});
-document.addEventListener('keydown',function(e){
-  if(e.key==='F12'||(e.ctrlKey&&e.shiftKey&&(e.key==='I'||e.key==='J'||e.key==='C'))||(e.ctrlKey&&e.key==='U')){
-    e.preventDefault();
-  }
-});
-`}} />
           <EmergencyBanner />
           <Header />
           <img src="/images/tablets-bg.svg" alt="" className="fixed bottom-0 right-0 w-[250px] sm:w-[350px] opacity-40 pointer-events-none z-0" />
