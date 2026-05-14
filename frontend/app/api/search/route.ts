@@ -38,12 +38,9 @@ export async function GET(request: Request) {
           END as rank
         FROM brands b
         WHERE 
-          ${isShort 
-            ? sql`LOWER(b.brand_name) ILIKE ${'%' + q + '%'} OR LOWER(b.generic_name) ILIKE ${'%' + q + '%'} OR LOWER(b.company_name) ILIKE ${'%' + q + '%'}`
-            : sql`LOWER(b.brand_name) ILIKE ${'%' + q + '%'} OR LOWER(b.generic_name) ILIKE ${'%' + q + '%'} OR LOWER(b.company_name) ILIKE ${'%' + q + '%'}
-               OR similarity(LOWER(b.brand_name), LOWER(${q})) > 0.4
-               OR similarity(LOWER(b.generic_name), LOWER(${q})) > 0.3`
-          }
+          LOWER(b.brand_name) ILIKE ${'%' + q + '%'}
+          OR LOWER(b.generic_name) ILIKE ${'%' + q + '%'}
+          OR LOWER(b.company_name) ILIKE ${'%' + q + '%'}
       ),
       deduped AS (
         SELECT *, ROW_NUMBER() OVER (
@@ -60,10 +57,7 @@ export async function GET(request: Request) {
           g.medicine_type as "medicineType", g.slug as slug, 'generic' as type,
           CASE WHEN LOWER(g.name) LIKE LOWER(${q + '%'}) THEN 3 ELSE 1 END as rank
         FROM generics g
-        WHERE ${isShort 
-          ? sql`LOWER(g.name) ILIKE ${'%' + q + '%'}`
-          : sql`LOWER(g.name) ILIKE ${'%' + q + '%'} OR similarity(LOWER(g.name), LOWER(${q})) > 0.3`
-        }
+        WHERE LOWER(g.name) ILIKE ${'%' + q + '%'}
       )
       SELECT * FROM (
         SELECT "brandName", "genericName", "dosageForm", strength, "companyName", "company", "medicineType", slug, type
