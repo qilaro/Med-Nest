@@ -137,13 +137,17 @@ function DrugsContent() {
         }
 
         if (companyFilter) {
-          const comps = companyFilter.split(',');
-          filteredDrugs = filteredDrugs.filter((dr: DrugSummary) => dr.company && comps.includes(dr.company));
+          const targetCompany = companyFilter.trim().toLowerCase();
+          filteredDrugs = filteredDrugs.filter(
+            (dr: DrugSummary) => (dr.company || '').trim().toLowerCase() === targetCompany
+          );
         }
         
         if (dosageFilter) {
-          const dForms = dosageFilter.split(',');
-          filteredDrugs = filteredDrugs.filter((dr: DrugSummary) => dForms.includes(dr.dosageForm));
+          const targetForm = dosageFilter.trim().toLowerCase();
+          filteredDrugs = filteredDrugs.filter(
+            (dr: DrugSummary) => (dr.dosageForm || '').trim().toLowerCase() === targetForm
+          );
         }
         
         if (ratingFilter) {
@@ -422,7 +426,17 @@ function DrugsContent() {
                         <input type="checkbox" checked={checked} onChange={() => {
                           const next = checked ? selectedRatings.filter(r => r !== val) : [...selectedRatings, val];
                           setSelectedRatings(next);
-                          if (next.length) router.push(`/drugs?rating=${next.join(',')}`); else clearFilters();
+                          const p = new URLSearchParams();
+                          const s = activeSearch || searchQ;
+                          if (s) p.set('search', s);
+                          if (selectedType) p.set('type', selectedType);
+                          if (selectedClass) p.set('drug_class', selectedClass);
+                          if (selectedCompany) p.set('company', selectedCompany);
+                          if (selectedGeneric) p.set('generic', selectedGeneric);
+                          if (selectedDosageForm) p.set('dosage_form', selectedDosageForm);
+                          if (next.length) p.set('rating', next.join(','));
+                          if (letterFilter) p.set('letter', letterFilter);
+                          router.push(p.toString() ? `/drugs?${p.toString()}` : '/drugs');
                           setShowRatingDropdown(false);
                         }} className="accent-teal-500" />
                         {display}
