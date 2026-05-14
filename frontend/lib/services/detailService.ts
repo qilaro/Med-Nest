@@ -102,7 +102,7 @@ export async function getDrugDetail(slug: string): Promise<DrugDetailResult | nu
         g.pregnancy_lactation,
         g.storage_conditions,
         g.overdose_effects,
-        g.warnings,
+        NULL::text as warnings,
         g.what_is,
         g.mode_of_action,
         g.pharmacology,

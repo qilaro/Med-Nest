@@ -33,7 +33,13 @@ export async function GET() {
           FROM brands b
           WHERE LOWER(b.brand_name) ILIKE ${'%' + q + '%'}
           GROUP BY b.brand_name, b.generic_name, b.dosage_form, b.strength, b.company_name, b.medicine_type
-          ORDER BY similarity(b.brand_name, ${q}) DESC
+          ORDER BY
+            CASE
+              WHEN LOWER(b.brand_name) = LOWER(${q}) THEN 0
+              WHEN LOWER(b.brand_name) LIKE LOWER(${q + '%'}) THEN 1
+              ELSE 2
+            END,
+            b.brand_name ASC
           LIMIT 1
         `);
         if (brand.rows.length > 0) {

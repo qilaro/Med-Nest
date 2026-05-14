@@ -31,9 +31,9 @@ export async function GET(request: Request) {
         b.average_rating::float as "averageRating",
         b.review_count as "reviewCount",
         b.medicine_type as "medicineType",
-        b.brand_verified as "brandVerified",
-        b.price_verified as "priceVerified",
-        b.generic_verified as "genericVerified",
+        false as "brandVerified",
+        false as "priceVerified",
+        false as "genericVerified",
         'brand' as type
       FROM brands b
       WHERE 1=1
@@ -106,7 +106,7 @@ export async function GET(request: Request) {
         LIMIT ${limit} OFFSET ${offset}`;
     } else {
       dataQuery = sql`${dataQuery} ORDER BY 
-        b.brand_verified DESC, b.price_verified DESC, b.generic_verified DESC, b.brand_name ASC 
+        b.review_count DESC NULLS LAST, b.brand_name ASC 
         LIMIT ${limit} OFFSET ${offset}`;
     }
     const result = await db.execute(dataQuery);
