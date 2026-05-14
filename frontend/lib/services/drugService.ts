@@ -39,7 +39,7 @@ export const drugService = {
   /**
    * Get a list of drugs with optional filtering
    */
-  getDrugs: async (params?: { page?: number; limit?: number; drug_class?: string; medicine_type?: string; letter?: string; search?: string }) => {
+  getDrugs: async (params?: { page?: number; limit?: number; drug_class?: string; medicine_type?: string; letter?: string; search?: string; company?: string; generic?: string; dosage_form?: string }) => {
     const q = new URLSearchParams();
     if (params?.page) q.set("page", String(params.page));
     if (params?.limit) q.set("limit", String(params.limit));
@@ -47,6 +47,9 @@ export const drugService = {
     if (params?.medicine_type) q.set("medicine_type", params.medicine_type);
     if (params?.letter) q.set("letter", params.letter);
     if (params?.search) q.set("search", params.search);
+    if (params?.company) q.set("company", params.company);
+    if (params?.generic) q.set("generic", params.generic);
+    if (params?.dosage_form) q.set("dosage_form", params.dosage_form);
     
     try {
       const data = await apiFetch<DrugsResponse>(`/drugs?${q}`);
@@ -70,12 +73,21 @@ export const drugService = {
             drugs = drugs.filter((d: any) => d.brandName.toUpperCase().startsWith(params.letter!.toUpperCase()));
           }
         }
+        if (params?.company) {
+          drugs = drugs.filter((d: any) => d.company?.toLowerCase() === params.company!.toLowerCase());
+        }
+        if (params?.generic) {
+          drugs = drugs.filter((d: any) => d.genericName?.toLowerCase() === params.generic!.toLowerCase());
+        }
+        if (params?.dosage_form) {
+          drugs = drugs.filter((d: any) => d.dosageForm?.toLowerCase() === params.dosage_form!.toLowerCase());
+        }
         
         return {
           drugs: drugs,
           total: drugs.length,
           page: 1,
-          limit: params?.limit || 50,
+          limit: params?.limit || 20,
           totalPages: 1
         };
       } catch (fallbackError) {

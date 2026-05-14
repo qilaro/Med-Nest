@@ -24,6 +24,7 @@ export default function Home() {
   const [isSearching, setIsSearching] = useState(false);
   const searchRef = useRef<HTMLFormElement>(null);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const interactedRef = useRef(false);
 
   useEffect(() => {
     fetch('/api/stats').then(r => r.json()).then(setStats).catch(() => {});
@@ -31,20 +32,29 @@ export default function Home() {
 
   // Close suggestions when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+    const handleOutside = (e: MouseEvent | TouchEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
         setShowSuggestions(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handleOutside);
+    document.addEventListener("touchstart", handleOutside, { passive: true });
+    return () => {
+      document.removeEventListener("mousedown", handleOutside);
+      document.removeEventListener("touchstart", handleOutside);
+    };
   }, []);
 
   // Handle search input changes with fuzzy search
   useEffect(() => {
     if (query.trim().length === 0) {
-      setShowSuggestions(false);
-      setSearchTotal(0);
+      if (interactedRef.current) {
+        fetch('/api/popular').then(r => r.json()).then(data => {
+          setSuggestions((data.results || []).slice(0, 5));
+          setSearchTotal(0);
+          setShowSuggestions(true);
+        }).catch(() => {});
+      }
       return;
     }
 
@@ -90,6 +100,7 @@ export default function Home() {
   };
 
   const handleFocus = async () => {
+    interactedRef.current = true;
     if (query.trim().length === 0) {
       try {
         setIsSearching(true);
@@ -112,11 +123,11 @@ export default function Home() {
       {/* Hero Section */}
       <section className="bg-gradient-to-b from-[#D5E9E7] via-white to-white py-6">
         <div className="mx-auto max-w-[1024px] px-3 sm:px-0">
-          <div className="bg-white rounded-2xl border border-sky-200 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.25)] p-4 sm:p-8">
+          <div className="bg-white rounded-2xl border border-sky-200 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.25)] p-3 sm:p-8">
             <div className="flex flex-col items-center justify-center text-center">
-              <div className="w-full max-w-3xl px-2 sm:px-0">
+              <div className="w-full max-w-3xl sm:px-0">
               {/* Badge */}
-              <div className="inline-flex items-center gap-2 bg-white/65 border border-gray-300 rounded-full px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-sm mb-2 mt-1 text-gray-800">
+              <div className="inline-flex items-center gap-2 bg-white/65 border border-gray-300 rounded-full px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-sm -mt-1 mb-1.5 text-gray-800">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-400" aria-hidden="true">
                   <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path>
                 </svg>
@@ -125,32 +136,34 @@ export default function Home() {
               </div>
 
               {/* Title */}
-              <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-3 leading-tight text-gray-900">
+              <h1 className="text-xl sm:text-4xl md:text-6xl font-bold mb-1 sm:mb-3 leading-tight text-gray-900 whitespace-nowrap">
                 Learn more. <span style={{ color: 'var(--primary)' }}>Live better.</span>
               </h1>
 
               {/* Subtitle */}
-              <p className="text-sm sm:text-base md:text-xl text-gray-700 mb-5 max-w-2xl mx-auto font-normal px-2 sm:px-0">
-                Your comprehensive source for drug information you can trust.
+              <p className="text-sm sm:text-base md:text-xl text-gray-700 mb-3 sm:mb-5 max-w-2xl mx-auto font-normal px-2 sm:px-0">
+                Most comprehensive source for drug information you can trust in Bangladesh.
               </p>
 
               {/* Search Bar */}
-              <form ref={searchRef} onSubmit={handleSearchSubmit} className="max-w-4xl mx-auto mb-4 relative px-0">
-                <div className="flex flex-col sm:flex-row gap-2 sm:gap-0 sm:bg-white sm:rounded-2xl sm:py-1.5 sm:pl-1.5 sm:pr-4 sm:border-2 sm:border-sky-200 focus-within:sm:shadow-[0_0_0_3px_rgba(45,138,120,0.3)] sm:transition-shadow sm:duration-200">
-                  <div className="relative flex items-center flex-1 bg-white rounded-2xl sm:rounded-none border-2 sm:border-0 border-sky-200 sm:shadow-none">
-                    <img src="/icons/pill.svg" alt="search" className="absolute left-4 h-7 w-7 sm:h-9 sm:w-9" />
+              <form ref={searchRef} onSubmit={handleSearchSubmit} className="max-w-4xl mx-auto mb-6 relative">
+                <div className="flex items-stretch bg-white rounded-full border-2 border-sky-200 focus-within:border-teal-400 focus-within:shadow-[0_0_0_4px_rgba(45,138,120,0.2)] transition-shadow duration-200 overflow-hidden">
+                  <div className="relative flex items-center flex-1 min-w-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="absolute left-5 h-5 w-5 text-gray-400"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                     <Input 
                       type="text" 
                       value={query}
-                      onChange={(e) => setQuery(e.target.value)}
+                      onChange={(e) => { setQuery(e.target.value); interactedRef.current = true; }}
                       onFocus={handleFocus}
-                      placeholder="Search drugs, ingredients, conditions..." 
-                      className="pl-12 sm:pl-16 h-12 sm:h-14 text-sm sm:text-base border-none shadow-none focus-visible:ring-0 rounded-2xl sm:rounded-none" 
+                      onBlur={() => { if (!query.trim()) setShowSuggestions(false); }}
+                      placeholder="Search your drugs here" 
+                      className="pl-12 h-12 sm:h-14 text-sm sm:text-base border-none shadow-none focus-visible:ring-0 rounded-full bg-transparent" 
                     />
                   </div>
-                  <Button type="submit" className="h-12 sm:h-14 w-full sm:w-auto sm:px-8 rounded-2xl sm:rounded-xl font-semibold text-sm sm:text-base cursor-pointer transition-all hover:opacity-90 active:scale-95" style={{ backgroundColor: 'var(--primary)' }}>
-                    Search
-                  </Button>
+                  <button type="submit" className="h-12 sm:h-14 shrink-0 px-5 sm:px-6 bg-teal-500 hover:bg-teal-600 text-white font-semibold text-sm sm:text-base transition-colors cursor-pointer flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    <span className="hidden sm:inline">Search</span>
+                  </button>
                 </div>
                 <SearchSuggestions 
                   suggestions={suggestions} 

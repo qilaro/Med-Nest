@@ -2,12 +2,11 @@
 
 import { useState, useRef, useEffect, Suspense } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, usePathname } from "next/navigation";
 
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const TABS = ["Browse Trade", "Browse Generics", "Browse Class", "Dosage Form"];
 const TYPE_ITEMS = [
-  { name: "All", type: "" },
   { name: "Pharmaceutical", type: "allopathic" },
   { name: "Herbal", type: "herbal" },
   { name: "Unani", type: "unani" },
@@ -23,6 +22,7 @@ const BASE_PATHS: Record<string, string> = {
 
 function AZBrowseContent({ showTabs = true }: { showTabs?: boolean }) {
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const currentLetter = searchParams.get("letter");
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [expandedLetter, setExpandedLetter] = useState<string | null>(null);
@@ -41,7 +41,7 @@ function AZBrowseContent({ showTabs = true }: { showTabs?: boolean }) {
   }, [openDropdown, expandedLetter]);
 
   return (
-    <div className="w-full max-w-4xl my-8" ref={containerRef}>
+    <div className="w-full max-w-4xl my-8 mx-auto" ref={containerRef}>
       {showTabs && (
         <div className="flex flex-col items-center gap-2 mb-6">
           <div className="grid grid-cols-2 sm:flex sm:flex-row gap-2">
@@ -96,7 +96,7 @@ function AZBrowseContent({ showTabs = true }: { showTabs?: boolean }) {
               {"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map((second) => (
                 <Link
                   key={second}
-                  href={`/drugs?letter=${expandedLetter}${second.toLowerCase()}`}
+                  href={`${pathname}?letter=${expandedLetter}${second.toLowerCase()}`}
                   className={`flex items-center justify-center h-9 sm:h-12 rounded-lg font-semibold text-xs sm:text-sm border transition-all cursor-pointer ${
                     currentLetter === `${expandedLetter}${second.toLowerCase()}`
                       ? "bg-primary text-white border-primary shadow-md"
@@ -124,7 +124,7 @@ function AZBrowseContent({ showTabs = true }: { showTabs?: boolean }) {
             </button>
           ))}
           <Link
-            href="/drugs?letter=0-9"
+            href={`${pathname}?letter=0-9`}
             className={`flex items-center justify-center h-9 sm:h-12 rounded-lg font-semibold text-xs sm:text-sm border transition-all cursor-pointer ${
               currentLetter === "0-9"
                 ? "bg-primary text-white border-primary shadow-md"

@@ -61,19 +61,39 @@
   * {
     border-color: var(--border);
   }
+  html {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: none;
+    scroll-behavior: smooth;
+  }
   body {
     background-color: #f9f9f9;
     color: var(--foreground);
     font-family: var(--font-serif);
     min-height: 100vh;
+    min-height: -webkit-fill-available;
     position: relative;
     overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   /* ENSURE NO PSEUDO ELEMENTS ON BODY */
   body::before, body::after {
     display: none !important;
     content: none !important;
   }
+}
+
+/* GPU-accelerated main content area */
+main {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Smooth momentum scrolling on iOS */
+.scroll-container {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
 .container-medq {
@@ -127,6 +147,52 @@
   animation: slide-up 0.25s ease-out;
 }
 
+@keyframes ripple-burst {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(3.5); opacity: 0; }
+}
+.animate-ripple-burst {
+  animation: ripple-burst 0.5s ease-out forwards;
+}
+
+@keyframes stagger-in {
+  0% { transform: scale(0); opacity: 0; }
+  60% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.animate-stagger-in {
+  animation: stagger-in 0.35s cubic-bezier(0.34, 1.78, 0.64, 1) backwards;
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.5; transform: scale(1.2); }
+  50% { opacity: 0.8; transform: scale(1.35); }
+}
+.animate-pulse-slow {
+  animation: pulse-slow 2.5s ease-in-out infinite;
+}
+
 .safe-area-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* GPU-accelerated animations */
+.gpu {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Content visibility for below-fold sections */
+.content-below {
+  content-visibility: auto;
+  contain-intrinsic-size: 500px;
+}
+
+/* Ensure fixed nav doesn't jump on mobile Safari */
+.fixed-nav {
+  will-change: transform;
+  backface-visibility: hidden;
+  contain: layout style;
+  overflow: visible !important;
 }

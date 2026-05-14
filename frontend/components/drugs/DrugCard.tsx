@@ -9,6 +9,16 @@ interface DrugCardProps {
   drug: DrugSummary;
 }
 
+const TYPE_SHORT: Record<string, string> = {
+  Herbal: 'Herb', Homeopathic: 'Homeo', Ayurvedic: 'Ayur',
+  Unani: 'Unani', Veterinary: 'Vet', Supplement: 'Suppl',
+  Device: 'Dev', PersonalCare: 'Care', Vaccine: 'Vacc',
+};
+const TYPE_COLORS: Record<string, string> = {
+  Herbal: 'bg-emerald-500', Homeopathic: 'bg-violet-500', Ayurvedic: 'bg-amber-500',
+  Unani: 'bg-rose-500', Veterinary: 'bg-blue-500', Supplement: 'bg-orange-500',
+  Device: 'bg-gray-500', PersonalCare: 'bg-pink-500', Vaccine: 'bg-cyan-500',
+};
 const getDosageLabel = (form: string) => {
   const f = form.toLowerCase();
   if (f.includes("tablet")) return "Tab";
@@ -53,6 +63,11 @@ export default function DrugCard({ drug }: DrugCardProps) {
               <p className="text-sm text-gray-500 truncate mt-0.5" title={drug.genericName}>
                 {drug.genericName}
               </p>
+              {drug.drugClass && (
+                <p className="text-[11px] font-semibold text-teal-700 truncate mt-0.5">
+                  {drug.drugClass}
+                </p>
+              )}
               {drug.company && (
                 <p className="text-[11px] text-gray-500 truncate font-medium mt-0.5" title={drug.company}>
                   {drug.company}
@@ -64,27 +79,27 @@ export default function DrugCard({ drug }: DrugCardProps) {
           {/* Divider */}
           <div className="h-px bg-gradient-to-r from-teal-200 via-teal-100 to-transparent my-2.5" />
 
-          {/* Bottom: Strength | Price | Drug Class */}
+          {/* Bottom: Strength + Price + Rating + Class */}
           <div className="flex items-start gap-3.5">
             <div className="w-14 shrink-0 flex flex-col items-center">
               {drug.strength && (
-                <span className="text-[9px] font-bold text-teal-800 bg-teal-100 px-1.5 py-0.5 rounded border border-teal-200 text-center leading-tight w-full truncate" title={drug.strength}>
+                <span className="text-[10px] font-bold text-teal-800 bg-teal-100 px-1.5 py-0.5 rounded border border-teal-200 text-center leading-tight w-full truncate" title={drug.strength}>
                   {drug.strength}
                 </span>
               )}
             </div>
 
-            <div className="min-w-0 flex-1 flex items-center justify-between gap-3">
-              <p className="text-[10px] text-gray-500 uppercase tracking-wider font-medium truncate" title={drug.drugClass || undefined}>
-                {drug.drugClass}
-              </p>
-              <div className="flex items-center justify-center flex-1">
-                {drug.price && (
-                  <span className="text-sm font-bold text-gray-800 bg-gray-100 px-2 py-0.5 rounded-md border border-gray-200" title={(drug as any).packSize ? `৳ ${drug.price} / ${(drug as any).packSize}` : `৳ ${drug.price} per unit`}>
-                    <span className="text-teal-600">৳</span> {drug.price}
-                  </span>
-                )}
-              </div>
+            <div className="min-w-0 flex-1 flex items-center justify-end gap-2">
+              {drug.medicineType && drug.medicineType !== 'Allopathic' && (
+                <span className={`shrink-0 text-[9px] sm:text-[10px] font-bold text-white px-1.5 sm:px-2 py-0.5 rounded-full ${TYPE_COLORS[drug.medicineType] || 'bg-gray-400 text-white'}`}>
+                  {TYPE_SHORT[drug.medicineType] || drug.medicineType}
+                </span>
+              )}
+              {drug.price && (
+                <span className="text-sm font-bold text-gray-800 bg-gray-100 px-2 py-0.5 rounded-md border border-gray-200" title={(drug as any).packSize ? `৳ ${drug.price.replace(/[^0-9.]/g, '')} / ${(drug as any).packSize}` : `৳ ${drug.price.replace(/[^0-9.]/g, '')} per unit`}>
+                  <span className="text-teal-600">৳</span> {drug.price.replace(/[^0-9.]/g, '')}
+                </span>
+              )}
               {drug.averageRating !== undefined && (
                 <span className="shrink-0 text-[10px] font-bold text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-300 flex items-center gap-0.5">
                   <svg width="9" height="9" viewBox="0 0 24 24" fill="#D97706" stroke="#D97706" strokeWidth="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>

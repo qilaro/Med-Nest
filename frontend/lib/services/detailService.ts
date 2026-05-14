@@ -26,6 +26,14 @@ async function fallbackFromFile(slug: string): Promise<Record<string, unknown> |
   return null;
 }
 
+export interface AlternateBrandResult {
+  slug: string;
+  brandName: string;
+  company: string | null;
+  averageRating: number;
+  reviewCount: number;
+}
+
 export interface DrugDetailResult {
   id: string;
   slug: string;
@@ -52,6 +60,17 @@ export interface DrugDetailResult {
   pregnancyLactation: string;
   storageConditions: string;
   overdoseEffects: string;
+  warnings: string;
+  whatIs: string;
+  modeOfAction: string;
+  pharmacology: string;
+  alcoholWarning: string;
+  monitoring: string;
+  pregnancyCategory: string;
+  halfLife: string;
+  csaSchedule: string;
+  commonQuestions: Array<{question: string; answer: string}>;
+  patientTips: string[];
   type: string;
 }
 
@@ -82,7 +101,18 @@ export async function getDrugDetail(slug: string): Promise<DrugDetailResult | nu
         g.precautions,
         g.pregnancy_lactation,
         g.storage_conditions,
-        g.overdose_effects
+        g.overdose_effects,
+        g.warnings,
+        g.what_is,
+        g.mode_of_action,
+        g.pharmacology,
+        g.alcohol_warning,
+        g.monitoring,
+        g.pregnancy_category,
+        g.half_life,
+        g.csa_schedule,
+        g.common_questions,
+        g.patient_tips
       FROM brands b
       LEFT JOIN generics g ON b.generic_id = g.id
       WHERE b.slug = ${slug}
@@ -117,6 +147,17 @@ export async function getDrugDetail(slug: string): Promise<DrugDetailResult | nu
         pregnancyLactation: String(d.pregnancy_lactation || "Information not available."),
         storageConditions: String(d.storage_conditions || "Information not available."),
         overdoseEffects: String(d.overdose_effects || "Information not available."),
+        warnings: String(d.warnings || "Information not available."),
+        whatIs: String(d.what_is || "Information not available."),
+        modeOfAction: String(d.mode_of_action || "Information not available."),
+        pharmacology: String(d.pharmacology || "Information not available."),
+        alcoholWarning: String(d.alcohol_warning || "Information not available."),
+        monitoring: String(d.monitoring || "Information not available."),
+        pregnancyCategory: String(d.pregnancy_category || "Information not available."),
+        halfLife: String(d.half_life || "Information not available."),
+        csaSchedule: String(d.csa_schedule || "Information not available."),
+        commonQuestions: Array.isArray(d.common_questions) ? d.common_questions : [],
+        patientTips: Array.isArray(d.patient_tips) ? d.patient_tips : [],
         type: 'brand',
       };
     }
@@ -125,5 +166,51 @@ export async function getDrugDetail(slug: string): Promise<DrugDetailResult | nu
   } catch (e) {
     console.error(`Error loading detail for ${slug}:`, e);
     return await fallbackFromFile(slug) as unknown as DrugDetailResult | null;
+  }
+}
+
+export async function getAlternateBrands(genericName: string, currentSlug: string): Promise<AlternateBrandResult[]> {
+  try {
+    const result = await db.execute(sql`
+      SELECT b.slug, b.brand_name, b.company_name, b.average_rating, b.review_count
+      FROM brands b
+      WHERE b.generic_name = ${genericName}
+        AND b.slug != ${currentSlug}
+      ORDER BY b.average_rating DESC NULLS LAST
+      LIMIT 10
+    `);
+    return (result.rows as any[]).map(d => ({
+      slug: String(d.slug || ''),
+      brandName: String(d.brand_name || ''),
+      company: d.company_name ? String(d.company_name) : null,
+      averageRating: Number(d.average_rating) || 0,
+      reviewCount: Number(d.review_count) || 0,
+    }));
+  } catch (e) {
+    console.error(`Error loading alternate brands for ${genericName}:`, e);
+    return [];
+  }
+}
+
+export async function getVariations(brandName: string, currentSlug: string): Promise<AlternateBrandResult[]> {
+  try {
+    const result = await db.execute(sql`
+      SELECT b.slug, b.brand_name, b.company_name, b.average_rating, b.review_count,
+             b.strength, b.dosage_form
+      FROM brands b
+      WHERE b.brand_name = ${brandName}
+        AND b.slug != ${currentSlug}
+      LIMIT 10
+    `);
+    return (result.rows as any[]).map(d => ({
+      slug: String(d.slug || ''),
+      brandName: String(d.strength || ''),
+      company: d.dosage_form ? String(d.dosage_form) : null,
+      averageRating: Number(d.average_rating) || 0,
+      reviewCount: Number(d.review_count) || 0,
+    }));
+  } catch (e) {
+    console.error(`Error loading variations for ${brandName}:`, e);
+    return [];
   }
 }

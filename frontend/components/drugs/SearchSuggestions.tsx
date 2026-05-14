@@ -145,8 +145,8 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
 
       {/* Recent search label */}
       {isFeatured && suggestions.length > 0 && !query.trim() && (
-        <div className="px-5 py-2.5 text-xs font-bold text-teal-700 uppercase tracking-wider bg-teal-50 border-b border-teal-100 text-left flex items-center gap-2">
-          <Clock size={14} />
+        <div className="px-3 sm:px-5 py-1.5 sm:py-2.5 text-[9px] sm:text-xs font-bold text-teal-700 uppercase tracking-wider bg-teal-50 border-b border-teal-100 text-left flex items-center gap-1 sm:gap-2">
+          <Clock size={10} className="sm:size-[14px]" />
           Popular Drug Searches
         </div>
       )}
@@ -159,36 +159,36 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
           data-index={index}
           onClick={() => onSelect(drug)}
           onMouseEnter={() => setHighlightedIndex(index)}
-          className={`w-full flex items-center gap-3 px-5 py-3 transition-colors text-left cursor-pointer border-b border-gray-100 last:border-0 ${
+          className={`w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-5 py-2 sm:py-3 transition-colors text-left cursor-pointer border-b border-gray-100 last:border-0 ${
             highlightedIndex === index ? 'bg-teal-200 shadow-sm' : 'hover:bg-teal-100'
           }`}
         >
-          <div className="w-12 h-12 rounded-xl bg-teal-50 flex items-center justify-center shrink-0 border border-teal-100">
+          <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-teal-50 flex items-center justify-center shrink-0 border border-teal-100">
             {(drug as any)._recent ? <Clock size={20} className="text-teal-500" /> : getDrugIcon(drug.type, drug.dosageForm)}
           </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <span className="text-base font-semibold text-gray-800 truncate">
-                {isFeatured ? drug.brandName : <HighlightText text={drug.brandName} query={query} />}
-              </span>
-              {drug.type === 'generic' && (
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 bg-yellow-400 text-yellow-900">Generic</span>
-              )}
-              {drug.type === 'class' && (
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 bg-blue-100 text-blue-700">Class</span>
-              )}
-              {drug.type === 'brand' && drug.strength && (
-                <span className="text-sm text-teal-600 font-semibold shrink-0">{drug.strength}</span>
-              )}
-              {drug.type === 'brand' && drug.medicineType && drug.medicineType !== 'Allopathic' && (
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${TYPE_COLORS[drug.medicineType] || 'bg-gray-400 text-white'}`}>
-                  {drug.medicineType}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1 sm:gap-1.5 flex-wrap">
+                <span className="text-sm sm:text-base font-semibold text-gray-800 truncate min-w-0 max-w-[55%] sm:max-w-none">
+                  {isFeatured ? drug.brandName : <HighlightText text={drug.brandName} query={query} />}
                 </span>
-              )}
-              {drug.type === 'brand' && (
-                <span className="text-xs font-semibold text-teal-600 shrink-0 ml-auto bg-teal-50 px-2.5 py-1 rounded-full">{drug.dosageForm}</span>
-              )}
-            </div>
+                {drug.type === 'generic' && (
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 bg-yellow-400 text-yellow-900">Generic</span>
+                )}
+                {drug.type === 'class' && (
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 bg-blue-100 text-blue-700">Class</span>
+                )}
+                {drug.type === 'brand' && drug.strength && (
+                  <span className="text-xs sm:text-sm text-teal-600 font-semibold shrink-0 whitespace-nowrap">{drug.strength}</span>
+                )}
+                {drug.type === 'brand' && drug.medicineType && drug.medicineType !== 'Allopathic' && (
+                  <span className={`inline-flex text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded-full ${TYPE_COLORS[drug.medicineType] || 'bg-gray-400 text-white'}`}>
+                    {drug.medicineType}
+                  </span>
+                )}
+                {drug.type === 'brand' && (
+                  <span className="inline-flex text-[9px] sm:text-xs font-semibold text-teal-600 bg-teal-50 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-full truncate max-w-[80px] sm:max-w-none">{drug.dosageForm}</span>
+                )}
+              </div>
             <div className="text-sm text-gray-600 font-medium truncate mt-0.5">
               {(drug as any)._recent && 'Recent search'}
               {drug.type === 'generic' && !(drug as any)._recent && 'Learn more about this generic medicine'}

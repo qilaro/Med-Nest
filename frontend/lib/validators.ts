@@ -5,6 +5,9 @@ export const drugsQuerySchema = z.object({
   medicine_type: z.string().optional(),
   letter: z.string().max(3).optional(),
   search: z.string().optional(),
+  company: z.string().optional(),
+  generic: z.string().optional(),
+  dosage_form: z.string().optional(),
   page: z.coerce.number().int().positive().optional().default(1),
   limit: z.coerce.number().int().positive().max(200).optional().default(50),
 });

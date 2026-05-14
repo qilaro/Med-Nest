@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
-import { sql, ilike } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Speaker } from "lucide-react";
@@ -29,8 +29,14 @@ interface GenericDetail {
 }
 
 async function getGenericDetail(slug: string): Promise<GenericDetail | null> {
-  const decodedName = decodeURIComponent(slug).replace(/-/g, " ");
+  // Normalize: replace +, - with spaces, collapse multiple spaces
+  const decodedName = decodeURIComponent(slug)
+    .replace(/[+]/g, ' ')
+    .replace(/-/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 
+  // Primary: exact match on normalized name
   const exact = await db.execute(sql`
     SELECT
       id,
@@ -49,35 +55,13 @@ async function getGenericDetail(slug: string): Promise<GenericDetail | null> {
       created_at AS "createdAt",
       updated_at AS "updatedAt"
     FROM generics
-    WHERE LOWER(name) = ${decodedName.toLowerCase()}
+    WHERE name ILIKE ${'%' + decodedName.toLowerCase().split(/\s+/).join('%') + '%'}
     LIMIT 1
   `);
 
   if (exact.rows[0]) return exact.rows[0] as unknown as GenericDetail;
 
-  const partial = await db.execute(sql`
-    SELECT
-      id,
-      name,
-      therapeutic_class AS "therapeuticClass",
-      indications,
-      side_effects AS "sideEffects",
-      interactions,
-      contraindications,
-      pregnancy_lactation AS "pregnancyLactation",
-      precautions,
-      dosage,
-      storage_conditions AS "storageConditions",
-      overdose_effects AS "overdoseEffects",
-      special_populations AS "specialPopulations",
-      created_at AS "createdAt",
-      updated_at AS "updatedAt"
-    FROM generics
-    WHERE name ILIKE ${`%${decodedName}%`}
-    LIMIT 1
-  `);
-
-  return partial.rows[0] as unknown as GenericDetail | null;
+  return null;
 }
 
 export default async function GenericDetailPage({ params }: PageProps) {

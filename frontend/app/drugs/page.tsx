@@ -34,6 +34,8 @@ function DrugsContent() {
   const [dosageForms, setDosageForms] = useState<string[]>([]);
   const [query, setQuery] = useState(searchQ);
   const [activeSearch, setActiveSearch] = useState("");
+
+  // Sync filter state from URL params (handles back/forward and direct URL changes)
   const [selectedType, setSelectedType] = useState(typeFilter);
   const [selectedClass, setSelectedClass] = useState(drugClassFilter);
   const [selectedCompany, setSelectedCompany] = useState(companyFilter);
@@ -41,6 +43,18 @@ function DrugsContent() {
   const [selectedDosageForm, setSelectedDosageForm] = useState(dosageFilter);
   const [selectedRating, setSelectedRating] = useState(ratingFilter);
   const [selectedRatings, setSelectedRatings] = useState<string[]>(ratingFilter ? ratingFilter.split(',') : []);
+
+  // Sync local filter state from URL — handles back/forward, direct nav, duplicate pushes
+  useEffect(() => {
+    setSelectedType(typeFilter);
+    setSelectedClass(drugClassFilter);
+    setSelectedCompany(companyFilter);
+    setSelectedGeneric(genericFilter);
+    setSelectedDosageForm(dosageFilter);
+    setSelectedRating(ratingFilter);
+    setSelectedRatings(ratingFilter ? ratingFilter.split(',') : []);
+    setCurrentPage(1);
+  }, [typeFilter, drugClassFilter, companyFilter, genericFilter, dosageFilter, ratingFilter]);
   const [showRatingDropdown, setShowRatingDropdown] = useState(false);
   const ratingRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
@@ -59,18 +73,23 @@ function DrugsContent() {
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
   const submittedRef = useRef(false);
   const reqIdRef = useRef(0);
+  const interactedRef = useRef(false);
 
   const isFiltered = !!(activeSearch || searchQ || typeFilter || drugClassFilter || companyFilter || genericFilter || dosageFilter || ratingFilter || letterFilter);
 
   // Close suggestions when clicking outside
   useEffect(() => {
-    const handler = (e: MouseEvent) => {
+    const handler = (e: MouseEvent | TouchEvent) => {
       if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
         setShowSuggestions(false);
       }
     };
     document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
+    document.addEventListener('touchstart', handler, { passive: true });
+    return () => {
+      document.removeEventListener('mousedown', handler);
+      document.removeEventListener('touchstart', handler);
+    };
   }, []);
 
   // Fetch main drug data
@@ -81,11 +100,14 @@ function DrugsContent() {
         const [drugsData, classesData, companiesData, formsData] = await Promise.all([
           drugService.getDrugs({ 
             page: currentPage,
-            limit: 50,
+            limit: 20,
             drug_class: drugClassFilter || undefined,
             medicine_type: typeFilter || undefined,
             letter: letterFilter || undefined,
             search: (activeSearch || searchQ) || undefined,
+            company: companyFilter || undefined,
+            generic: genericFilter || undefined,
+            dosage_form: dosageFilter || undefined,
           }),
           drugService.getDrugClasses(),
           drugService.getCompanies(),
@@ -117,10 +139,6 @@ function DrugsContent() {
         if (companyFilter) {
           const comps = companyFilter.split(',');
           filteredDrugs = filteredDrugs.filter((dr: DrugSummary) => dr.company && comps.includes(dr.company));
-        }
-        
-        if (genericFilter) {
-          filteredDrugs = filteredDrugs.filter((dr: DrugSummary) => dr.genericName === genericFilter);
         }
         
         if (dosageFilter) {
@@ -164,8 +182,13 @@ function DrugsContent() {
   useEffect(() => {
     if (hasUrlQuery.current) { hasUrlQuery.current = false; return; }
     if (query.trim().length === 0) {
-      setShowSuggestions(false);
-      setSearchTotal(0);
+      if (interactedRef.current) {
+        fetch('/api/popular').then(r => r.json()).then(data => {
+          setSuggestions((data.results || []).slice(0, 5));
+          setSearchTotal(0);
+          setShowSuggestions(true);
+        }).catch(() => {});
+      }
       return;
     }
 
@@ -207,7 +230,15 @@ function DrugsContent() {
     setIsSearching(false);
     submittedRef.current = true;
     if (debounceRef.current) { clearTimeout(debounceRef.current); debounceRef.current = null; }
-    setActiveSearch(query.trim());
+
+    // If other filters are active, navigate to clear them
+    if (typeFilter || drugClassFilter || companyFilter || genericFilter || dosageFilter || ratingFilter || letterFilter) {
+      const p = new URLSearchParams();
+      p.set('search', query.trim());
+      router.push(`/drugs?${p.toString()}`);
+    } else {
+      setActiveSearch(query.trim());
+    }
     setCurrentPage(1);
     fetch('/api/search/log', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: query.trim() }) }).catch(() => {});
   };
@@ -221,7 +252,12 @@ function DrugsContent() {
     else router.push(`/drugs/${drug.slug}`);
   };
 
+  const goToPage = (page: number) => {
+    setCurrentPage(page);
+  };
+
   const handleFocus = async () => {
+    interactedRef.current = true;
     if (activeSearch || searchQ || submittedRef.current) { submittedRef.current = false; return; }
     if (query.trim().length === 0) {
       try {
@@ -254,8 +290,17 @@ function DrugsContent() {
     router.push("/drugs");
   };
 
+  const canonicalUrl = (() => {
+    const p = new URLSearchParams(searchParams.toString());
+    p.delete('page');
+    const qs = p.toString();
+    return `https://mednest.com.bd/drugs${qs ? `?${qs}` : ''}`;
+  })();
+
   return (
-    <div className="bg-gradient-to-b from-[#D5E9E7] via-white to-white py-6">
+    <>
+      <link rel="canonical" href={canonicalUrl} />
+      <div className="bg-gradient-to-b from-[#D5E9E7] via-white to-white py-6">
       <div className="max-w-[1024px] mx-auto px-3 sm:px-0">
         <div className="bg-white rounded-2xl border border-sky-200 shadow-[8px_16px_40px_rgba(0,0,0,0.15),0_20px_60px_-12px_rgba(0,0,0,0.25)] p-6 md:p-8">
           <header className="mb-6">
@@ -272,37 +317,41 @@ function DrugsContent() {
             </div>
           )}
 
-          <form ref={searchRef} onSubmit={(e) => handleSearch(e)} className="flex flex-wrap gap-4 mb-6 items-start">
-            <div className="relative flex-1 min-w-0 w-full sm:min-w-[280px]">
-              <img src="/icons/pill.svg" alt="search" className="absolute left-4 top-1/2 -translate-y-1/2 h-9 w-9" />
-              <Input
-                type="text"
-                value={query}
-                onChange={(e) => {
-                  setQuery(e.target.value);
-                  submittedRef.current = false;
-                  if (searchQ) { router.replace('/drugs'); }
-                  else if (activeSearch) { setActiveSearch(""); }
-                }}
-                onFocus={handleFocus}
-                placeholder="Search medications..."
-                className="pl-16 h-14 rounded-xl text-base border-2 border-sky-200 focus-visible:border-sky-400 focus-visible:shadow-[0_0_0_3px_rgba(45,138,120,0.25)] transition-shadow duration-200"
-              />
-              <SearchSuggestions 
-                suggestions={suggestions} 
-                isVisible={showSuggestions} 
-                onSelect={handleSuggestionSelect} 
-                isFeatured={query.trim().length === 0}
-                query={query}
-                isLoading={isSearching}
-                total={searchTotal}
-                onViewAll={() => setShowSuggestions(false)}
-              />
+          <form ref={searchRef} onSubmit={(e) => handleSearch(e)} className="mb-6 max-w-4xl mx-auto relative">
+            <div className="flex items-stretch rounded-full border-2 border-sky-200 bg-white focus-within:border-teal-400 focus-within:shadow-[0_0_0_4px_rgba(45,138,120,0.2)] transition-shadow duration-200 overflow-hidden">
+              <div className="relative flex-1 min-w-0 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="absolute left-5 h-5 w-5 text-gray-400 shrink-0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                <Input
+                  type="text"
+                  value={query}
+                  onChange={(e) => {
+                    interactedRef.current = true;
+                    setQuery(e.target.value);
+                    submittedRef.current = false;
+                    if (searchQ) { router.replace('/drugs'); }
+                    else if (activeSearch) { setActiveSearch(""); }
+                  }}
+                  onFocus={handleFocus}
+                  onBlur={() => { if (!query.trim() && !activeSearch && !searchQ) setShowSuggestions(false); }}
+                  placeholder="Search your drugs here"
+                  className="pl-12 h-12 sm:h-14 text-sm sm:text-base border-none shadow-none focus-visible:ring-0 rounded-full bg-transparent"
+                />
+              </div>
+              <button type="submit" className="h-12 sm:h-14 shrink-0 px-5 sm:px-6 bg-teal-500 hover:bg-teal-600 text-white font-semibold text-sm sm:text-base transition-colors cursor-pointer flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                <span className="hidden sm:inline">Search</span>
+              </button>
             </div>
-
-            <Button type="submit" className="h-14 w-full sm:w-auto px-8 rounded-xl font-bold bg-primary hover:bg-primary-dark cursor-pointer">
-              Find Medicine
-            </Button>
+            <SearchSuggestions 
+              suggestions={suggestions} 
+              isVisible={showSuggestions} 
+              onSelect={handleSuggestionSelect} 
+              isFeatured={query.trim().length === 0}
+              query={query}
+              isLoading={isSearching}
+              total={searchTotal}
+              onViewAll={() => setShowSuggestions(false)}
+            />
           </form>
 
           {/* Inline Filter Bar */}
@@ -322,6 +371,7 @@ function DrugsContent() {
                     onChange={(e) => {
                       const val = e.target.value;
                       f.set(val);
+                      setCurrentPage(1);
                       const p = new URLSearchParams();
                       const s = activeSearch || searchQ;
                       if (s) p.set('search', s);
@@ -335,14 +385,13 @@ function DrugsContent() {
                       const qs = p.toString();
                       router.push(qs ? `/drugs?${qs}` : '/drugs');
                     }}
-                    className={`appearance-none rounded-full px-3 py-1.5 pr-4 text-xs font-semibold w-full text-center shadow-sm transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-teal-300 border-2 [&>option]:cursor-pointer ${
+                    className={`appearance-none rounded-full px-3 py-1.5 pr-4 text-xs font-semibold w-full text-center shadow-sm transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-teal-300 border-2 [&>option]:cursor-pointer ${
                       isActive
                         ? 'bg-teal-500 text-white border-teal-500'
                         : 'bg-gray-50 text-gray-700 border-sky-200 hover:border-teal-400 hover:bg-teal-50'
                     }`}
                   >
                     <option value="" hidden>{f.label}</option>
-                    <option value="">All</option>
                     {f.opts.map(([val, display]: string[]) => <option key={val} value={val}>{display}</option>)}
                   </select>
                   <svg className={`absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none transition-colors ${isActive ? 'text-white' : 'text-gray-500'}`} width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
@@ -354,7 +403,7 @@ function DrugsContent() {
             <div className="relative shrink-0" ref={ratingRef}>
               <button
                 onClick={() => setShowRatingDropdown(!showRatingDropdown)}
-                className={`rounded-full px-3 py-1.5 text-xs font-semibold shadow-sm transition-all border-2 flex items-center gap-1 ${
+                className={`rounded-full px-3 py-1.5 text-xs font-semibold shadow-sm transition-colors border-2 flex items-center gap-1 ${
                   selectedRatings.length
                     ? 'bg-teal-500 text-white border-teal-500'
                     : 'bg-gray-50 text-gray-700 border-sky-200 hover:border-teal-400 hover:bg-teal-50'
@@ -408,15 +457,17 @@ function DrugsContent() {
               </div>
             ) : (
               <div>
-                <h2 className="text-lg sm:text-xl font-bold text-navy mb-6">
-                  {(activeSearch || searchQ) ? <>Showing all <span className="text-teal-600">{totalResults}</span> results for "<span className="text-teal-600">{activeSearch || searchQ}</span>"</>
-                    : letterFilter ? <>Showing all <span className="text-teal-600">{totalResults}</span> results for "<span className="text-teal-600">{letterFilter}</span>"</>
-                    : isFiltered ? 'Filtered Drugs'
-                    : 'Popular Drug Searches'}
+                <div className="flex items-center gap-2 mb-6 flex-wrap">
+                  <h2 className="text-lg sm:text-xl font-bold text-navy">
+                    {(activeSearch || searchQ) ? <>Showing all <span className="text-teal-600">{totalResults}</span> results for "<span className="text-teal-600">{activeSearch || searchQ}</span>"</>
+                      : letterFilter ? <>Showing all <span className="text-teal-600">{totalResults}</span> results for "<span className="text-teal-600">{letterFilter}</span>"</>
+                      : isFiltered ? <>Showing <span className="text-teal-600">{totalResults}</span> results{[typeFilter, drugClassFilter, companyFilter, genericFilter, dosageFilter, ...(selectedRatings.length ? [`${selectedRatings.join(',')}★`] : [])].filter(Boolean).join(', ') && <> for <span className="text-teal-600">{[typeFilter, drugClassFilter, companyFilter, genericFilter, dosageFilter, ...(selectedRatings.length ? [`${selectedRatings.join(',')}★`] : [])].filter(Boolean).join(', ')}</span></>}</>
+                      : 'Popular Drug Searches'}
+                  </h2>
                   {isFiltered && (
                     <button
                       onClick={clearFilters}
-                      className="ml-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold text-red-500 bg-red-50 border border-red-200 hover:bg-red-100 hover:text-red-600 hover:border-red-300 active:scale-95 transition-all duration-150 cursor-pointer align-middle"
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold text-red-500 bg-red-50 border border-red-200 hover:bg-red-100 hover:text-red-600 hover:border-red-300 active:scale-95 transition-colors duration-150 cursor-pointer align-middle shrink-0"
                     >
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                         <line x1="18" y1="6" x2="6" y2="18" />
@@ -425,14 +476,14 @@ function DrugsContent() {
                       Clear
                     </button>
                   )}
-                </h2>
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {isFiltered ? drugs.map((drug) => <DrugCard key={drug.id} drug={drug} />) : drugs.slice(0, 12).map((drug) => <DrugCard key={drug.id} drug={drug} />)}
                 </div>
                 {isFiltered && totalPages > 1 && (
                   <div className="flex items-center justify-center gap-1.5 sm:gap-2 mt-6 sm:mt-8 flex-wrap">
                     <button
-                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                      onClick={() => goToPage(Math.max(1, currentPage - 1))}
                       disabled={currentPage <= 1}
                       className="px-3 py-1.5 text-sm font-semibold rounded-lg border border-gray-200 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-gray-50 cursor-pointer"
                     >Prev</button>
@@ -451,7 +502,7 @@ function DrugsContent() {
                         ) : (
                           <button
                             key={p}
-                            onClick={() => setCurrentPage(p as number)}
+                            onClick={() => goToPage(p as number)}
                             className={`w-8 h-8 text-sm font-semibold rounded-lg cursor-pointer ${
                               p === currentPage ? 'bg-teal-500 text-white' : 'border border-gray-200 hover:bg-gray-50'
                             }`}
@@ -460,7 +511,7 @@ function DrugsContent() {
                       );
                     })()}
                     <button
-                      onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                      onClick={() => goToPage(Math.min(totalPages, currentPage + 1))}
                       disabled={currentPage >= totalPages}
                       className="px-3 py-1.5 text-sm font-semibold rounded-lg border border-gray-200 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-gray-50 cursor-pointer"
                     >Next</button>
@@ -471,7 +522,8 @@ function DrugsContent() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 

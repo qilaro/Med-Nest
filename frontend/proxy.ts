@@ -9,52 +9,48 @@ const BOT_PATTERNS = [
   'phantomjs', 'mechanize', 'htmlunit',
 ]
 
+const HONEYPOT_PATHS = ['/api/honeypot', '/api/admin', '/api/debug', '/wp-admin', '/.env', '/api/secret']
+const STATIC_APIS = ['/api/stats', '/api/drug-classes', '/api/drugs/companies', '/api/dosage-forms', '/api/popular', '/api/generic-classes']
+const SENSITIVE_APIS = ['/api/drugs', '/api/generics', '/api/search', '/api/drugs/']
+
 export default function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname
-  const isApiOrTrpc = pathname.startsWith('/api/') || pathname.startsWith('/trpc')
+  const isApi = pathname.startsWith('/api/')
   const response = NextResponse.next()
 
-  // Avoid blocking page/RSC requests (can cause permanent Loading... fallbacks).
-  // Keep strict checks for API/trpc endpoints only.
-  if (!isApiOrTrpc) {
-    Object.entries(securityHeaders()).forEach(([key, value]) => {
-      response.headers.set(key, value)
-    })
-    return response
+  // Security headers on all responses
+  Object.entries(securityHeaders()).forEach(([key, value]) => response.headers.set(key, value))
+
+  // Honeypot — instant 403
+  if (HONEYPOT_PATHS.some(p => pathname.startsWith(p))) {
+    return NextResponse.json({ error: 'Access denied' }, { status: 403, headers: securityHeaders() })
   }
+
+  // For non-API requests, just set headers and return
+  if (!isApi) return response
 
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
     || req.headers.get('x-real-ip')
     || 'unknown'
 
-  // Rate limiting
-  if (!rateLimit(ip, 100, 10000)) {
-    return NextResponse.json(
-      { error: 'Too many requests. Please try again later.' },
-      { status: 429, headers: securityHeaders() }
-    )
+  // Tighter rate limit for sensitive APIs (drugs/search)
+  const isSensitive = SENSITIVE_APIS.some(p => pathname.startsWith(p))
+  if (!rateLimit(ip, isSensitive ? 25 : 30, 10000)) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429, headers: securityHeaders() })
   }
 
-  // Bot detection
+  // Simple bot detection
   const ua = req.headers.get('user-agent') || ''
   if (ua.length < 20 || BOT_PATTERNS.some(p => ua.toLowerCase().includes(p))) {
     if (!ua.includes('Googlebot') && !ua.includes('Bingbot') && !ua.includes('Slurp')) {
-      return NextResponse.json(
-        { error: 'Access denied' },
-        { status: 403, headers: securityHeaders() }
-      )
+      return NextResponse.json({ error: 'Access denied' }, { status: 403, headers: securityHeaders() })
     }
   }
 
-  // Cache static API responses for 5 minutes
-  const staticApis = ['/api/stats', '/api/drug-classes', '/api/drugs/companies', '/api/dosage-forms', '/api/popular'];
-  if (staticApis.includes(pathname)) {
-    response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=60');
+  // Cache static APIs
+  if (STATIC_APIS.includes(pathname)) {
+    response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=60')
   }
-
-  Object.entries(securityHeaders()).forEach(([key, value]) => {
-    response.headers.set(key, value)
-  })
 
   return response
 }
