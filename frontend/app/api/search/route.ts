@@ -12,6 +12,8 @@ export async function GET(request: Request) {
   if (!q) return NextResponse.json({ results: [] });
 
   const isShort = q.length < 3;
+  const contains = `%${q}%`;
+  const prefix = `${q}%`;
 
   try {
     // Single combined query for brands + generics + classes
@@ -29,18 +31,31 @@ export async function GET(request: Request) {
           'brand' as type,
           CASE 
             WHEN LOWER(b.brand_name) = LOWER(${q}) THEN 10
-            WHEN LOWER(b.brand_name) LIKE LOWER(${q + '%'}) THEN 8
-            WHEN LOWER(b.brand_name) ILIKE ${'%' + q + '%'} THEN 5
-            WHEN LOWER(b.generic_name) LIKE LOWER(${q + '%'}) THEN 4
-            WHEN LOWER(b.generic_name) ILIKE ${'%' + q + '%'} THEN 2
-            WHEN LOWER(b.company_name) ILIKE ${'%' + q + '%'} THEN 3
+            WHEN LOWER(b.brand_name) LIKE LOWER(${prefix}) THEN 8
+            WHEN LOWER(b.brand_name) ILIKE ${contains} THEN 5
+            WHEN LOWER(b.generic_name) LIKE LOWER(${prefix}) THEN 4
+            WHEN LOWER(b.generic_name) ILIKE ${contains} THEN 2
+            WHEN LOWER(b.company_name) ILIKE ${contains} THEN 3
             ELSE 0
           END as rank
         FROM brands b
         WHERE 
-          LOWER(b.brand_name) ILIKE ${'%' + q + '%'}
-          OR LOWER(b.generic_name) ILIKE ${'%' + q + '%'}
-          OR LOWER(b.company_name) ILIKE ${'%' + q + '%'}
+          (
+            ${isShort}
+            AND (
+              b.brand_name ILIKE ${prefix}
+              OR b.generic_name ILIKE ${prefix}
+              OR b.company_name ILIKE ${prefix}
+            )
+          )
+          OR (
+            NOT ${isShort}
+            AND (
+              b.brand_name ILIKE ${contains}
+              OR b.generic_name ILIKE ${contains}
+              OR b.company_name ILIKE ${contains}
+            )
+          )
       ),
       deduped AS (
         SELECT *, ROW_NUMBER() OVER (
@@ -55,9 +70,10 @@ export async function GET(request: Request) {
           g.name as "brandName", g.name as "genericName",
           '' as "dosageForm", '' as strength, '' as "companyName", '' as company,
           NULL::text as "medicineType", g.slug as slug, 'generic' as type,
-          CASE WHEN LOWER(g.name) LIKE LOWER(${q + '%'}) THEN 3 ELSE 1 END as rank
+          CASE WHEN LOWER(g.name) LIKE LOWER(${prefix}) THEN 3 ELSE 1 END as rank
         FROM generics g
-        WHERE LOWER(g.name) ILIKE ${'%' + q + '%'}
+        WHERE (${isShort} AND g.name ILIKE ${prefix})
+           OR (NOT ${isShort} AND g.name ILIKE ${contains})
       )
       SELECT * FROM (
         SELECT "brandName", "genericName", "dosageForm", strength, "companyName", "company", "medicineType", slug, type
@@ -74,18 +90,7 @@ export async function GET(request: Request) {
       ) generics
       LIMIT 10
     `);
-
-    // Get total count for "View All"
-    const countResult = await db.execute(sql`
-      SELECT COUNT(*) as total FROM (
-        SELECT b.brand_name FROM brands b
-        WHERE LOWER(b.brand_name) ILIKE ${'%' + q + '%'} 
-           OR LOWER(b.generic_name) ILIKE ${'%' + q + '%'}
-           OR LOWER(b.company_name) ILIKE ${'%' + q + '%'}
-        LIMIT 100
-      ) sub
-    `);
-    const total = Number(countResult.rows[0]?.total) || 0;
+    const total = results.rows.length;
 
     return NextResponse.json(
       { results: results.rows, total },

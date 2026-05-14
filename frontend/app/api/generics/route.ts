@@ -33,7 +33,7 @@ export async function GET(request: Request) {
       FROM generics g
       WHERE 1=1
         AND (${search} = '' OR g.name ILIKE ${search + '%'})
-        AND (${typeFilter} = '' OR EXISTS (SELECT 1 FROM brands WHERE generic_id = g.id AND medicine_type ILIKE ${typeFilter}))
+        AND (${typeFilter} = '' OR EXISTS (SELECT 1 FROM brands WHERE generic_id = g.id AND medicine_type ILIKE ${'%' + typeFilter + '%'}))
         AND (${classFilter} = '' OR g.therapeutic_class = ${classFilter})
         AND (${formFilter} = '' OR EXISTS (SELECT 1 FROM brands WHERE generic_id = g.id AND dosage_form = ${formFilter}))
         AND (${ratingFilter} = '' OR EXISTS (SELECT 1 FROM brands WHERE generic_id = g.id AND average_rating >= CAST(NULLIF(${ratingFilter}, '') AS numeric)))
@@ -48,7 +48,7 @@ export async function GET(request: Request) {
       FROM generics g
       WHERE 1=1
         AND (${search} = '' OR g.name ILIKE ${search + '%'})
-        AND (${typeFilter} = '' OR EXISTS (SELECT 1 FROM brands WHERE generic_id = g.id AND medicine_type ILIKE ${typeFilter}))
+        AND (${typeFilter} = '' OR EXISTS (SELECT 1 FROM brands WHERE generic_id = g.id AND medicine_type ILIKE ${'%' + typeFilter + '%'}))
         AND (${classFilter} = '' OR g.therapeutic_class = ${classFilter})
         AND (${formFilter} = '' OR EXISTS (SELECT 1 FROM brands WHERE generic_id = g.id AND dosage_form = ${formFilter}))
         AND (${ratingFilter} = '' OR EXISTS (SELECT 1 FROM brands WHERE generic_id = g.id AND average_rating >= CAST(NULLIF(${ratingFilter}, '') AS numeric)))

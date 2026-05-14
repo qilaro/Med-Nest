@@ -46,7 +46,7 @@ export async function GET(request: Request) {
     }
 
     if (medicineType) {
-      const filter = sql` AND b.medicine_type ILIKE ${medicineType}`;
+      const filter = sql` AND b.medicine_type ILIKE ${'%' + medicineType + '%'}`;
       countQuery = sql`${countQuery}${filter}`;
       dataQuery = sql`${dataQuery}${filter}`;
     }
