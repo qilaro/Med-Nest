@@ -3,23 +3,20 @@ import { drizzle } from 'drizzle-orm/neon-http';
 import * as schema from './schema';
 
 function createDb() {
-  const connectionString = process.env.DATABASE_URL
-    || process.env.POSTGRES_URL
-    || process.env.DATABASE_URL_UNPOOLED
+  // Try unpooled/clean URLs first — pooled URLs with channel_binding=require break neon-http
+  const connectionString = process.env.DATABASE_URL_UNPOOLED
     || process.env.POSTGRES_URL_NON_POOLING
-    || process.env.POSTGRES_URL_NO_SSL;
+    || process.env.POSTGRES_URL_NO_SSL
+    || process.env.DATABASE_URL
+    || process.env.POSTGRES_URL
+    || process.env.POSTGRES_PRISMA_URL;
   if (!connectionString) {
-    console.error('[DB] No connection string found. Checked: DATABASE_URL, POSTGRES_URL, DATABASE_URL_UNPOOLED, POSTGRES_URL_NON_POOLING, POSTGRES_URL_NO_SSL');
+    console.error('[DB] No connection string found');
     throw new Error('DATABASE_URL environment variable is not set');
   }
-  // Log which env var was found (first 20 chars only)
-  const source = connectionString === process.env.DATABASE_URL ? 'DATABASE_URL'
-    : connectionString === process.env.POSTGRES_URL ? 'POSTGRES_URL'
-    : connectionString === process.env.DATABASE_URL_UNPOOLED ? 'DATABASE_URL_UNPOOLED'
-    : connectionString === process.env.POSTGRES_URL_NON_POOLING ? 'POSTGRES_URL_NON_POOLING'
-    : 'POSTGRES_URL_NO_SSL';
-  console.log(`[DB] Using ${source}: ${connectionString.substring(0, 25)}...`);
-  const client = neon(connectionString);
+  // Strip parameters that break the neon HTTP driver
+  const cleanUrl = connectionString.replace(/[?&](channel_binding|sslmode|connect_timeout)=[^&]+/g, '').replace(/[?&]$/, '');
+  const client = neon(cleanUrl);
   return drizzle(client, { schema });
 }
 
