@@ -14,7 +14,7 @@ export async function GET(request: Request) {
 
   try {
     const results = await db.execute(sql`
-      SELECT g.name, g.slug, g.medicine_type, g.therapeutic_class,
+      SELECT g.name, g.slug, NULL::text as medicine_type, g.therapeutic_class,
         (SELECT COUNT(*) FROM brands WHERE generic_id = g.id)::int as brand_count
       FROM generics g
       WHERE g.name ILIKE ${query + '%'}

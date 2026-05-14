@@ -54,7 +54,7 @@ export async function GET(request: Request) {
         SELECT 
           g.name as "brandName", g.name as "genericName",
           '' as "dosageForm", '' as strength, '' as "companyName", '' as company,
-          g.medicine_type as "medicineType", g.slug as slug, 'generic' as type,
+          NULL::text as "medicineType", g.slug as slug, 'generic' as type,
           CASE WHEN LOWER(g.name) LIKE LOWER(${q + '%'}) THEN 3 ELSE 1 END as rank
         FROM generics g
         WHERE LOWER(g.name) ILIKE ${'%' + q + '%'}

@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
   try {
     const result = await db.execute(sql`
-      SELECT g.name, g.slug, g.medicine_type,
+      SELECT g.name, g.slug, NULL::text as medicine_type,
         (SELECT COUNT(*) FROM brands WHERE generic_id = g.id)::int as brand_count
       FROM generics g
       ORDER BY brand_count DESC
