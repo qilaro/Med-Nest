@@ -264,7 +264,7 @@ function GenericsContent() {
             {/* Filter Bar */}
             <div className="flex items-center gap-1.5 mb-5 flex-wrap sm:flex-nowrap justify-center">
               {[
-                { value: selectedType, set: setSelectedType, param: "type", label: "Type", opts: [["allopathic","Pharmaceutical"],["herbal","Herbal"],["unani","Unani"],["homeopathic","Homeopathic"],["ayurvedic","Ayurvedic"]] },
+                { value: selectedType, set: setSelectedType, param: "type", label: "Type", opts: [["allopathic","Pharma"],["herbal","Herbal"],["unani","Unani"],["homeopathic","Homeopathic"],["ayurvedic","Ayurvedic"]] },
                 { value: selectedClass, set: setSelectedClass, param: "class", label: "Class", opts: classes.map((c: any) => [c.name, c.name]) },
               ].map((f: any) => {
                 const isActive = !!f.value;
@@ -353,9 +353,18 @@ function GenericsContent() {
                 {/* Results heading */}
                 <div className="flex items-center gap-2 mb-4 flex-wrap">
                   <h2 className="text-lg sm:text-xl font-bold text-navy">
-                    {(activeSearch || searchQ) ? <>Showing all <span className="text-teal-600">{totalResults}</span> results for "<span className="text-teal-600">{activeSearch || searchQ}</span>"</>
-                      : isFiltered ? <>Showing <span className="text-teal-600">{totalResults}</span> results{[typeFilter, classFilter, ...(selectedRating ? [`${selectedRating}★`] : [])].filter(Boolean).join(', ') && <> for <span className="text-teal-600">{[typeFilter, classFilter, ...(selectedRating ? [`${selectedRating}★`] : [])].filter(Boolean).join(', ')}</span></>}</>
-                      : <>Most Popular Generic Ingredients</>}
+                    {(() => {
+                      const allFilters = [
+                        ...(activeSearch || searchQ ? [`"${activeSearch || searchQ}"`] : []),
+                        ...(typeFilter ? [typeFilter] : []),
+                        ...(classFilter ? [classFilter] : []),
+                        ...(selectedRating ? [`${selectedRating}★`] : []),
+                        ...(letterFilter ? [letterFilter] : []),
+                      ].filter(Boolean);
+                      return allFilters.length > 0
+                        ? <>Showing <span className="text-teal-600">{totalResults}</span> results for <span className="text-teal-600">{allFilters.join(', ')}</span></>
+                        : <>Most Popular Generic Ingredients</>;
+                    })()}
                   </h2>
                   {isFiltered && (
                     <button onClick={clearFilters} className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold text-red-500 bg-red-50 border border-red-200 hover:bg-red-100 hover:text-red-600 hover:border-red-300 active:scale-95 transition-colors duration-150 cursor-pointer align-middle shrink-0">

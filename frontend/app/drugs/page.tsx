@@ -357,7 +357,7 @@ function DrugsContent() {
           {/* Inline Filter Bar */}
           <div className="flex items-center gap-1.5 mb-5 flex-wrap sm:flex-nowrap justify-center">
             {[
-              { value: selectedType, set: setSelectedType, param: "type", label: "Type", opts: [["allopathic","Pharmaceutical"],["herbal","Herbal"],["unani","Unani"],["homeopathic","Homeopathic"],["ayurvedic","Ayurvedic"]] },
+              { value: selectedType, set: setSelectedType, param: "type", label: "Type", opts: [["allopathic","Pharma"],["herbal","Herbal"],["unani","Unani"],["homeopathic","Homeopathic"],["ayurvedic","Ayurvedic"]] },
               { value: selectedClass, set: setSelectedClass, param: "drug_class", label: "Class", opts: classes.map((c: any) => [c.name, c.name]) },
               { value: selectedCompany, set: setSelectedCompany, param: "company", label: "Company", opts: companies.map((c: string) => [c, c]) },
               { value: selectedGeneric, set: setSelectedGeneric, param: "generic", label: "Generic", opts: generics.map((g: string) => [g, g]) },
@@ -459,10 +459,21 @@ function DrugsContent() {
               <div>
                 <div className="flex items-center gap-2 mb-6 flex-wrap">
                   <h2 className="text-lg sm:text-xl font-bold text-navy">
-                    {(activeSearch || searchQ) ? <>Showing all <span className="text-teal-600">{totalResults}</span> results for "<span className="text-teal-600">{activeSearch || searchQ}</span>"</>
-                      : letterFilter ? <>Showing all <span className="text-teal-600">{totalResults}</span> results for "<span className="text-teal-600">{letterFilter}</span>"</>
-                      : isFiltered ? <>Showing <span className="text-teal-600">{totalResults}</span> results{[typeFilter, drugClassFilter, companyFilter, genericFilter, dosageFilter, ...(selectedRatings.length ? [`${selectedRatings.join(',')}★`] : [])].filter(Boolean).join(', ') && <> for <span className="text-teal-600">{[typeFilter, drugClassFilter, companyFilter, genericFilter, dosageFilter, ...(selectedRatings.length ? [`${selectedRatings.join(',')}★`] : [])].filter(Boolean).join(', ')}</span></>}</>
-                      : 'Popular Drug Searches'}
+                    {(() => {
+                      const allFilters = [
+                        ...(activeSearch || searchQ ? [`"${activeSearch || searchQ}"`] : []),
+                        ...(typeFilter ? [typeFilter] : []),
+                        ...(drugClassFilter ? [drugClassFilter] : []),
+                        ...(companyFilter ? [companyFilter] : []),
+                        ...(genericFilter ? [genericFilter] : []),
+                        ...(dosageFilter ? [dosageFilter] : []),
+                        ...(selectedRatings.length ? [`${selectedRatings.join(',')}★`] : []),
+                        ...(letterFilter ? [letterFilter] : []),
+                      ].filter(Boolean);
+                      return allFilters.length > 0
+                        ? <>Showing <span className="text-teal-600">{totalResults}</span> results for <span className="text-teal-600">{allFilters.join(', ')}</span></>
+                        : <>Popular Drug Searches</>;
+                    })()}
                   </h2>
                   {isFiltered && (
                     <button
