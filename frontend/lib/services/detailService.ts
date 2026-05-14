@@ -103,16 +103,16 @@ export async function getDrugDetail(slug: string): Promise<DrugDetailResult | nu
         g.storage_conditions,
         g.overdose_effects,
         NULL::text as warnings,
-        g.what_is,
-        g.mode_of_action,
-        g.pharmacology,
-        g.alcohol_warning,
-        g.monitoring,
-        g.pregnancy_category,
-        g.half_life,
-        g.csa_schedule,
-        g.common_questions,
-        g.patient_tips
+        NULL::text as what_is,
+        NULL::text as mode_of_action,
+        NULL::text as pharmacology,
+        NULL::text as alcohol_warning,
+        NULL::text as monitoring,
+        NULL::text as pregnancy_category,
+        NULL::text as half_life,
+        NULL::text as csa_schedule,
+        '[]'::jsonb as common_questions,
+        '[]'::jsonb as patient_tips
       FROM brands b
       LEFT JOIN generics g ON b.generic_id = g.id
       WHERE b.slug = ${slug}
