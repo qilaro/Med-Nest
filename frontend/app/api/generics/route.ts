@@ -29,7 +29,7 @@ export async function GET(request: Request) {
         (SELECT ROUND(AVG(average_rating)::numeric, 1) FROM brands WHERE generic_id = g.id AND average_rating > 0)::text as avg_rating,
         (SELECT MIN(price_unit) FROM brands WHERE generic_id = g.id AND price_unit > 0)::text as min_price,
         (SELECT MAX(price_unit) FROM brands WHERE generic_id = g.id AND price_unit > 0)::text as max_price,
-        (g.indications IS NOT NULL AND g.indications != '') as has_medical_info
+        (COALESCE(to_jsonb(g)->>'indications', '') != '') as has_medical_info
       FROM generics g
       WHERE 1=1
         AND (${search} = '' OR g.name ILIKE ${search + '%'})

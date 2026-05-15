@@ -31,7 +31,7 @@ export async function GET(
         b.review_count as "reviewCount",
         b.dar_number as "darNumber",
         b.medicine_type as "medicineType",
-        b.indications,
+        COALESCE(to_jsonb(g)->>'indications', '') as indications,
         'brand' as type,
         to_jsonb(g)->>'side_effects' as "sideEffects",
         to_jsonb(g)->>'interactions' as interactions,
