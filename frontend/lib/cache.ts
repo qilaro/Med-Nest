@@ -1,23 +1,17 @@
-import { kv } from '@vercel/kv';
+// Simple in-memory cache with TTL — no external dependencies
+const store = new Map<string, { data: any; expiresAt: number }>();
 
 export async function withCache<T>(
   key: string,
   ttl: number,
   fn: () => Promise<T>
 ): Promise<T> {
-  // Only use KV if the env var is set (Vercel KV integration installed)
-  if (!process.env.KV_URL) return fn();
-
-  try {
-    const cached = await kv.get<T>(key);
-    if (cached !== null && cached !== undefined) return cached;
-  } catch {
-    return fn();
+  const existing = store.get(key);
+  if (existing && Date.now() < existing.expiresAt) {
+    return existing.data as T;
   }
 
   const fresh = await fn();
-  try {
-    await kv.set(key, fresh, { ex: ttl });
-  } catch {}
+  store.set(key, { data: fresh, expiresAt: Date.now() + ttl * 1000 });
   return fresh;
 }
