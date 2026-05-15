@@ -1,15 +1,16 @@
-import { neon } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-http';
+import { Pool } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/neon-serverless';
 import * as schema from './schema';
 
-const connectionString = process.env.MEDNEST_DATABASE_URL
+const raw = process.env.MEDNEST_DATABASE_URL
   || process.env.DATABASE_URL
   || process.env.POSTGRES_URL
   || process.env.DATABASE_URL_UNPOOLED
   || process.env.POSTGRES_URL_NON_POOLING;
-if (!connectionString) {
-  throw new Error('DATABASE_URL environment variable is not set');
-}
+if (!raw) throw new Error('DATABASE_URL environment variable is not set');
 
-const sql = neon(connectionString);
-export const db = drizzle(sql, { schema });
+// Strip -pooler and all query params — Pool handles TLS natively
+const clean = raw.replace(/-pooler\./g, '.').split('?')[0];
+const pool = new Pool({ connectionString: clean, max: 1 });
+
+export const db = drizzle(pool, { schema });
