@@ -74,6 +74,7 @@ function DrugsContent() {
   const submittedRef = useRef(false);
   const reqIdRef = useRef(0);
   const interactedRef = useRef(false);
+  const savedScrollY = useRef(0);
 
   const isFiltered = !!(activeSearch || searchQ || typeFilter || drugClassFilter || companyFilter || genericFilter || dosageFilter || ratingFilter || letterFilter);
 
@@ -304,7 +305,7 @@ function DrugsContent() {
   return (
     <>
       <link rel="canonical" href={canonicalUrl} />
-      <div className="bg-gradient-to-b from-[#D5E9E7] via-white to-white py-6">
+      <div className="bg-gradient-to-b from-[#c5e0db] via-[#d5e9e7] to-[#e5f2ef] py-6">
       <div className="max-w-[1024px] mx-auto px-3 sm:px-0">
         <div className="bg-white rounded-2xl border border-sky-200 shadow-[8px_16px_40px_rgba(0,0,0,0.15),0_20px_60px_-12px_rgba(0,0,0,0.25)] p-6 md:p-8">
           <header className="mb-6">
@@ -335,8 +336,17 @@ function DrugsContent() {
                     if (searchQ) { router.replace('/drugs'); }
                     else if (activeSearch) { setActiveSearch(""); }
                   }}
+                  onClick={() => {
+                    if (window.innerWidth < 1024) {
+                      savedScrollY.current = window.scrollY;
+                      const rect = searchRef.current?.getBoundingClientRect();
+                      if (rect) window.scrollBy({ top: rect.top - 80, behavior: 'smooth' });
+                    }
+                  }}
                   onFocus={handleFocus}
-                  onBlur={() => { if (!query.trim() && !activeSearch && !searchQ) setShowSuggestions(false); }}
+                  onBlur={() => {
+                    if (!query.trim() && !activeSearch && !searchQ) setShowSuggestions(false);
+                  }}
                   placeholder="Search your drugs here"
                   className="pl-12 h-12 sm:h-14 text-sm sm:text-base border-none shadow-none focus-visible:ring-0 rounded-full bg-transparent"
                 />

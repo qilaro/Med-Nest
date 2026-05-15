@@ -35,6 +35,7 @@ function GenericsContent() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchRef = useRef<HTMLFormElement>(null);
   const interactedRef = useRef(false);
+  const savedScrollY = useRef(0);
 
   const isFiltered = !!(activeSearch || searchQ || typeFilter || classFilter || ratingFilter || letterFilter);
 
@@ -158,7 +159,7 @@ function GenericsContent() {
   return (
     <>
       <link rel="canonical" href={canonicalUrl} />
-      <div className="bg-gradient-to-b from-[#D5E9E7] via-white to-white py-6">
+      <div className="bg-gradient-to-b from-[#c5e0db] via-[#d5e9e7] to-[#e5f2ef] py-6">
         <div className="max-w-[1024px] mx-auto px-3 sm:px-0">
           <div className="bg-white rounded-2xl border border-sky-200 shadow-[8px_16px_40px_rgba(0,0,0,0.15),0_20px_60px_-12px_rgba(0,0,0,0.25)] p-6 md:p-8">
             {/* Heading */}
@@ -184,6 +185,13 @@ function GenericsContent() {
                     type="text"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
+                    onClick={() => {
+                      if (window.innerWidth < 1024) {
+                        savedScrollY.current = window.scrollY;
+                        const rect = searchRef.current?.getBoundingClientRect();
+                        if (rect) window.scrollBy({ top: rect.top - 80, behavior: 'smooth' });
+                      }
+                    }}
                     onFocus={async () => {
                       interactedRef.current = true;
                       if (activeSearch || searchQ) return;
@@ -196,6 +204,7 @@ function GenericsContent() {
                         } catch {}
                       }
                     }}
+                    onBlur={() => {}}
                     placeholder="Search generic ingredients..."
                     className="w-full bg-transparent border-0 pl-14 pr-4 py-3 sm:py-3.5 text-sm sm:text-base outline-none text-gray-800 placeholder:text-gray-400"
                   />

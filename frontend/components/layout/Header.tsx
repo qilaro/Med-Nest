@@ -29,6 +29,7 @@ const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [navExpanded, setNavExpanded] = useState(false);
   const [ripple, setRipple] = useState(false);
+  const [ballHidden, setBallHidden] = useState(false);
   const pathname = usePathname();
 
   // Lock body scroll when menu is open
@@ -60,6 +61,18 @@ const Header = () => {
       clearTimeout(timer);
     };
   }, [navExpanded]);
+
+  // Track scroll position to fade the ball
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
+    const handler = () => {
+      setBallHidden(true);
+      clearTimeout(timer);
+      timer = setTimeout(() => setBallHidden(false), 300);
+    };
+    window.addEventListener('scroll', handler, { passive: true });
+    return () => { window.removeEventListener('scroll', handler); clearTimeout(timer); };
+  }, []);
 
   return (
     <>
@@ -153,32 +166,32 @@ const Header = () => {
           {/* Ripple burst */}
           <div className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-200 ${ripple ? 'opacity-100' : 'opacity-0'}`}>
             <div className={`rounded-full border-2 border-teal-400/60 ${ripple ? 'animate-ripple-burst' : ''}`}
-              style={{ width: '56px', height: '56px' }}
+              style={{ width: '48px', height: '48px' }}
             />
           </div>
 
           {/* 3D Ball */}
           <button
             onClick={handleExpand}
-            className={`relative flex items-center justify-center w-14 h-14 rounded-full cursor-pointer select-none touch-manipulation transition-all duration-300 ease-out active:scale-90 ${navExpanded ? 'scale-0 opacity-0 pointer-events-none' : 'scale-100 opacity-100 pointer-events-auto'}`}
+            className={`relative flex items-center justify-center w-12 h-12 rounded-full cursor-pointer select-none touch-manipulation transition-all duration-300 ease-out active:scale-90 ${navExpanded || ballHidden ? 'scale-0 opacity-0 pointer-events-none' : 'scale-100 opacity-100 pointer-events-auto'}`}
             aria-label="Open navigation"
           >
-            <div className="absolute inset-0 rounded-full bg-teal-400/20 animate-pulse-slow" style={{ filter: 'blur(8px)', transform: 'scale(1.2)' }} />
+            <div className="absolute inset-0 rounded-full bg-teal-400/20 animate-pulse-slow" style={{ filter: 'blur(6px)', transform: 'scale(1.15)' }} />
             <div className="absolute inset-0 rounded-full"
               style={{
                 background: 'radial-gradient(circle at 35% 30%, #5EEAD4 0%, #0D9488 35%, #0F766E 65%, #0F5E58 100%)',
-                boxShadow: '0 8px 28px -4px rgba(13,148,136,0.5), inset 0 -6px 12px rgba(0,0,0,0.3), inset 0 4px 8px rgba(255,255,255,0.25)',
+                boxShadow: '0 6px 22px -4px rgba(13,148,136,0.5), inset 0 -5px 10px rgba(0,0,0,0.3), inset 0 3px 6px rgba(255,255,255,0.25)',
               }}
             />
             <div className="absolute rounded-full pointer-events-none"
               style={{
-                width: '65%', height: '40%', top: '14%', left: '17%',
+                width: '60%', height: '38%', top: '15%', left: '20%',
                 background: 'radial-gradient(ellipse at center, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.1) 50%, transparent 70%)',
               }}
             />
             <div className="absolute rounded-full pointer-events-none"
               style={{
-                width: '75%', height: '18%', bottom: '5%', left: '12%',
+                width: '70%', height: '16%', bottom: '6%', left: '15%',
                 background: 'radial-gradient(ellipse at center, rgba(255,255,255,0.12) 0%, transparent 70%)',
               }}
             />

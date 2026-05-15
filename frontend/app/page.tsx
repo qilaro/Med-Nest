@@ -25,6 +25,7 @@ export default function Home() {
   const searchRef = useRef<HTMLFormElement>(null);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
   const interactedRef = useRef(false);
+  const savedScrollY = useRef(0);
 
   useEffect(() => {
     fetch('/api/stats').then(r => r.json()).then(setStats).catch(() => {});
@@ -119,9 +120,9 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col flex-1">
+    <div className="flex flex-col flex-1 bg-gradient-to-b from-[#c5e0db] via-[#d5e9e7] to-[#e5f2ef]">
       {/* Hero Section */}
-      <section className="bg-gradient-to-b from-[#D5E9E7] via-white to-white py-6">
+      <section className="py-6">
         <div className="mx-auto max-w-[1024px] px-3 sm:px-0">
           <div className="bg-white rounded-2xl border border-sky-200 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.25)] p-3 sm:p-8">
             <div className="flex flex-col items-center justify-center text-center">
@@ -154,6 +155,13 @@ export default function Home() {
                       type="text" 
                       value={query}
                       onChange={(e) => { setQuery(e.target.value); interactedRef.current = true; }}
+                      onClick={() => {
+                        if (window.innerWidth < 1024) {
+                          savedScrollY.current = window.scrollY;
+                          const rect = searchRef.current?.getBoundingClientRect();
+                          if (rect) window.scrollBy({ top: rect.top - 80, behavior: 'smooth' });
+                        }
+                      }}
                       onFocus={handleFocus}
                       onBlur={() => { if (!query.trim()) setShowSuggestions(false); }}
                       placeholder="Search your drugs here" 
@@ -200,7 +208,7 @@ export default function Home() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-6 sm:py-8 bg-gray-50">
+      <section className="py-6 sm:py-8">
         <div className="mx-auto max-w-[1024px] px-3 sm:px-0">
           <div className="bg-white rounded-2xl border border-sky-200 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.25)] p-6 sm:p-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 text-center">
