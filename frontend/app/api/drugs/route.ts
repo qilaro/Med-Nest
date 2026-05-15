@@ -3,27 +3,6 @@ import { db } from '@/lib/db';
 import { sql } from 'drizzle-orm';
 import { drugsQuerySchema } from '@/lib/validators';
 
-let filterCache: { data: any; expiresAt: number } = { data: null, expiresAt: 0 };
-const FILTER_CACHE_TTL = 300_000;
-
-async function getFilterOptions() {
-  if (filterCache.data && Date.now() < filterCache.expiresAt) return filterCache.data;
-  const result = await db.execute(sql`
-    SELECT 
-      (SELECT json_agg(DISTINCT therapeutic_class ORDER BY therapeutic_class) FROM brands WHERE therapeutic_class IS NOT NULL AND therapeutic_class != '') as classes,
-      (SELECT json_agg(DISTINCT company_name ORDER BY company_name) FROM brands WHERE company_name IS NOT NULL AND company_name != '') as companies,
-      (SELECT json_agg(DISTINCT dosage_form ORDER BY dosage_form) FROM brands WHERE dosage_form IS NOT NULL AND dosage_form != '') as forms
-  `);
-  const row = result.rows[0] as any;
-  const data = {
-    classes: (row.classes || []).map((n: string) => ({ name: n, count: 0 })),
-    companies: row.companies || [],
-    forms: (row.forms || []).map((n: string) => ({ name: n, count: 0 })),
-  };
-  filterCache = { data, expiresAt: Date.now() + FILTER_CACHE_TTL };
-  return data;
-}
-
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const parsed = drugsQuerySchema.safeParse(Object.fromEntries(searchParams));
@@ -33,7 +12,6 @@ export async function GET(request: Request) {
   const offset = (page - 1) * limit;
 
   try {
-    // Single query with COUNT(*) OVER() — replaces separate count + data queries
     let query = sql`
       SELECT 
         b.id::text as id, b.slug, b.brand_name as "brandName", b.generic_name as "genericName",
@@ -67,15 +45,12 @@ export async function GET(request: Request) {
       query = sql`${query} ORDER BY b.brand_name ASC LIMIT ${limit} OFFSET ${offset}`;
     }
 
-    // Run the single query + fetch filter cache in parallel
-    const [dataResult] = await Promise.all([db.execute(query)]);
+    const dataResult = await db.execute(query);
     const rows = dataResult.rows;
     const total = Number(rows[0]?.total_count) || 0;
 
-    const filters = await getFilterOptions();
     return NextResponse.json({
       drugs: rows, total, page, limit, totalPages: Math.ceil(total / limit),
-      classes: filters.classes, companies: filters.companies, dosageForms: filters.forms,
     }, { headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=86400' } });
   } catch (error) {
     console.error('Drugs list error:', error);

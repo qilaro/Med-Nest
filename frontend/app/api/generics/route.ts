@@ -11,64 +11,45 @@ export async function GET(request: Request) {
     const search = searchParams.get('search') || '';
     const typeFilter = searchParams.get('medicine_type') || '';
     const classFilter = searchParams.get('drug_class') || '';
-    const formFilter = searchParams.get('dosage_form') || '';
     const ratingFilter = searchParams.get('rating') || '';
     const letterFilter = searchParams.get('letter') || '';
 
     const offset = (page - 1) * ITEMS_PER_PAGE;
-    const hasFilter = !!(search || typeFilter || classFilter || formFilter || ratingFilter || letterFilter);
+    const hasFilter = !!(search || typeFilter || classFilter || ratingFilter || letterFilter);
 
     const data = await db.execute(sql`
-      SELECT
-        g.id::text,
-        g.name,
-        g.slug,
-        g.therapeutic_class,
-        g.medicine_type,
-        COALESCE(bstats.brand_count, 0)::int as brand_count,
-        bstats.avg_rating,
-        bstats.min_price,
-        bstats.max_price,
-        (g.indications IS NOT NULL AND g.indications != '') as has_medical_info
-      FROM generics g
-      LEFT JOIN (
+      WITH bstats AS (
         SELECT generic_id,
           COUNT(*)::int as brand_count,
           ROUND(AVG(average_rating)::numeric, 1)::text as avg_rating,
           MIN(price_unit)::text as min_price,
           MAX(price_unit)::text as max_price
-        FROM brands
-        WHERE price_unit > 0 OR average_rating > 0
+        FROM brands WHERE price_unit > 0 OR average_rating > 0
         GROUP BY generic_id
-      ) bstats ON bstats.generic_id = g.id
+      )
+      SELECT
+        g.id::text, g.name, g.slug, g.therapeutic_class, g.medicine_type,
+        COALESCE(bstats.brand_count, 0)::int as brand_count,
+        bstats.avg_rating, bstats.min_price, bstats.max_price,
+        (g.indications IS NOT NULL AND g.indications != '') as has_medical_info,
+        COUNT(*) OVER() as total_count
+      FROM generics g
+      LEFT JOIN bstats ON bstats.generic_id = g.id
       WHERE 1=1
         AND (${search} = '' OR g.name ILIKE ${search + '%'})
-        AND (${typeFilter} = '' OR EXISTS (SELECT 1 FROM brands WHERE generic_id = g.id AND medicine_type ILIKE ${typeFilter}))
+        AND (${typeFilter} = '' OR g.medicine_type ILIKE ${typeFilter})
         AND (${classFilter} = '' OR g.therapeutic_class = ${classFilter})
-        AND (${formFilter} = '' OR EXISTS (SELECT 1 FROM brands WHERE generic_id = g.id AND dosage_form = ${formFilter}))
         AND (${ratingFilter} = '' OR EXISTS (SELECT 1 FROM brands WHERE generic_id = g.id AND average_rating >= CAST(NULLIF(${ratingFilter}, '') AS numeric)))
         AND (${letterFilter} = '' OR g.name ILIKE ${letterFilter + '%'})
       ORDER BY ${hasFilter ? sql`g.name ASC` : sql`COALESCE(bstats.brand_count, 0) DESC, g.name ASC`}
-      LIMIT ${ITEMS_PER_PAGE}
-      OFFSET ${offset}
+      LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
     `);
 
-    const totalResult = await db.execute(sql`
-      SELECT COUNT(*)::int as total
-      FROM generics g
-      WHERE 1=1
-        AND (${search} = '' OR g.name ILIKE ${search + '%'})
-        AND (${typeFilter} = '' OR EXISTS (SELECT 1 FROM brands WHERE generic_id = g.id AND medicine_type ILIKE ${typeFilter}))
-        AND (${classFilter} = '' OR g.therapeutic_class = ${classFilter})
-        AND (${formFilter} = '' OR EXISTS (SELECT 1 FROM brands WHERE generic_id = g.id AND dosage_form = ${formFilter}))
-        AND (${ratingFilter} = '' OR EXISTS (SELECT 1 FROM brands WHERE generic_id = g.id AND average_rating >= CAST(NULLIF(${ratingFilter}, '') AS numeric)))
-        AND (${letterFilter} = '' OR g.name ILIKE ${letterFilter + '%'})
-    `);
-
-    const total = Number(totalResult.rows[0]?.total || 0);
+    const rows = data.rows as any[];
+    const total = Number(rows[0]?.total_count || 0);
     const totalPages = Math.ceil(total / ITEMS_PER_PAGE);
 
-    const generics = (data.rows as any[]).map(d => ({
+    const generics = rows.map(d => ({
       id: String(d.id || ''),
       name: String(d.name || ''),
       slug: String(d.slug || ''),
@@ -81,19 +62,8 @@ export async function GET(request: Request) {
       medicineType: d.medicine_type ? String(d.medicine_type) : null,
     }));
 
-    // Fetch filter options in parallel
-    const [classesRows, formsRows] = await Promise.all([
-      db.execute(sql`SELECT therapeutic_class as name FROM generics WHERE therapeutic_class IS NOT NULL AND therapeutic_class != '' GROUP BY therapeutic_class ORDER BY therapeutic_class`),
-      db.execute(sql`SELECT DISTINCT dosage_form as name FROM brands WHERE dosage_form IS NOT NULL AND dosage_form != '' ORDER BY dosage_form`),
-    ]);
-
     return NextResponse.json({
-      generics,
-      total,
-      page,
-      totalPages,
-      classes: classesRows.rows.map((r: any) => ({ name: r.name, count: 0 })),
-      dosageForms: formsRows.rows.map((r: any) => ({ name: r.name, count: 0 })),
+      generics, total, page, totalPages,
     }, { headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=86400' } });
   } catch (error) {
     console.error('Error fetching generics:', error);
