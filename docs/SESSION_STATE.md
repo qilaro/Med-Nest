@@ -51,6 +51,13 @@
 3. Type badge (Herbal/Vet/Vaccine) in search
 4. Unify pages under `/drugs?filter=X`
 
+## Pro Migration Notes
+- **Move Upstash Redis**: Delete → recreate in Singapore (`ap-southeast-1`)
+- **Vercel functions**: Auto-detect nearest region to Redis/NeoN
+- **Neon**: Already in Singapore — no change needed
+- **Edge CDN**: Mumbai → Bangladesh at ~50ms (no change)
+- **Result**: All three layers (function, Redis, DB) in Singapore — everything sub-5ms
+
 ## 📖 Key Docs
 - `docs/SOURCE_OF_TRUTH.md` — Read FIRST in every session
 - `docs/SECURITY.md` — Security hardening details
