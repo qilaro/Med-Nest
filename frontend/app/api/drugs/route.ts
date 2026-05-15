@@ -3,6 +3,30 @@ import { db } from '@/lib/db';
 import { sql } from 'drizzle-orm';
 import { drugsQuerySchema } from '@/lib/validators';
 
+// In-memory cache for filter options (classes, companies, forms) — rarely changes
+let filterCache: { data: { classes: any[]; companies: any[]; forms: any[] } | null; expiresAt: number } = {
+  data: null, expiresAt: 0
+};
+const FILTER_CACHE_TTL = 300_000; // 5 minutes
+
+async function getFilterOptions() {
+  if (filterCache.data && Date.now() < filterCache.expiresAt) {
+    return filterCache.data;
+  }
+  const [classesRows, companiesRows, formsRows] = await Promise.all([
+    db.execute(sql`SELECT DISTINCT therapeutic_class as name FROM brands WHERE therapeutic_class IS NOT NULL AND therapeutic_class != '' ORDER BY therapeutic_class`),
+    db.execute(sql`SELECT DISTINCT company_name as name FROM brands WHERE company_name IS NOT NULL AND company_name != '' ORDER BY company_name`),
+    db.execute(sql`SELECT DISTINCT dosage_form as name FROM brands WHERE dosage_form IS NOT NULL AND dosage_form != '' ORDER BY dosage_form`),
+  ]);
+  const data = {
+    classes: classesRows.rows.map((r: any) => ({ name: r.name, count: 0 })),
+    companies: companiesRows.rows.map((r: any) => r.name),
+    forms: formsRows.rows.map((r: any) => ({ name: r.name, count: 0 })),
+  };
+  filterCache = { data, expiresAt: Date.now() + FILTER_CACHE_TTL };
+  return data;
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const parsed = drugsQuerySchema.safeParse(Object.fromEntries(searchParams));
@@ -88,12 +112,9 @@ export async function GET(request: Request) {
       dataQuery = sql`${dataQuery}${filter}`;
     }
 
-    // Fetch filter options in parallel with count
-    const [countResult, classesRows, companiesRows, formsRows] = await Promise.all([
+    // Fetch filter options from cache (rarely changes)
+    const [countResult] = await Promise.all([
       db.execute(countQuery),
-      db.execute(sql`SELECT DISTINCT therapeutic_class as name FROM brands WHERE therapeutic_class IS NOT NULL AND therapeutic_class != '' ORDER BY therapeutic_class`),
-      db.execute(sql`SELECT DISTINCT company_name as name FROM brands WHERE company_name IS NOT NULL AND company_name != '' ORDER BY company_name`),
-      db.execute(sql`SELECT DISTINCT dosage_form as name FROM brands WHERE dosage_form IS NOT NULL AND dosage_form != '' ORDER BY dosage_form`),
     ]);
     const total = Number(countResult.rows[0]?.total) || 0;
 
@@ -119,15 +140,16 @@ export async function GET(request: Request) {
     const dataResult = await db.execute(dataQuery);
     const rows = dataResult.rows;
 
+    const filters = await getFilterOptions();
     return NextResponse.json({
       drugs: rows,
       total,
       page,
       limit,
       totalPages: Math.ceil(total / limit),
-      classes: classesRows.rows.map((r: any) => ({ name: r.name, count: 0 })),
-      companies: companiesRows.rows.map((r: any) => r.name),
-      dosageForms: formsRows.rows.map((r: any) => ({ name: r.name, count: 0 })),
+      classes: filters.classes,
+      companies: filters.companies,
+      dosageForms: filters.forms,
     }, { headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=30' } });
   } catch (error) {
     console.error('Drugs list error:', error);
