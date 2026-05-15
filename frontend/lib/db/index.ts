@@ -11,6 +11,6 @@ if (!raw) throw new Error('DATABASE_URL environment variable is not set');
 
 // Strip -pooler and all query params — Pool handles TLS natively
 const clean = raw.replace(/-pooler\./g, '.').split('?')[0];
-const pool = new Pool({ connectionString: clean, max: 1 });
+const pool = new Pool({ connectionString: clean, max: 2 });
 
 export const db = drizzle(pool, { schema });

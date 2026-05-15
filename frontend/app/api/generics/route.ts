@@ -94,7 +94,7 @@ export async function GET(request: Request) {
       totalPages,
       classes: classesRows.rows.map((r: any) => ({ name: r.name, count: 0 })),
       dosageForms: formsRows.rows.map((r: any) => ({ name: r.name, count: 0 })),
-    }, { headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=30' } });
+    }, { headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=86400' } });
   } catch (error) {
     console.error('Error fetching generics:', error);
     return NextResponse.json({ error: 'Failed to fetch generics' }, { status: 500 });
