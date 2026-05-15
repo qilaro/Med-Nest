@@ -11,12 +11,9 @@ function createDb() {
   if (!raw) {
     throw new Error('DATABASE_URL environment variable is not set');
   }
-  // Strip -pooler from hostname to bypass pgBouncer (which breaks GROUP BY / SUM etc.)
-  // Also strip incompatible query params
-  const clean = raw
-    .replace(/-pooler\./g, '.')
-    .replace(/[?&](channel_binding|connect_timeout)=[^&]+/g, '')
-    .replace(/[?&]$/, '');
+  // Strip -pooler from hostname to bypass pgBouncer, and remove ALL query params
+  // (Neon Pool uses TLS by default, no SSL params needed)
+  const clean = raw.replace(/-pooler\./g, '.').split('?')[0];
   const pool = new Pool({ connectionString: clean });
   return drizzle(pool, { schema });
 }
