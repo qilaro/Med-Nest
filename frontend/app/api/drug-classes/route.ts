@@ -14,7 +14,7 @@ export async function GET() {
       ORDER BY b.therapeutic_class ASC
     `);
 
-    return NextResponse.json(result.rows);
+    return NextResponse.json(result.rows, { headers: { 'Cache-Control': 'public, s-maxage=600, stale-while-revalidate=300' } });
   } catch (error) {
     console.error('Drug classes error:', error);
     return NextResponse.json({ error: 'Failed to fetch drug classes' }, { status: 500 });

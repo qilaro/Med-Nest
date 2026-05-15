@@ -11,7 +11,7 @@ export async function GET() {
     `);
 
     const companies = result.rows.map((r: any) => r.name);
-    return NextResponse.json(companies);
+    return NextResponse.json(companies, { headers: { 'Cache-Control': 'public, s-maxage=600, stale-while-revalidate=300' } });
   } catch (error) {
     console.error('Companies error:', error);
     return NextResponse.json({ error: 'Failed to fetch companies' }, { status: 500 });

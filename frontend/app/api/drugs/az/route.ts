@@ -37,7 +37,7 @@ export async function GET() {
 
     const groups = Array.from(groupsMap.entries()).map(([letter, drugs]) => ({ letter, drugs }));
 
-    return NextResponse.json({ groups });
+    return NextResponse.json({ groups }, { headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=150' } });
   } catch (error) {
     console.error('Drugs AZ error:', error);
     return NextResponse.json({ error: 'Failed to fetch A-Z drugs' }, { status: 500 });

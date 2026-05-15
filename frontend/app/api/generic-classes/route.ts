@@ -13,7 +13,7 @@ export async function GET() {
       GROUP BY therapeutic_class
       ORDER BY therapeutic_class ASC
     `);
-    return NextResponse.json(result.rows);
+    return NextResponse.json(result.rows, { headers: { 'Cache-Control': 'public, s-maxage=600, stale-while-revalidate=300' } });
   } catch (error) {
     console.error('Error fetching generic classes:', error);
     return NextResponse.json([], { status: 500 });

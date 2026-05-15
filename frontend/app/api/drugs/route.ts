@@ -128,7 +128,7 @@ export async function GET(request: Request) {
       classes: classesRows.rows.map((r: any) => ({ name: r.name, count: 0 })),
       companies: companiesRows.rows.map((r: any) => r.name),
       dosageForms: formsRows.rows.map((r: any) => ({ name: r.name, count: 0 })),
-    });
+    }, { headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=30' } });
   } catch (error) {
     console.error('Drugs list error:', error);
     return NextResponse.json({ error: 'Failed to fetch drugs' }, { status: 500 });

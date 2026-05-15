@@ -14,7 +14,7 @@ export async function GET() {
       ORDER BY count DESC
     `);
 
-    return NextResponse.json(result.rows);
+    return NextResponse.json(result.rows, { headers: { 'Cache-Control': 'public, s-maxage=600, stale-while-revalidate=300' } });
   } catch (error) {
     console.error('Dosage forms error:', error);
     return NextResponse.json({ error: 'Failed to fetch dosage forms' }, { status: 500 });

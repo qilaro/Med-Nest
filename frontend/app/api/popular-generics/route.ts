@@ -19,7 +19,7 @@ export async function GET() {
       brandCount: Number(r.brand_count) || 0,
       medicineType: r.medicine_type ? String(r.medicine_type) : null,
     }));
-    return NextResponse.json(rows);
+    return NextResponse.json(rows, { headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=150' } });
   } catch (error) {
     console.error('Error fetching popular generics:', error);
     return NextResponse.json([]);
