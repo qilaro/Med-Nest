@@ -3,13 +3,12 @@ import { drizzle } from 'drizzle-orm/neon-serverless';
 import * as schema from './schema';
 
 function createDb() {
-  const connectionString = process.env.DATABASE_URL
-    || process.env.POSTGRES_URL
-    || process.env.DATABASE_URL_UNPOOLED
+  const connectionString = process.env.DATABASE_URL_UNPOOLED
     || process.env.POSTGRES_URL_NON_POOLING
-    || process.env.POSTGRES_URL_NO_SSL;
+    || process.env.POSTGRES_URL_NO_SSL
+    || process.env.DATABASE_URL
+    || process.env.POSTGRES_URL;
   if (!connectionString) {
-    console.error('[DB] No connection string found');
     throw new Error('DATABASE_URL environment variable is not set');
   }
   const pool = new Pool({ connectionString });
