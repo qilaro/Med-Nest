@@ -64,13 +64,13 @@ export async function GET(request: Request) {
     `;
 
     if (drugClass) {
-      const filter = sql` AND b.therapeutic_class ILIKE ${'%' + drugClass + '%'}`;
+      const filter = sql` AND b.therapeutic_class ILIKE ${drugClass}`;
       countQuery = sql`${countQuery}${filter}`;
       dataQuery = sql`${dataQuery}${filter}`;
     }
 
     if (medicineType) {
-      const filter = sql` AND b.medicine_type ILIKE ${'%' + medicineType + '%'}`;
+      const filter = sql` AND b.medicine_type ILIKE ${medicineType}`;
       countQuery = sql`${countQuery}${filter}`;
       dataQuery = sql`${dataQuery}${filter}`;
     }
