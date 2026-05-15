@@ -24,21 +24,31 @@ export async function GET(request: Request) {
         g.name,
         g.slug,
         g.therapeutic_class,
-        NULL::text as medicine_type,
-        (SELECT COUNT(*) FROM brands WHERE generic_id = g.id)::int as brand_count,
-        (SELECT ROUND(AVG(average_rating)::numeric, 1) FROM brands WHERE generic_id = g.id AND average_rating > 0)::text as avg_rating,
-        (SELECT MIN(price_unit) FROM brands WHERE generic_id = g.id AND price_unit > 0)::text as min_price,
-        (SELECT MAX(price_unit) FROM brands WHERE generic_id = g.id AND price_unit > 0)::text as max_price,
-        (COALESCE(to_jsonb(g)->>'indications', '') != '') as has_medical_info
+        g.medicine_type,
+        COALESCE(bstats.brand_count, 0)::int as brand_count,
+        bstats.avg_rating,
+        bstats.min_price,
+        bstats.max_price,
+        (g.indications IS NOT NULL AND g.indications != '') as has_medical_info
       FROM generics g
+      LEFT JOIN (
+        SELECT generic_id,
+          COUNT(*)::int as brand_count,
+          ROUND(AVG(average_rating)::numeric, 1)::text as avg_rating,
+          MIN(price_unit)::text as min_price,
+          MAX(price_unit)::text as max_price
+        FROM brands
+        WHERE price_unit > 0 OR average_rating > 0
+        GROUP BY generic_id
+      ) bstats ON bstats.generic_id = g.id
       WHERE 1=1
         AND (${search} = '' OR g.name ILIKE ${search + '%'})
-        AND (${typeFilter} = '' OR EXISTS (SELECT 1 FROM brands WHERE generic_id = g.id AND medicine_type ILIKE ${'%' + typeFilter + '%'}))
+        AND (${typeFilter} = '' OR EXISTS (SELECT 1 FROM brands WHERE generic_id = g.id AND medicine_type ILIKE ${typeFilter}))
         AND (${classFilter} = '' OR g.therapeutic_class = ${classFilter})
         AND (${formFilter} = '' OR EXISTS (SELECT 1 FROM brands WHERE generic_id = g.id AND dosage_form = ${formFilter}))
         AND (${ratingFilter} = '' OR EXISTS (SELECT 1 FROM brands WHERE generic_id = g.id AND average_rating >= CAST(NULLIF(${ratingFilter}, '') AS numeric)))
         AND (${letterFilter} = '' OR g.name ILIKE ${letterFilter + '%'})
-      ORDER BY ${hasFilter ? sql`g.name ASC` : sql`brand_count DESC, g.name ASC`}
+      ORDER BY ${hasFilter ? sql`g.name ASC` : sql`COALESCE(bstats.brand_count, 0) DESC, g.name ASC`}
       LIMIT ${ITEMS_PER_PAGE}
       OFFSET ${offset}
     `);
@@ -48,7 +58,7 @@ export async function GET(request: Request) {
       FROM generics g
       WHERE 1=1
         AND (${search} = '' OR g.name ILIKE ${search + '%'})
-        AND (${typeFilter} = '' OR EXISTS (SELECT 1 FROM brands WHERE generic_id = g.id AND medicine_type ILIKE ${'%' + typeFilter + '%'}))
+        AND (${typeFilter} = '' OR EXISTS (SELECT 1 FROM brands WHERE generic_id = g.id AND medicine_type ILIKE ${typeFilter}))
         AND (${classFilter} = '' OR g.therapeutic_class = ${classFilter})
         AND (${formFilter} = '' OR EXISTS (SELECT 1 FROM brands WHERE generic_id = g.id AND dosage_form = ${formFilter}))
         AND (${ratingFilter} = '' OR EXISTS (SELECT 1 FROM brands WHERE generic_id = g.id AND average_rating >= CAST(NULLIF(${ratingFilter}, '') AS numeric)))

@@ -26,7 +26,7 @@ export default function GenericCard({ generic }: { generic: GenericSummary }) {
           {/* Top: Icon + Name + Actions */}
           <div className="flex items-start gap-3.5">
             <div className="flex flex-col items-center gap-1 shrink-0 w-14">
-              <Link href={detailHref}>
+                <Link href={detailHref} prefetch={false}>
                 <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-teal-100 to-teal-200 flex items-center justify-center text-teal-600 shadow-sm hover:shadow-md hover:from-teal-200 hover:to-teal-300 hover:text-teal-700 hover:scale-105 transition-all duration-300">
                   <FlaskConical className="w-5 h-5" />
                 </div>
@@ -38,7 +38,7 @@ export default function GenericCard({ generic }: { generic: GenericSummary }) {
 
             <div className="min-w-0 flex-1">
               <div className="flex justify-between items-start gap-2">
-                <Link href={detailHref}>
+              <Link href={detailHref} prefetch={false}>
                   <h3 title={generic.name} className="font-bold text-gray-800 hover:text-teal-700 transition-colors text-[15px] leading-snug truncate cursor-pointer">
                     {generic.name}
                   </h3>

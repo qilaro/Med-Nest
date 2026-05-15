@@ -33,7 +33,7 @@ const getDosageLabel = (form: string) => {
 
 export default function DrugCard({ drug }: DrugCardProps) {
   return (
-    <Link href={`/drugs/${drug.slug}`} className="block group">
+    <Link href={`/drugs/${drug.slug}`} className="block group" prefetch={false}>
       <Card className="relative h-full transition-all duration-300 hover:shadow-[0_12px_35px_-8px_rgba(0,0,0,0.12),0_4px_10px_-4px_rgba(0,150,136,0.15)] overflow-hidden bg-white border border-gray-200 hover:border-teal-300 hover:-translate-y-0.5 before:absolute before:inset-y-2 before:left-0 before:w-0.5 before:rounded-r before:bg-teal-500 before:opacity-0 before:transition-all before:duration-300 group-hover:before:opacity-100 group-hover:before:inset-y-3">
         <CardContent className="p-4">
           {/* Top: Icon + Brand + Rating */}
