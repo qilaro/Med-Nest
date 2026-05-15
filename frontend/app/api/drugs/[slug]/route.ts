@@ -33,14 +33,14 @@ export async function GET(
         b.medicine_type as "medicineType",
         b.indications,
         'brand' as type,
-        g.side_effects as "sideEffects",
-        g.interactions,
-        g.contraindications,
-        g.dosage,
-        g.precautions,
-        g.pregnancy_lactation as "pregnancyLactation",
-        g.storage_conditions as "storageConditions",
-        g.overdose_effects as "overdoseEffects"
+        to_jsonb(g)->>'side_effects' as "sideEffects",
+        to_jsonb(g)->>'interactions' as interactions,
+        to_jsonb(g)->>'contraindications' as contraindications,
+        to_jsonb(g)->>'dosage' as dosage,
+        to_jsonb(g)->>'precautions' as precautions,
+        to_jsonb(g)->>'pregnancy_lactation' as "pregnancyLactation",
+        to_jsonb(g)->>'storage_conditions' as "storageConditions",
+        to_jsonb(g)->>'overdose_effects' as "overdoseEffects"
       FROM brands b
       LEFT JOIN generics g ON b.generic_id = g.id
       WHERE b.slug = ${slug}
