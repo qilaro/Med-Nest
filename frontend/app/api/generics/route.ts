@@ -10,7 +10,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const cacheKey = `generics:${searchParams.toString()}`;
 
-    const responseData = await withCache(cacheKey, 60, async () => {
+    const responseData = await withCache(cacheKey, 300, async () => {
     const page = Math.max(1, parseInt(searchParams.get('page') || '1'));
     const search = searchParams.get('search') || '';
     const typeFilter = searchParams.get('medicine_type') || '';

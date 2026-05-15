@@ -1,11 +1,14 @@
 import { NextResponse } from 'next/server';
 
 export async function GET() {
-  // Cron runs server-side — use relative URLs
+  const base = process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : 'http://localhost:3000';
+
   await Promise.allSettled([
-    fetch(`${process.env.VERCEL_URL || 'http://localhost:3000'}/api/drugs?page=1&limit=20`),
-    fetch(`${process.env.VERCEL_URL || 'http://localhost:3000'}/api/generics?page=1`),
-    fetch(`${process.env.VERCEL_URL || 'http://localhost:3000'}/api/stats`),
+    fetch(`${base}/api/drugs?page=1&limit=20`),
+    fetch(`${base}/api/generics?page=1`),
+    fetch(`${base}/api/stats`),
   ]);
 
   return NextResponse.json({ ok: true });

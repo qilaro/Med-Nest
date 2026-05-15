@@ -15,7 +15,7 @@ export async function GET(request: Request) {
   try {
     const cacheKey = `drugs:${searchParams.toString()}`;
 
-    const responseData = await withCache(cacheKey, 60, async () => {
+    const responseData = await withCache(cacheKey, 300, async () => {
       let query = sql`
         SELECT 
           b.id::text as id, b.slug, b.brand_name as "brandName", b.generic_name as "genericName",
