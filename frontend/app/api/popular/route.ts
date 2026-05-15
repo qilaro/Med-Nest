@@ -26,7 +26,8 @@ export async function GET() {
       { results: fallback.rows },
       { headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=60' } }
     );
-  } catch {
+  } catch (e) {
+    console.error('Popular fetch error:', e);
     return NextResponse.json({ results: [] });
   }
 }
