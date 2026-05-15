@@ -88,9 +88,16 @@ export async function GET(request: Request) {
       dataQuery = sql`${dataQuery}${filter}`;
     }
 
-    const countResult = await db.execute(countQuery);
+    // Fetch filter options in parallel with count
+    const [countResult, classesRows, companiesRows, formsRows] = await Promise.all([
+      db.execute(countQuery),
+      db.execute(sql`SELECT DISTINCT therapeutic_class as name FROM brands WHERE therapeutic_class IS NOT NULL AND therapeutic_class != '' ORDER BY therapeutic_class`),
+      db.execute(sql`SELECT DISTINCT company_name as name FROM brands WHERE company_name IS NOT NULL AND company_name != '' ORDER BY company_name`),
+      db.execute(sql`SELECT DISTINCT dosage_form as name FROM brands WHERE dosage_form IS NOT NULL AND dosage_form != '' ORDER BY dosage_form`),
+    ]);
     const total = Number(countResult.rows[0]?.total) || 0;
 
+    // Add ordering, limit, offset and execute
     if (searchQuery) {
       const like = '%' + searchQuery + '%';
       const prefix = searchQuery + '%';
@@ -109,8 +116,8 @@ export async function GET(request: Request) {
         b.review_count DESC NULLS LAST, b.brand_name ASC 
         LIMIT ${limit} OFFSET ${offset}`;
     }
-    const result = await db.execute(dataQuery);
-    const rows = result.rows;
+    const dataResult = await db.execute(dataQuery);
+    const rows = dataResult.rows;
 
     return NextResponse.json({
       drugs: rows,
@@ -118,6 +125,9 @@ export async function GET(request: Request) {
       page,
       limit,
       totalPages: Math.ceil(total / limit),
+      classes: classesRows.rows.map((r: any) => ({ name: r.name, count: 0 })),
+      companies: companiesRows.rows.map((r: any) => r.name),
+      dosageForms: formsRows.rows.map((r: any) => ({ name: r.name, count: 0 })),
     });
   } catch (error) {
     console.error('Drugs list error:', error);

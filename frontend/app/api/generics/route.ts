@@ -81,11 +81,19 @@ export async function GET(request: Request) {
       medicineType: d.medicine_type ? String(d.medicine_type) : null,
     }));
 
+    // Fetch filter options in parallel
+    const [classesRows, formsRows] = await Promise.all([
+      db.execute(sql`SELECT therapeutic_class as name FROM generics WHERE therapeutic_class IS NOT NULL AND therapeutic_class != '' GROUP BY therapeutic_class ORDER BY therapeutic_class`),
+      db.execute(sql`SELECT DISTINCT dosage_form as name FROM brands WHERE dosage_form IS NOT NULL AND dosage_form != '' ORDER BY dosage_form`),
+    ]);
+
     return NextResponse.json({
       generics,
       total,
       page,
       totalPages,
+      classes: classesRows.rows.map((r: any) => ({ name: r.name, count: 0 })),
+      dosageForms: formsRows.rows.map((r: any) => ({ name: r.name, count: 0 })),
     });
   } catch (error) {
     console.error('Error fetching generics:', error);

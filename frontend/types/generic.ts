@@ -16,4 +16,6 @@ export interface GenericsResponse {
   total: number;
   page: number;
   totalPages: number;
+  classes?: { name: string; count: number }[];
+  dosageForms?: { name: string; count: number }[];
 }

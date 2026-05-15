@@ -14,6 +14,9 @@ export interface DrugsResponse {
   page: number;
   limit: number;
   totalPages: number;
+  classes?: { name: string; count: number }[];
+  companies?: string[];
+  dosageForms?: { name: string; count: number }[];
 }
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "/api";

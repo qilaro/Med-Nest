@@ -96,23 +96,20 @@ function GenericsContent() {
     async function fetchData() {
       setLoading(true);
       try {
-        const [genericsData, classesData] = await Promise.all([
-          genericService.getGenerics({
-            page: currentPage,
-            medicine_type: typeFilter || undefined,
-            drug_class: classFilter || undefined,
-            rating: ratingFilter || undefined,
-            letter: letterFilter || undefined,
-            search: (activeSearch || searchQ) || undefined,
-          }),
-          genericService.getGenericClasses(),
-        ]);
+        const genericsData = await genericService.getGenerics({
+          page: currentPage,
+          medicine_type: typeFilter || undefined,
+          drug_class: classFilter || undefined,
+          rating: ratingFilter || undefined,
+          letter: letterFilter || undefined,
+          search: (activeSearch || searchQ) || undefined,
+        });
 
         setGenerics(genericsData.generics);
         setTotalResults(genericsData.total);
         setCurrentPage(genericsData.page || 1);
         setTotalPages(genericsData.totalPages || 1);
-        setClasses(classesData);
+        if (genericsData.classes) setClasses(genericsData.classes);
       } catch (error) {
         console.error("Failed to fetch generics:", error);
         setWarning("Failed to load generics. Please try again.");

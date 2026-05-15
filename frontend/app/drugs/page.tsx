@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Loader2, AlertCircle, Star } from "lucide-react";
-import { drugService } from "@/lib/services/drugService";
+import { drugService, DrugsResponse } from "@/lib/services/drugService";
 import { DrugClass, DrugSummary } from "@/types/drug";
 import DrugCard from "@/components/drugs/DrugCard";
 import AZBrowse from "@/components/drugs/AZBrowse";
@@ -98,22 +98,18 @@ function DrugsContent() {
     async function fetchData() {
       setLoading(true);
       try {
-        const [drugsData, classesData, companiesData, formsData] = await Promise.all([
-          drugService.getDrugs({ 
-            page: currentPage,
-            limit: 20,
-            drug_class: drugClassFilter || undefined,
-            medicine_type: typeFilter || undefined,
-            letter: letterFilter || undefined,
-            search: (activeSearch || searchQ) || undefined,
-            company: companyFilter || undefined,
-            generic: genericFilter || undefined,
-            dosage_form: dosageFilter || undefined,
-          }),
-          drugService.getDrugClasses(),
-          drugService.getCompanies(),
-          drugService.getDosageForms(),
-        ]);
+        // Single API call — filter options included in response
+        const drugsData = await drugService.getDrugs({ 
+          page: currentPage,
+          limit: 20,
+          drug_class: drugClassFilter || undefined,
+          medicine_type: typeFilter || undefined,
+          letter: letterFilter || undefined,
+          search: (activeSearch || searchQ) || undefined,
+          company: companyFilter || undefined,
+          generic: genericFilter || undefined,
+          dosage_form: dosageFilter || undefined,
+        }) as DrugsResponse;
 
         let filteredDrugs = drugsData.drugs;
         setTotalResults(drugsData.total);
@@ -123,8 +119,11 @@ function DrugsContent() {
         const uniqueGenerics: string[] = Array.from(new Set(drugsData.drugs.map((d: DrugSummary) => d.genericName))).filter((g): g is string => typeof g === 'string').sort();
         setGenerics(uniqueGenerics);
         
-        const uniqueForms: string[] = formsData.map((f: any) => f.name).filter(Boolean).sort();
-        setDosageForms(uniqueForms);
+        if (drugsData.dosageForms) {
+          setDosageForms(drugsData.dosageForms.map((f: any) => f.name).filter(Boolean).sort());
+        }
+        if (drugsData.classes) setClasses(drugsData.classes);
+        if (drugsData.companies) setCompanies(drugsData.companies);
         
         if (searchQ) {
           const q = searchQ.trim().toLowerCase();
@@ -160,9 +159,9 @@ function DrugsContent() {
         }
 
         setDrugs(filteredDrugs);
-        setClasses(classesData);
-        setCompanies(companiesData);
-        setDosageForms(uniqueForms);
+        if (drugsData.dosageForms) {
+          setDosageForms(drugsData.dosageForms.map((f: any) => f.name).filter(Boolean).sort());
+        }
       } catch (error) {
         console.error("Failed to fetch drugs:", error);
         setWarning("Failed to load medicines. Please try again.");
