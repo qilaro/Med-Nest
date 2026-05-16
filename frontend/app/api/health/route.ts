@@ -16,25 +16,38 @@ export async function GET() {
 
   const url = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL;
   const token = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
+  results.redis = { envUrlSet: !!url, envTokenSet: !!token };
+
   if (url && token) {
     try {
       const key = 'health:' + Date.now();
-      await fetch(`${url}/set/${encodeURIComponent(key)}`, {
+      const testValue = JSON.stringify({ test: true, time: Date.now() });
+
+      const setRes = await fetch(`${url}/set/${encodeURIComponent(key)}`, {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ test: true }),
+        headers: { Authorization: `Bearer ${token}` },
+        body: testValue,
       });
-      const read = await fetch(`${url}/get/${encodeURIComponent(key)}`, {
+
+      const getRes = await fetch(`${url}/get/${encodeURIComponent(key)}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const data = await read.json();
-      fetch(`${url}/del/${encodeURIComponent(key)}`, { headers: { Authorization: `Bearer ${token}` } });
-      results.redis = { ok: data?.result?.test === true };
+      const getData = await getRes.json();
+
+      // Cleanup
+      await fetch(`${url}/del/${encodeURIComponent(key)}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      results.redis.ok = getData?.result === testValue;
+      if (!results.redis.ok) {
+        results.redis.gotType = typeof getData?.result;
+        results.redis.gotPreview = JSON.stringify(getData?.result).slice(0, 100);
+      }
     } catch (e: any) {
-      results.redis = { ok: false, error: e.message };
+      results.redis.ok = false;
+      results.redis.error = e.message;
     }
-  } else {
-    results.redis = { ok: false, error: 'Redis env vars not set' };
   }
 
   return NextResponse.json(results);

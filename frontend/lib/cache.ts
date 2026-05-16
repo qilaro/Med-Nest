@@ -27,7 +27,7 @@ async function redisSet(key: string, value: any, ttl: number): Promise<void> {
   try {
     await fetch(`${UPSTASH_URL}/set/${encodeURIComponent(key)}`, {
       method: 'POST',
-      headers: { Authorization: `Bearer ${UPSTASH_TOKEN}`, 'Content-Type': 'application/json' },
+      headers: { Authorization: `Bearer ${UPSTASH_TOKEN}` },
       body: JSON.stringify(value),
     });
     await fetch(`${UPSTASH_URL}/expire/${encodeURIComponent(key)}/${ttl}`, {
