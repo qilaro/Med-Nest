@@ -1,6 +1,8 @@
 import { Redis } from '@upstash/redis';
 
-const redis = Redis.fromEnv();
+const redis = process.env.KV_REST_API_URL
+  ? new Redis({ url: process.env.KV_REST_API_URL, token: process.env.KV_REST_API_TOKEN! })
+  : null;
 const memStore = new Map<string, { data: any; expiresAt: number }>();
 
 export async function withCache<T>(
@@ -8,24 +10,21 @@ export async function withCache<T>(
   ttl: number,
   fn: () => Promise<T>
 ): Promise<T> {
-  // 1. Try Redis (fastest, shared across containers)
-  try {
-    const cached = await redis.get<T>(key);
-    if (cached !== null && cached !== undefined) return cached;
-  } catch {}
-
-  // 2. Try in-memory (fallback if Redis unavailable)
-  const existing = memStore.get(key);
-  if (existing && Date.now() < existing.expiresAt) {
-    return existing.data as T;
+  if (redis) {
+    try {
+      const cached = await redis.get<T>(key);
+      if (cached !== null && cached !== undefined) return cached;
+    } catch {}
   }
 
-  // 3. Execute the function and cache the result
+  const existing = memStore.get(key);
+  if (existing && Date.now() < existing.expiresAt) return existing.data as T;
+
   const fresh = await fn();
 
-  try {
-    await redis.set(key, JSON.parse(JSON.stringify(fresh)), { ex: ttl });
-  } catch {}
+  if (redis) {
+    try { await redis.set(key, fresh, { ex: ttl }); } catch {}
+  }
   memStore.set(key, { data: fresh, expiresAt: Date.now() + ttl * 1000 });
 
   return fresh;
