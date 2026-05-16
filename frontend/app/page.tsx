@@ -122,21 +122,12 @@ export default function Home() {
 
   const handleFocus = async () => {
     interactedRef.current = true;
-    if (query.trim().length === 0) {
-      try {
-        setIsSearching(true);
-        const res = await fetch('/api/popular');
-        const data = await res.json();
-        setSuggestions((data.results || []).slice(0, 5));
-        setShowSuggestions(true);
-      } catch (error) {
-        console.error("Failed to fetch featured suggestions:", error);
-      } finally {
-        setIsSearching(false);
-      }
-    } else {
-      setShowSuggestions(true);
+    if (window.innerWidth < 1024) {
+      savedScrollY.current = window.scrollY;
+      const rect = searchRef.current?.getBoundingClientRect();
+      if (rect) window.scrollBy({ top: rect.top - 80, behavior: 'smooth' });
     }
+    if (query.trim().length > 0) setShowSuggestions(true);
   };
 
   return (
