@@ -1,6 +1,8 @@
 // Direct Upstash REST API — no SDK, no version issues, works every time
-const UPSTASH_URL = process.env.KV_REST_API_URL;
-const UPSTASH_TOKEN = process.env.KV_REST_API_TOKEN;
+const UPSTASH_URL = process.env.UPSTASH_REDIS_REST_URL
+  || process.env.KV_REST_API_URL;
+const UPSTASH_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN
+  || process.env.KV_REST_API_TOKEN;
 const memStore = new Map<string, { data: any; expiresAt: number }>();
 
 async function redisGet<T>(key: string): Promise<T | null> {
