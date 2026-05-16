@@ -10,6 +10,26 @@ import { SearchSuggestions } from "@/components/drugs/SearchSuggestions";
 import { drugService } from "@/lib/services/drugService";
 import { DrugSummary } from "@/types/drug";
 
+function CountUp({ value, duration = 1500 }: { value: number; duration?: number }) {
+  const [display, setDisplay] = useState(0);
+  const started = useRef(false);
+
+  useEffect(() => {
+    if (started.current || value === 0) return;
+    started.current = true;
+    const start = performance.now();
+    const raf = () => {
+      const elapsed = performance.now() - start;
+      const progress = Math.min(elapsed / duration, 1);
+      setDisplay(Math.floor(progress * value));
+      if (progress < 1) requestAnimationFrame(raf);
+    };
+    requestAnimationFrame(raf);
+  }, [value, duration]);
+
+  return <>{value === 0 ? 0 : display.toLocaleString()}</>;
+}
+
 const FeaturesCarousel = lazy(() => import("@/components/sections/FeaturesCarousel").then(m => ({ default: m.FeaturesCarousel })));
 const HealthNews = lazy(() => import("@/components/sections/HealthNews").then(m => ({ default: m.HealthNews })));
 const AiAssistantCTA = lazy(() => import("@/components/sections/AiAssistantCTA").then(m => ({ default: m.AiAssistantCTA })));
@@ -213,13 +233,13 @@ export default function Home() {
           <div className="bg-white rounded-2xl border border-sky-200 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.25)] p-6 sm:p-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 text-center">
               {[
-                { label: 'Drugs Listed', value: stats.drugs.toLocaleString() },
-                { label: 'Generics', value: stats.generics.toLocaleString() },
-                { label: 'Drug Classes', value: stats.classes.toLocaleString() },
-                { label: 'Companies', value: stats.companies.toLocaleString() },
+                { label: 'Drugs Listed', value: stats.drugs },
+                { label: 'Generics', value: stats.generics },
+                { label: 'Drug Classes', value: stats.classes },
+                { label: 'Companies', value: stats.companies },
               ].map((stat) => (
                 <div key={stat.label}>
-                  <div className="text-2xl sm:text-3xl font-bold text-primary">{stat.value}</div>
+                  <div className="text-2xl sm:text-3xl font-bold text-primary"><CountUp value={stat.value} /></div>
                   <div className="text-gray-600 text-xs sm:text-sm mt-1">{stat.label}</div>
                 </div>
               ))}
