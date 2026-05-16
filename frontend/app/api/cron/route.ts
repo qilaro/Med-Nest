@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+// Triggered by cron-job.org every 5 minutes to keep Redis warm
+// Vercel Hobby doesn't support cron schedules, so use external cron service
 export async function GET() {
   const base = process.env.VERCEL_URL
     ? `https://${process.env.VERCEL_URL}`
@@ -7,7 +9,6 @@ export async function GET() {
 
   const opts = { headers: { 'User-Agent': 'Mozilla/5.0 (compatible; MedNestCron/1.0)' } };
 
-  // Keep common first-page queries warm in Redis — runs every 4 min
   await Promise.allSettled([
     fetch(`${base}/api/drugs?page=1&limit=20`, opts),
     fetch(`${base}/api/drugs?page=1&limit=20&medicine_type=allopathic`, opts),

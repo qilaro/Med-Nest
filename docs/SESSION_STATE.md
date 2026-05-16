@@ -53,10 +53,18 @@
 
 ## Pro Migration Notes
 - **Move Upstash Redis**: Delete → recreate in Singapore (`ap-southeast-1`)
-- **Vercel functions**: Auto-detect nearest region to Redis/NeoN
+- **Vercel functions**: Auto-detect nearest region to Redis/Neon
 - **Neon**: Already in Singapore — no change needed
 - **Edge CDN**: Mumbai → Bangladesh at ~50ms (no change)
 - **Result**: All three layers (function, Redis, DB) in Singapore — everything sub-5ms
+- **Vercel Cron**: `vercel.json` cron schedules work (Hobby ignores <24h intervals)
+- **Fix vercel.json location**: Must be in `frontend/` (project root directory)
+
+### External Cron (Hobby Plan)
+- Use **cron-job.org** (free, no account)
+- Create one job: `https://<preview-url>.vercel.app/api/cron` every 5 minutes
+- Endpoint pings: drugs default, drugs pharma, generics pharma, popular, search napa
+- Keeps Redis warm despite Vercel Hobby cron limitations
 
 ## 📖 Key Docs
 - `docs/SOURCE_OF_TRUTH.md` — Read FIRST in every session

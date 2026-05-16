@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import AZBrowse from "@/components/drugs/AZBrowse";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { SearchSuggestions } from "@/components/drugs/SearchSuggestions";
 import { drugService } from "@/lib/services/drugService";
 import { DrugSummary } from "@/types/drug";
@@ -46,6 +45,7 @@ export default function Home() {
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
   const interactedRef = useRef(false);
   const savedScrollY = useRef(0);
+  const searchCache = useRef<Map<string, { results: DrugSummary[]; total: number }>>(new Map());
 
   useEffect(() => {
     fetch('/api/stats').then(r => r.json()).then(setStats).catch(() => {});
@@ -66,7 +66,7 @@ export default function Home() {
     };
   }, []);
 
-  // Handle search input changes with fuzzy search
+  // Handle search input changes with optimistic fuzzy search
   useEffect(() => {
     if (query.trim().length === 0) {
       if (interactedRef.current) {
@@ -79,21 +79,32 @@ export default function Home() {
       return;
     }
 
+    // Optimistic: check local cache → show instantly
+    const cached = searchCache.current.get(query.trim().toLowerCase());
+    if (cached) {
+      setSuggestions(cached.results.slice(0, 10));
+      setSearchTotal(cached.total);
+      setShowSuggestions(true);
+    }
+
+    // Fresh fetch in background
     const fetchFuzzySuggestions = async () => {
       try {
-        setIsSearching(true);
         const { results, total } = await drugService.searchDrugs(query.trim());
+        searchCache.current.set(query.trim().toLowerCase(), { results, total });
+        if (searchCache.current.size > 50) {
+          const first = searchCache.current.keys().next().value;
+          if (first) searchCache.current.delete(first);
+        }
         setSuggestions(results.slice(0, 10));
         setSearchTotal(total);
         setShowSuggestions(true);
       } catch (error) {
         console.error("Failed to fetch fuzzy suggestions:", error);
-      } finally {
-        setIsSearching(false);
       }
     };
 
-    const timer = setTimeout(fetchFuzzySuggestions, 300);
+    const timer = setTimeout(fetchFuzzySuggestions, 100);
     debounceRef.current = timer;
     return () => { clearTimeout(timer); debounceRef.current = null; };
   }, [query]);
@@ -127,7 +138,21 @@ export default function Home() {
       const rect = searchRef.current?.getBoundingClientRect();
       if (rect) window.scrollBy({ top: rect.top - 80, behavior: 'smooth' });
     }
-    if (query.trim().length > 0) setShowSuggestions(true);
+    if (query.trim().length === 0) {
+      try {
+        setIsSearching(true);
+        const res = await fetch('/api/popular');
+        const data = await res.json();
+        setSuggestions((data.results || []).slice(0, 5));
+        setShowSuggestions(true);
+      } catch (error) {
+        console.error("Failed to fetch suggestions:", error);
+      } finally {
+        setIsSearching(false);
+      }
+    } else {
+      setShowSuggestions(true);
+    }
   };
 
   return (
