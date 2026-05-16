@@ -13,7 +13,12 @@ async function redisGet<T>(key: string): Promise<T | null> {
     });
     if (!res.ok) return null;
     const json = await res.json();
-    return (json.result ?? null) as T | null;
+    // Upstash REST API stores JSON as strings — parse it back to object
+    if (json.result === null || json.result === undefined) return null;
+    if (typeof json.result === 'string') {
+      try { return JSON.parse(json.result) as T; } catch { return null; }
+    }
+    return json.result as T | null;
   } catch { return null; }
 }
 
