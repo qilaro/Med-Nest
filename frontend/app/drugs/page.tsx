@@ -68,6 +68,7 @@ function DrugsContent() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isSearching, setIsSearching] = useState(false);
+  const firstLoad = useRef(true);
   const searchRef = useRef<HTMLFormElement>(null);
   const hasUrlQuery = useRef(!!searchQ);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
@@ -98,7 +99,9 @@ function DrugsContent() {
   // Fetch main drug data
   useEffect(() => {
     async function fetchData() {
-      setLoading(true);
+      const isFirst = firstLoad.current;
+      if (isFirst) setLoading(true);
+      firstLoad.current = false;
       try {
         const [drugsData, classesData, companiesData, formsData] = await Promise.all([
           drugService.getDrugs({ 

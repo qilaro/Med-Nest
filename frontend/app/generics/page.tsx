@@ -30,6 +30,7 @@ function GenericsContent() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
+  const firstLoad = useRef(true);
   const [warning, setWarning] = useState<string | null>(null);
   const [suggestions, setSuggestions] = useState<{ name: string; slug: string; brandCount: number }[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -83,7 +84,8 @@ function GenericsContent() {
   // Fetch generics data
   useEffect(() => {
     async function fetchData() {
-      setLoading(true);
+      if (firstLoad.current) setLoading(true);
+      firstLoad.current = false;
       try {
         const [genericsData, classesData] = await Promise.all([
           genericService.getGenerics({
