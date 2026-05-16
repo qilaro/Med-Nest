@@ -280,7 +280,21 @@ function DrugsContent() {
   const handleFocus = async () => {
     interactedRef.current = true;
     if (activeSearch || searchQ || submittedRef.current) { submittedRef.current = false; return; }
-    if (query.trim().length > 0) setShowSuggestions(true);
+    if (query.trim().length === 0) {
+      try {
+        setIsSearching(true);
+        const res = await fetch('/api/popular');
+        const data = await res.json();
+        setSuggestions((data.results || []).slice(0, 5));
+        setShowSuggestions(true);
+      } catch (error) {
+        console.error("Failed to fetch suggestions:", error);
+      } finally {
+        setIsSearching(false);
+      }
+    } else {
+      setShowSuggestions(true);
+    }
   };
 
   const clearFilters = () => {
