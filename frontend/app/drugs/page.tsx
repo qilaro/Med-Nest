@@ -75,6 +75,8 @@ function DrugsContent() {
   const reqIdRef = useRef(0);
   const interactedRef = useRef(false);
   const savedScrollY = useRef(0);
+  // Optimistic search cache — show instant results while fetching fresh
+  const searchCache = useRef<Map<string, { results: DrugSummary[]; total: number }>>(new Map());
 
   const isFiltered = !!(activeSearch || searchQ || typeFilter || drugClassFilter || companyFilter || genericFilter || dosageFilter || ratingFilter || letterFilter);
 
@@ -183,9 +185,11 @@ function DrugsContent() {
     }
   }, [searchQ]);
 
-  // Handle suggestion filtering
+  // Handle suggestion filtering with optimistic cache
   useEffect(() => {
     if (hasUrlQuery.current) { hasUrlQuery.current = false; return; }
+    
+    // Empty query → show popular (always fresh)
     if (query.trim().length === 0) {
       if (interactedRef.current) {
         fetch('/api/popular').then(r => r.json()).then(data => {
@@ -197,25 +201,37 @@ function DrugsContent() {
       return;
     }
 
+    // Optimistic: check local cache → show instantly (no loading state)
+    const cached = searchCache.current.get(query.trim().toLowerCase());
+    if (cached) {
+      setSuggestions(cached.results.slice(0, 10));
+      setSearchTotal(cached.total);
+      setShowSuggestions(true);
+    }
+
+    // Fresh fetch in background
     const fetchFuzzySuggestions = async () => {
       const myReqId = ++reqIdRef.current;
       try {
-        setIsSearching(true);
         const { results, total } = await drugService.searchDrugs(query.trim());
         if (reqIdRef.current !== myReqId) return;
         if (searchQ && query.trim() === searchQ) return;
         if (activeSearch && query.trim() === activeSearch) return;
+        // Cache for instant show next time
+        searchCache.current.set(query.trim().toLowerCase(), { results, total });
+        if (searchCache.current.size > 50) {
+          const first = searchCache.current.keys().next().value;
+          if (first) searchCache.current.delete(first);
+        }
         setSuggestions(results.slice(0, 10));
         setSearchTotal(total);
         setShowSuggestions(true);
       } catch (error) {
         console.error("Failed to fetch fuzzy suggestions:", error);
-      } finally {
-        if (reqIdRef.current === myReqId) setIsSearching(false);
       }
     };
 
-    const timer = setTimeout(fetchFuzzySuggestions, 300);
+    const timer = setTimeout(fetchFuzzySuggestions, 100); // 100ms debounce instead of 300
     debounceRef.current = timer;
     return () => { clearTimeout(timer); debounceRef.current = null; };
   }, [query]);

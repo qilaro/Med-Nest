@@ -36,34 +36,11 @@ function GenericsContent() {
   const searchRef = useRef<HTMLFormElement>(null);
   const interactedRef = useRef(false);
   const savedScrollY = useRef(0);
+  const searchCache = useRef<Map<string, { name: string; slug: string; brandCount: number; medicineType: string | null; therapeuticClass: string | null }[]>>(new Map());
 
   const isFiltered = !!(activeSearch || searchQ || typeFilter || classFilter || ratingFilter || letterFilter);
 
-  // Sync state from URL
-  useEffect(() => {
-    setSelectedType(typeFilter);
-    setSelectedClass(classFilter);
-    setSelectedRating(ratingFilter);
-    setQuery(searchQ);
-    setCurrentPage(1);
-  }, [typeFilter, classFilter, ratingFilter, searchQ, letterFilter]);
-
-  // Close suggestions when clicking outside
-  useEffect(() => {
-    const handler = (e: MouseEvent | TouchEvent) => {
-      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
-        setShowSuggestions(false);
-      }
-    };
-    document.addEventListener('mousedown', handler);
-    document.addEventListener('touchstart', handler, { passive: true });
-    return () => {
-      document.removeEventListener('mousedown', handler);
-      document.removeEventListener('touchstart', handler);
-    };
-  }, []);
-
-  // Debounced suggestion fetch + reset results when query clears
+  // Debounced suggestion fetch with optimistic cache
   useEffect(() => {
     if (query.trim().length === 0) {
       if (activeSearch) setActiveSearch("");
@@ -79,15 +56,27 @@ function GenericsContent() {
       setShowSuggestions(false);
       return;
     }
+    // Optimistic: check local cache → show instantly
+    const cached = searchCache.current.get(query.trim().toLowerCase());
+    if (cached) {
+      setSuggestions(cached);
+      setShowSuggestions(cached.length > 0);
+    }
+    // Fresh fetch in background
     const timer = setTimeout(async () => {
       try {
         const res = await fetch(`/api/search/generics?q=${encodeURIComponent(query.trim())}`);
         if (!res.ok) return;
         const data = await res.json();
+        searchCache.current.set(query.trim().toLowerCase(), data);
+        if (searchCache.current.size > 50) {
+          const first = searchCache.current.keys().next().value;
+          if (first) searchCache.current.delete(first);
+        }
         setSuggestions(data);
         setShowSuggestions(data.length > 0);
       } catch {}
-    }, 300);
+    }, 100);
     return () => clearTimeout(timer);
   }, [query, activeSearch, searchQ]);
 
