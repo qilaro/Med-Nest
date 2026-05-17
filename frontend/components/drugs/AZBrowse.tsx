@@ -23,6 +23,7 @@ const BASE_PATHS: Record<string, string> = {
 function AZBrowseContent({ showTabs = true }: { showTabs?: boolean }) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
+  const letterBase = pathname === '/' ? '/drugs' : pathname;
   const currentLetter = searchParams.get("letter");
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [expandedLetter, setExpandedLetter] = useState<string | null>(null);
@@ -96,7 +97,7 @@ function AZBrowseContent({ showTabs = true }: { showTabs?: boolean }) {
               {"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map((second) => (
                 <Link
                   key={second}
-                  href={`${pathname}?letter=${expandedLetter}${second.toLowerCase()}`}
+                  href={`${letterBase}?letter=${expandedLetter}${second.toLowerCase()}`}
                   className={`flex items-center justify-center h-9 sm:h-12 rounded-lg font-semibold text-xs sm:text-sm border transition-all cursor-pointer ${
                     currentLetter === `${expandedLetter}${second.toLowerCase()}`
                       ? "bg-primary text-white border-primary shadow-md"
@@ -124,7 +125,7 @@ function AZBrowseContent({ showTabs = true }: { showTabs?: boolean }) {
             </button>
           ))}
           <Link
-            href={`${pathname}?letter=0-9`}
+            href={`${letterBase}?letter=0-9`}
             className={`flex items-center justify-center h-9 sm:h-12 rounded-lg font-semibold text-xs sm:text-sm border transition-all cursor-pointer ${
               currentLetter === "0-9"
                 ? "bg-primary text-white border-primary shadow-md"

@@ -84,8 +84,11 @@ function GenericsContent() {
   // Fetch generics data
   useEffect(() => {
     async function fetchData() {
-      if (firstLoad.current) setLoading(true);
+      const isFirst = firstLoad.current;
+      if (isFirst) setLoading(true);
       firstLoad.current = false;
+      if (!isFirst) setTotalResults(0);
+      const startTime = performance.now();
       try {
         const [genericsData, classesData] = await Promise.all([
           genericService.getGenerics({
@@ -108,7 +111,13 @@ function GenericsContent() {
         console.error("Failed to fetch generics:", error);
         setWarning("Failed to load generics. Please try again.");
       } finally {
-        setLoading(false);
+        const elapsed = performance.now() - startTime;
+        const minTime = 600;
+        if (elapsed < minTime) {
+          setTimeout(() => setLoading(false), minTime - elapsed);
+        } else {
+          setLoading(false);
+        }
       }
     }
     fetchData();
@@ -265,7 +274,7 @@ function GenericsContent() {
             <div className="flex items-center gap-1.5 mb-5 flex-wrap sm:flex-nowrap justify-center">
               {[
                 { value: selectedType, set: setSelectedType, param: "type", label: "Type", opts: [["allopathic","Pharma"],["herbal","Herbal"],["unani","Unani"],["homeopathic","Homeopathic"],["ayurvedic","Ayurvedic"]] },
-                { value: selectedClass, set: setSelectedClass, param: "class", label: "Class", opts: classes.map((c: any) => [c.name, c.name]) },
+                { value: selectedClass, set: setSelectedClass, param: "class", label: "Class", opts: classes.map((c: any) => [c.name, c.name.length > 24 ? c.name.slice(0, 23) + '…' : c.name]) },
               ].map((f: any) => {
                 const isActive = !!f.value;
                 return (

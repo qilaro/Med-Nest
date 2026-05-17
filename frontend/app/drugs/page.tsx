@@ -102,6 +102,8 @@ function DrugsContent() {
       const isFirst = firstLoad.current;
       if (isFirst) setLoading(true);
       firstLoad.current = false;
+      if (!isFirst) setTotalResults(0);
+      const startTime = performance.now();
       try {
         const [drugsData, classesData, companiesData, formsData] = await Promise.all([
           drugService.getDrugs({ 
@@ -124,9 +126,6 @@ function DrugsContent() {
         setTotalResults(drugsData.total);
         setCurrentPage(drugsData.page || 1);
         setTotalPages(drugsData.totalPages || 1);
-        
-        const uniqueGenerics: string[] = Array.from(new Set(drugsData.drugs.map((d: DrugSummary) => d.genericName))).filter((g): g is string => typeof g === 'string').sort();
-        setGenerics(uniqueGenerics);
         
         const uniqueForms: string[] = formsData.map((f: any) => f.name).filter(Boolean).sort();
         setDosageForms(uniqueForms);
@@ -172,12 +171,30 @@ function DrugsContent() {
         console.error("Failed to fetch drugs:", error);
         setWarning("Failed to load medicines. Please try again.");
       } finally {
-        setLoading(false);
+        const elapsed = performance.now() - startTime;
+        const minTime = 600; // Show skeletons for at least 600ms
+        if (elapsed < minTime) {
+          setTimeout(() => setLoading(false), minTime - elapsed);
+        } else {
+          setLoading(false);
+        }
       }
     }
 
     fetchData();
   }, [activeSearch, searchQ, currentPage, typeFilter, drugClassFilter, companyFilter, genericFilter, dosageFilter, ratingFilter, letterFilter]);
+
+  // Fetch generics progressively — show first 20 instantly, load rest in background
+  useEffect(() => {
+    drugService.getGenerics().then(all => {
+      if (all.length > 20) {
+        setGenerics(all.slice(0, 20));
+        setTimeout(() => setGenerics(all), 100);
+      } else {
+        setGenerics(all);
+      }
+    }).catch(() => {});
+  }, []);
 
   // Reset suggestions when URL has active search (e.g. from homepage navigation)
   useEffect(() => {
@@ -391,9 +408,9 @@ function DrugsContent() {
           <div className="flex items-center gap-1.5 mb-5 flex-wrap sm:flex-nowrap justify-center">
             {[
               { value: selectedType, set: setSelectedType, param: "type", label: "Type", opts: [["allopathic","Pharma"],["herbal","Herbal"],["unani","Unani"],["homeopathic","Homeopathic"],["ayurvedic","Ayurvedic"]] },
-              { value: selectedClass, set: setSelectedClass, param: "drug_class", label: "Class", opts: classes.map((c: any) => [c.name, c.name]) },
-              { value: selectedCompany, set: setSelectedCompany, param: "company", label: "Company", opts: companies.map((c: string) => [c, c]) },
-              { value: selectedGeneric, set: setSelectedGeneric, param: "generic", label: "Generic", opts: generics.map((g: string) => [g, g]) },
+              { value: selectedClass, set: setSelectedClass, param: "drug_class", label: "Class", opts: classes.map((c: any) => [c.name, c.name.length > 24 ? c.name.slice(0, 23) + '…' : c.name]) },
+              { value: selectedCompany, set: setSelectedCompany, param: "company", label: "Company", opts: companies.map((c: string) => [c, c.length > 24 ? c.slice(0, 23) + '…' : c]) },
+              { value: selectedGeneric, set: setSelectedGeneric, param: "generic", label: "Generic", opts: generics.map((g: string) => [g, g.length > 24 ? g.slice(0, 23) + '…' : g]) },
               { value: selectedDosageForm, set: setSelectedDosageForm, param: "dosage_form", label: "Form", opts: dosageForms.map((f: string) => [f, f]) },
             ].map((f: any) => {
               const isActive = !!f.value;
@@ -425,7 +442,7 @@ function DrugsContent() {
                     }`}
                   >
                     <option value="" hidden>{f.label}</option>
-                    {f.opts.map(([val, display]: string[]) => <option key={val} value={val}>{display}</option>)}
+                    {f.opts.map(([val, display]: string[]) => <option key={val} value={val} title={display}>{display}</option>)}
                   </select>
                   <svg className={`absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none transition-colors ${isActive ? 'text-white' : 'text-gray-500'}`} width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
                 </div>

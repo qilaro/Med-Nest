@@ -159,6 +159,14 @@ export const drugService = {
     }
   },
 
+  getGenerics: async (): Promise<string[]> => {
+    try {
+      return await apiFetch<string[]>("/drugs/generics");
+    } catch {
+      return [];
+    }
+  },
+
   /**
    * Get a single drug by its slug
    */
