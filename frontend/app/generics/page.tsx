@@ -30,7 +30,8 @@ function GenericsContent() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
-  const firstLoad = useRef(true);
+  const [animatedCount, setAnimatedCount] = useState(0);
+  const countAnimRef = useRef(0);
   const [warning, setWarning] = useState<string | null>(null);
   const [suggestions, setSuggestions] = useState<{ name: string; slug: string; brandCount: number }[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -38,6 +39,25 @@ function GenericsContent() {
   const interactedRef = useRef(false);
   const savedScrollY = useRef(0);
   const searchCache = useRef<Map<string, { name: string; slug: string; brandCount: number; medicineType: string | null; therapeuticClass: string | null }[]>>(new Map());
+  const firstLoad = useRef(true);
+
+  // Animate totalResults count — smooth spin-up on every filter change
+  useEffect(() => {
+    const from = countAnimRef.current;
+    const to = totalResults;
+    if (from === to) return;
+    const duration = 300;
+    const start = performance.now();
+    const raf = () => {
+      const elapsed = performance.now() - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const current = Math.round(from + (to - from) * progress);
+      setAnimatedCount(current);
+      if (progress < 1) requestAnimationFrame(raf);
+      else countAnimRef.current = to;
+    };
+    requestAnimationFrame(raf);
+  }, [totalResults]);
 
   const isFiltered = !!(activeSearch || searchQ || typeFilter || classFilter || ratingFilter || letterFilter);
 
@@ -87,8 +107,6 @@ function GenericsContent() {
       const isFirst = firstLoad.current;
       if (isFirst) setLoading(true);
       firstLoad.current = false;
-      if (!isFirst) setTotalResults(0);
-      const startTime = performance.now();
       try {
         const [genericsData, classesData] = await Promise.all([
           genericService.getGenerics({
@@ -111,13 +129,7 @@ function GenericsContent() {
         console.error("Failed to fetch generics:", error);
         setWarning("Failed to load generics. Please try again.");
       } finally {
-        const elapsed = performance.now() - startTime;
-        const minTime = 600;
-        if (elapsed < minTime) {
-          setTimeout(() => setLoading(false), minTime - elapsed);
-        } else {
-          setLoading(false);
-        }
+        setLoading(false);
       }
     }
     fetchData();
@@ -371,7 +383,7 @@ function GenericsContent() {
                         ...(letterFilter ? [letterFilter] : []),
                       ].filter(Boolean);
                       return allFilters.length > 0
-                        ? <>Showing <span className="text-teal-600">{totalResults}</span> results for <span className="text-teal-600">{allFilters.join(', ')}</span></>
+                        ? <>Showing <span className="text-teal-600">{animatedCount}</span> results for <span className="text-teal-600">{allFilters.join(', ')}</span></>
                         : <>Most Popular Generic Ingredients</>;
                     })()}
                   </h2>

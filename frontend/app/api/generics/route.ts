@@ -28,7 +28,7 @@ export async function GET(request: Request) {
           ROUND(AVG(average_rating)::numeric, 1)::text as avg_rating,
           MIN(price_unit)::text as min_price,
           MAX(price_unit)::text as max_price
-        FROM brands WHERE price_unit > 0 OR average_rating > 0
+        FROM brands
         GROUP BY generic_id
       )
       SELECT

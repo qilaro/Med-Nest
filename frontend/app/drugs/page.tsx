@@ -68,7 +68,27 @@ function DrugsContent() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isSearching, setIsSearching] = useState(false);
+  const [animatedCount, setAnimatedCount] = useState(0);
+  const countAnimRef = useRef(0);
   const firstLoad = useRef(true);
+
+  // Animate totalResults count — smooth spin-up on every filter change
+  useEffect(() => {
+    const from = countAnimRef.current;
+    const to = totalResults;
+    if (from === to) return;
+    const duration = 300;
+    const start = performance.now();
+    const raf = () => {
+      const elapsed = performance.now() - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const current = Math.round(from + (to - from) * progress);
+      setAnimatedCount(current);
+      if (progress < 1) requestAnimationFrame(raf);
+      else countAnimRef.current = to;
+    };
+    requestAnimationFrame(raf);
+  }, [totalResults]);
   const searchRef = useRef<HTMLFormElement>(null);
   const hasUrlQuery = useRef(!!searchQ);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
@@ -102,8 +122,6 @@ function DrugsContent() {
       const isFirst = firstLoad.current;
       if (isFirst) setLoading(true);
       firstLoad.current = false;
-      if (!isFirst) setTotalResults(0);
-      const startTime = performance.now();
       try {
         const [drugsData, classesData, companiesData, formsData] = await Promise.all([
           drugService.getDrugs({ 
@@ -171,13 +189,7 @@ function DrugsContent() {
         console.error("Failed to fetch drugs:", error);
         setWarning("Failed to load medicines. Please try again.");
       } finally {
-        const elapsed = performance.now() - startTime;
-        const minTime = 600; // Show skeletons for at least 600ms
-        if (elapsed < minTime) {
-          setTimeout(() => setLoading(false), minTime - elapsed);
-        } else {
-          setLoading(false);
-        }
+        setLoading(false);
       }
     }
 
@@ -531,7 +543,7 @@ function DrugsContent() {
                         ...(letterFilter ? [letterFilter] : []),
                       ].filter(Boolean);
                       return allFilters.length > 0
-                        ? <>Showing <span className="text-teal-600">{totalResults}</span> results for <span className="text-teal-600">{allFilters.join(', ')}</span></>
+                        ? <>Showing <span className="text-teal-600">{animatedCount}</span> results for <span className="text-teal-600">{allFilters.join(', ')}</span></>
                         : <>Popular Drug Searches</>;
                     })()}
                   </h2>
