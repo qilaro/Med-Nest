@@ -363,7 +363,11 @@ function GenericsContent() {
               </div>
             ) : generics.length === 0 ? (
               <div className="text-center py-16">
-                <p className="text-gray-400 text-lg font-semibold">No generics found</p>
+                <p className="text-gray-400 text-lg font-semibold">
+                  No generics found{[typeFilter, classFilter, ...(selectedRating ? [`${selectedRating}★`] : []), ...(activeSearch || searchQ ? [`"${activeSearch || searchQ}"`] : []), ...(letterFilter ? [letterFilter] : [])].filter(Boolean).length > 0 && (
+                    <> for <span className="text-teal-600">{[typeFilter, classFilter, ...(selectedRating ? [`${selectedRating}★`] : []), ...(activeSearch || searchQ ? [`"${activeSearch || searchQ}"`] : []), ...(letterFilter ? [letterFilter] : [])].filter(Boolean).join(', ')}</span></>
+                  )}
+                </p>
                 <p className="text-gray-400 text-sm mt-1">Try adjusting your filters or search term</p>
                 {isFiltered && (
                   <button onClick={clearFilters} className="mt-4 px-4 py-2 text-sm font-bold text-teal-600 bg-teal-50 rounded-full hover:bg-teal-100 transition-colors cursor-pointer">Clear all filters</button>
