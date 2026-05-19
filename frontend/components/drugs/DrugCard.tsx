@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { DrugSummary } from "../../types/drug";
 import { Card, CardContent } from "../ui/card";

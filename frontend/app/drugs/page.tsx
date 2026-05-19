@@ -2,13 +2,12 @@
 
 import { useState, useEffect, Suspense, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Loader2, AlertCircle, Star } from "lucide-react";
+import { Loader2, AlertCircle } from "lucide-react";
 import { drugService } from "@/lib/services/drugService";
 import { DrugClass, DrugSummary } from "@/types/drug";
 import DrugCard from "@/components/drugs/DrugCard";
 import AZBrowse from "@/components/drugs/AZBrowse";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { SearchSuggestions } from "@/components/drugs/SearchSuggestions";
 
 /**

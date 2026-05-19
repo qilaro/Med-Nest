@@ -4,7 +4,6 @@ import {
   DrugAZResponse, 
   DrugClass 
 } from "../../types/drug";
-import Fuse from "fuse.js";
 import drugsData from "@/public/data/drugs.json";
 
 // Add local interface for list response until types/drug.ts is updated
@@ -218,6 +217,7 @@ export const drugService = {
     try {
       return await apiFetch<{ results: any[]; total: number }>(`/search?q=${encodeURIComponent(query)}`);
     } catch (error) {
+      const Fuse = (await import("fuse.js")).default;
       const fuse = new Fuse(drugsData.drugs, {
         keys: [
           { name: "brandName", weight: 2 },
