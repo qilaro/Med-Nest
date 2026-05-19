@@ -95,29 +95,28 @@ export default async function DrugDetailPage({ params }: PageProps) {
 
               {/* Pricing — directly below company/pills */}
               {unitPrice > 0 && (
-                <div className="mt-2 overflow-x-auto">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="inline-flex items-center gap-2 sm:gap-3 bg-teal-50 border border-teal-200 rounded-lg px-2 sm:px-3 py-1.5 shrink-0">
-                      <div className="text-center min-w-0">
-                        <div className="text-[7px] sm:text-[8px] font-bold text-gray-500 uppercase tracking-widest">Unit</div>
-                        <div className="text-[13px] sm:text-[17px] font-black text-gray-900 leading-none truncate">৳{unitPrice.toFixed(2)}</div>
-                      </div>
-                      <div className="w-px h-6 sm:h-7 bg-teal-200 shrink-0" />
-                      <div className="text-center min-w-0">
-                        <div className="text-[7px] sm:text-[8px] font-bold text-gray-500 uppercase tracking-widest">Strip (10)</div>
-                        <div className="text-[13px] sm:text-[17px] font-black text-teal-700 leading-none truncate">৳{(unitPrice * 10).toFixed(2)}</div>
-                      </div>
-                      <div className="w-px h-6 sm:h-7 bg-teal-200 shrink-0" />
-                      <div className="text-center min-w-0">
-                        <div className="text-[7px] sm:text-[8px] font-bold text-gray-500 uppercase tracking-widest">Box (100)</div>
-                        <div className="text-[11px] sm:text-[14px] font-bold text-gray-500 leading-none truncate">৳{(unitPrice * 100).toFixed(2)}</div>
-                      </div>
+                <div className="mt-2 flex items-center gap-2 sm:gap-3">
+                  <div className="inline-flex items-center gap-2 sm:gap-3 bg-teal-50 border border-teal-200 rounded-lg px-2 sm:px-3 py-1.5">
+                    <div className="text-center">
+                      <div className="text-[7px] sm:text-[8px] font-bold text-gray-500 uppercase tracking-widest">Unit</div>
+                      <div className="text-[13px] sm:text-[17px] font-black text-gray-900 leading-none">৳{unitPrice.toFixed(2)}</div>
                     </div>
-                    <PrintButton />
-                    {drug.darNumber && (
-                      <span className="hidden sm:inline-block ml-3 text-[11px] text-gray-400 font-medium">DAR: {drug.darNumber}</span>
+                    <div className="w-px h-6 sm:h-7 bg-teal-200" />
+                    <div className="text-center">
+                      <div className="text-[7px] sm:text-[8px] font-bold text-gray-500 uppercase tracking-widest">Strip (10)</div>
+                      <div className="text-[13px] sm:text-[17px] font-black text-teal-700 leading-none">৳{(unitPrice * 10).toFixed(2)}</div>
+                    </div>
+                    {unitPrice * 100 < 10000 && (
+                      <>
+                        <div className="w-px h-6 sm:h-7 bg-teal-200" />
+                        <div className="text-center">
+                          <div className="text-[7px] sm:text-[8px] font-bold text-gray-500 uppercase tracking-widest">Box (100)</div>
+                          <div className="text-[11px] sm:text-[14px] font-bold text-gray-500 leading-none">৳{(unitPrice * 100).toFixed(2)}</div>
+                        </div>
+                      </>
                     )}
                   </div>
+                  <PrintButton />
                 </div>
               )}
             </div>
