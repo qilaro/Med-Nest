@@ -8,15 +8,13 @@ const Footer = () => {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-10">
           {/* Brand */}
           <div className="col-span-2 md:col-span-2">
-            <Link className="inline-flex items-center gap-2.5 mb-4" href="/">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center shadow-md">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/>
-                </svg>
+            <Link className="flex items-center gap-2 mb-4" href="/">
+              <div className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center bg-white border border-gray-100">
+                <img src="/logo.svg" alt="Med-Nest" className="w-full h-full object-contain" />
               </div>
-              <div>
+              <div className="leading-tight">
                 <span className="text-xl font-bold text-gray-900">Med-Nest</span>
-                <p className="text-[11px] text-gray-400 -mt-0.5">Learn more. Live better.</p>
+                <div className="text-[11px] text-gray-400">Learn more. Live better.</div>
               </div>
             </Link>
             <p className="text-[13px] text-gray-500 leading-relaxed max-w-xs">
