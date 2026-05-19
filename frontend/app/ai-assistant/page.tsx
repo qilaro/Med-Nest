@@ -30,21 +30,21 @@ export default function AiAssistantPage() {
 
           {/* Search bar — top, like any AI model */}
           <div className="mb-10">
-            <div className="flex items-stretch bg-white rounded-full border-2 border-purple-200 focus-within:border-purple-400 focus-within:shadow-[0_0_0_4px_rgba(147,51,234,0.15)] transition-all duration-200 overflow-hidden max-w-2xl mx-auto">
+            <div className="flex items-stretch bg-white rounded-full border-2 border-purple-200 focus-within:border-purple-400 focus-within:shadow-[0_0_0_4px_rgba(147,51,234,0.15)] focus-within:ring-2 focus-within:ring-purple-200 transition-all duration-200 overflow-hidden max-w-xl sm:max-w-2xl mx-auto">
               <div className="relative flex items-center flex-1 min-w-0">
-                <svg className="absolute left-5 h-5 w-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                <svg className="absolute left-3 sm:left-5 h-4 w-4 sm:h-5 sm:w-5 text-purple-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                 <input
                   type="text"
-                  placeholder="Ask anything about your medication..."
-                  className="w-full bg-transparent border-0 pl-12 pr-4 py-4 text-[16px] outline-none text-gray-800 placeholder:text-gray-500"
+                  placeholder="Ask about your medication..."
+                  className="w-full bg-transparent border-0 pl-8 sm:pl-12 pr-2 sm:pr-4 py-3.5 sm:py-4 text-[14px] sm:text-[16px] outline-none text-gray-800 placeholder:text-gray-500 placeholder:truncate"
                 />
               </div>
-              <button type="button" className="shrink-0 px-7 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold text-[14px] transition-all cursor-pointer flex items-center gap-2">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-                Ask
+              <button type="button" className="shrink-0 px-4 sm:px-7 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold text-[13px] sm:text-[14px] transition-all cursor-pointer flex items-center gap-1 sm:gap-2">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                <span className="hidden sm:inline">Ask</span>
               </button>
             </div>
-            <p className="text-[13px] text-gray-700 font-medium text-center mt-3">Try: &ldquo;What is Napa used for?&rdquo; or &ldquo;Side effects of Metformin&rdquo;</p>
+            <p className="text-[12px] sm:text-[13px] text-gray-600 font-medium text-center mt-3">Try: &ldquo;What is Napa used for?&rdquo; or &ldquo;Metformin side effects&rdquo;</p>
           </div>
 
           {/* Status banner */}
