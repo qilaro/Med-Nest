@@ -179,16 +179,15 @@ export function FeaturesCarousel() {
           {/* Viewport - flex: 1 */}
           <div className="flex-1 min-w-0 overflow-hidden" ref={emblaRef}>
             {/* Track - flex gap: 2rem */}
-            <div className="flex gap-4 sm:gap-8">
+            <div className="flex gap-5 sm:gap-8">
               {features.map((feature, index) => (
                 <div 
                   key={index} 
-                  className="min-w-0 shrink-0 grow-0 basis-full md:basis-[calc((100%-2rem)/2)] lg:basis-[calc((100%-4rem)/3)]"
+                  className="min-w-0 shrink-0 grow-0 basis-full md:basis-[calc((100%-2.5rem)/2)] lg:basis-[calc((100%-5rem)/3)]"
                 >
                   <Link 
                     href={feature.href}
-                    className="block bg-white border border-gray-200 transition-all duration-150 hover:border-primary group h-full rounded-xl sm:rounded-2xl p-4 sm:p-10 min-h-[12rem] sm:min-h-[16rem] flex flex-col"
-                    style={{ boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)' }}
+                    className="block bg-white border border-gray-200 hover:border-teal-300 hover:shadow-md transition-all duration-200 group h-full rounded-xl sm:rounded-2xl p-4 sm:p-8 min-h-[12rem] sm:min-h-[16rem] flex flex-col"
                   >
                     {/* Truth Design: Wide Pill Bar with Expansive Shadow */}
                     <div className="flex justify-center mb-4 sm:mb-6 shrink-0">
