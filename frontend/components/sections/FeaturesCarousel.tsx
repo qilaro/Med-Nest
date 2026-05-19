@@ -8,8 +8,8 @@ import { cn } from "@/lib/utils"
 const features = [
   {
     title: "Drug Directory",
-    description: "Browse 20,000+ prescription & OTC drugs with complete medical information.",
-    href: "#",
+    description: "Browse 71,000+ prescription & OTC drugs with complete medical information available in Bangladesh.",
+    href: "/drugs",
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
         <path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"></path>
@@ -19,8 +19,8 @@ const features = [
   },
   {
     title: "Interaction Checker",
-    description: "Check for dangerous drug-drug and drug-food interactions instantly.",
-    href: "#",
+    description: "Check for dangerous drug-drug and drug-food interactions instantly. Review your medications for safety.",
+    href: "/interactions",
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
         <path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"></path>
@@ -29,8 +29,8 @@ const features = [
   },
   {
     title: "Drug Comparison",
-    description: "Compare up to 4 medications side-by-side for informed decisions.",
-    href: "#",
+    description: "Compare medications side-by-side — pricing, ratings, side effects, interactions, and more.",
+    href: "/compare",
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
         <circle cx="18" cy="18" r="3"></circle>
@@ -41,9 +41,9 @@ const features = [
     ),
   },
   {
-    title: "AI Chat",
-    description: "Get quick medication guidance from Med-Nest AI any time you need support.",
-    href: "#",
+    title: "AI Assistant",
+    description: "Get smart medication guidance from Med-Nest AI. Ask anything about your medicines in Bengali or English.",
+    href: "/ai-assistant",
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
         <path d="M12 8V4H8"></path>
@@ -57,8 +57,8 @@ const features = [
   },
   {
     title: "Health News",
-    description: "Stay updated with reliable medicine and wellness stories from experts.",
-    href: "#",
+    description: "Stay updated with the latest medical breakthroughs, drug approvals, and health news from trusted sources.",
+    href: "/news",
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
         <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path>
@@ -66,6 +66,52 @@ const features = [
         <path d="M10 9H8"></path>
         <path d="M16 13H8"></path>
         <path d="M16 17H8"></path>
+      </svg>
+    ),
+  },
+  {
+    title: "Conditions",
+    description: "Browse treatment options for 60+ health conditions. Find medications by disease or symptom.",
+    href: "/indications",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+        <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2 M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v0a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2zm0 0"></path>
+      </svg>
+    ),
+  },
+  {
+    title: "Companies",
+    description: "Explore 298+ pharmaceutical companies in Bangladesh with DGDA license information.",
+    href: "/companies",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+        <circle cx="9" cy="7" r="4"></circle>
+        <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+      </svg>
+    ),
+  },
+  {
+    title: "Generic Ingredients",
+    description: "Browse 4,900+ generic drug ingredients and their brand name equivalents available in Bangladesh.",
+    href: "/generics",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+        <polyline points="21 15 16 10 5 21"></polyline>
+      </svg>
+    ),
+  },
+  {
+    title: "Dosage Forms",
+    description: "Browse medications by dosage form — tablets, capsules, syrups, injections, creams, and more.",
+    href: "/dosage-forms",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+        <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
       </svg>
     ),
   },
