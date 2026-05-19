@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { DrugSummary } from "../../types/drug";
 import { Card, CardContent } from "../ui/card";
 import { getDosageIcon } from "@/components/dosage-icons";
@@ -32,8 +33,12 @@ const getDosageLabel = (form: string) => {
 };
 
 export default function DrugCard({ drug }: DrugCardProps) {
+  const router = useRouter();
   return (
-    <Link href={`/drugs/${drug.slug}`} className="block group" prefetch={false}>
+    <div
+      onClick={() => router.push(`/drugs/${drug.slug}`)}
+      className="block group cursor-pointer"
+    >
       <Card className="relative h-full transition-all duration-300 hover:shadow-[0_12px_35px_-8px_rgba(0,0,0,0.12),0_4px_10px_-4px_rgba(0,150,136,0.15)] overflow-hidden bg-white border border-gray-200 hover:border-teal-300 hover:-translate-y-0.5 before:absolute before:inset-y-2 before:left-0 before:w-0.5 before:rounded-r before:bg-teal-500 before:opacity-0 before:transition-all before:duration-300 group-hover:before:opacity-100 group-hover:before:inset-y-3">
         <CardContent className="p-4">
           {/* Top: Icon + Brand + Rating */}
@@ -69,9 +74,21 @@ export default function DrugCard({ drug }: DrugCardProps) {
                 </p>
               )}
               {drug.company && (
-                <p className="text-[11px] text-gray-500 truncate font-medium mt-0.5" title={drug.company}>
+                <span
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    router.push(`/companies/${drug.company!.toLowerCase().replace(/\s+/g, '-')}`);
+                  }}
+                  className="text-[11px] text-gray-500 hover:text-teal-600 truncate font-medium mt-0.5 inline-flex items-center gap-1 transition-colors cursor-pointer hover:underline underline-offset-2"
+                  title={`View ${drug.company} page`}
+                >
                   {drug.company}
-                </p>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-0 -ml-1 group-hover:opacity-100 transition-all shrink-0">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                    <polyline points="15 3 21 3 21 9"/>
+                    <line x1="10" y1="14" x2="21" y2="3"/>
+                  </svg>
+                </span>
               )}
             </div>
           </div>
@@ -110,6 +127,6 @@ export default function DrugCard({ drug }: DrugCardProps) {
           </div>
         </CardContent>
       </Card>
-    </Link>
+    </div>
   );
 }

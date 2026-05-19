@@ -296,15 +296,6 @@ function DrugsContent() {
     fetch('/api/search/log', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: query.trim() }) }).catch(() => {});
   };
 
-  const handleSuggestionSelect = (drug: DrugSummary) => {
-    fetch('/api/search/log', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: drug.brandName }) }).catch(() => {});
-    setQuery(drug.brandName);
-    setShowSuggestions(false);
-    if (drug.type === 'generic') router.push(`/generics/${drug.slug}`);
-    else if (drug.type === 'class') router.push(`/class?name=${encodeURIComponent(drug.brandName)}`);
-    else router.push(`/drugs/${drug.slug}`);
-  };
-
   const goToPage = (page: number) => {
     setCurrentPage(page);
   };
@@ -407,7 +398,6 @@ function DrugsContent() {
             <SearchSuggestions 
               suggestions={suggestions} 
               isVisible={showSuggestions} 
-              onSelect={handleSuggestionSelect} 
               isFeatured={query.trim().length === 0}
               query={query}
               isLoading={isSearching}

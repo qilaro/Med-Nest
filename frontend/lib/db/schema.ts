@@ -81,13 +81,47 @@ export const companies = pgTable('companies', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: varchar('name', { length: 255 }).notNull().unique(),
   slug: varchar('slug', { length: 255 }).unique(),
+
+  // About & Identity
+  about: text('about'),
+  mission: text('mission'),
+  vision: text('vision'),
+  foundedYear: integer('founded_year'),
+  ceo: varchar('ceo', { length: 255 }),
+  employees: integer('employees'),
+  corporateType: varchar('corporate_type', { length: 50 }).default('Local'),
+
+  // Contact
   address: text('address'),
+  city: varchar('city', { length: 100 }),
+  postalCode: varchar('postal_code', { length: 20 }),
+  country: varchar('country', { length: 50 }).default('Bangladesh'),
+  phone: varchar('phone', { length: 100 }),
+  email: varchar('email', { length: 255 }),
+  website: varchar('website', { length: 500 }),
+
+  // Branding
+  logoUrl: text('logo_url'),
+
+  // Business
+  marketShare: varchar('market_share', { length: 100 }),
+  revenue: varchar('revenue', { length: 100 }),
   licenseNoBiological: varchar('license_no_biological', { length: 100 }),
   licenseNoNonBiological: varchar('license_no_non_biological', { length: 100 }),
   validityDate: timestamp('validity_date'),
   dgdaStatus: varchar('dgda_status', { length: 50 }),
-  country: varchar('country', { length: 50 }).default('Bangladesh'),
-  corporateType: varchar('corporate_type', { length: 50 }).default('Local'),
+
+  // Social & Media
+  socialLinks: jsonb('social_links').default('{}'),
+
+  // Operational
+  facilities: jsonb('facilities').default('[]'),
+  certifications: jsonb('certifications').default('[]'),
+  exportMarkets: jsonb('export_markets').default('[]'),
+
+  // Extensibility
+  extra: jsonb('extra').default('{}'),
+
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });

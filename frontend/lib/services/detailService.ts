@@ -30,6 +30,8 @@ export interface AlternateBrandResult {
   slug: string;
   brandName: string;
   company: string | null;
+  strength: string | null;
+  dosageForm: string | null;
   averageRating: number;
   reviewCount: number;
 }
@@ -39,11 +41,13 @@ export interface DrugDetailResult {
   slug: string;
   brandName: string;
   genericName: string;
+  pronunciation: string | null;
   dosageForm: string;
   strength: string;
   drugClass: string | null;
   company: string | null;
   companyName: string | null;
+  darNumber: string | null;
   price: string;
   priceStrip: string | null;
   priceBox: string | null;
@@ -86,6 +90,8 @@ export async function getDrugDetail(slug: string): Promise<DrugDetailResult | nu
         b.strength,
         b.therapeutic_class as therapeutic_class,
         b.company_name as company_name,
+        b.dar_number as dar_number,
+        g.pronunciation as pronunciation,
         b.price_unit,
         b.price_strip,
         b.price_box,
@@ -131,6 +137,8 @@ export async function getDrugDetail(slug: string): Promise<DrugDetailResult | nu
         drugClass: d.therapeutic_class ? String(d.therapeutic_class) : null,
         company: d.company_name ? String(d.company_name) : null,
         companyName: d.company_name ? String(d.company_name) : null,
+        darNumber: d.dar_number ? String(d.dar_number) : null,
+        pronunciation: d.pronunciation ? String(d.pronunciation) : null,
         price: d.price_unit ? `৳ ${d.price_unit}` : "N/A",
         priceStrip: d.price_strip ? String(d.price_strip) : null,
         priceBox: d.price_box ? String(d.price_box) : null,
@@ -169,48 +177,46 @@ export async function getDrugDetail(slug: string): Promise<DrugDetailResult | nu
   }
 }
 
-export async function getAlternateBrands(genericName: string, currentSlug: string): Promise<AlternateBrandResult[]> {
+export async function getAlternateBrands(genericName: string, currentSlug: string, dosageForm?: string, companyName?: string, excludeCompany?: string): Promise<AlternateBrandResult[]> {
   try {
-    const result = await db.execute(sql`
-      SELECT b.slug, b.brand_name, b.company_name, b.average_rating, b.review_count
-      FROM brands b
-      WHERE b.generic_name = ${genericName}
-        AND b.slug != ${currentSlug}
-      ORDER BY b.average_rating DESC NULLS LAST
-      LIMIT 10
-    `);
+    const conditions = [sql`b.generic_name = ${genericName}`, sql`b.slug != ${currentSlug}`];
+    if (dosageForm) conditions.push(sql`b.dosage_form ILIKE ${dosageForm}`);
+
+    let query;
+    if (companyName) {
+      // Alternate Versions: same company, same generic, same dosage form — different strengths
+      conditions.push(sql`b.company_name ILIKE ${companyName}`);
+      query = sql`
+        SELECT b.slug, b.brand_name, b.company_name, b.strength, b.dosage_form, b.average_rating, b.review_count
+        FROM brands b
+        WHERE ${sql.join(conditions, sql` AND `)}
+        ORDER BY b.strength ASC
+        LIMIT 50
+      `;
+    } else {
+      // Alternate Brands: different companies, same generic, same dosage form
+      if (excludeCompany) conditions.push(sql`b.company_name NOT ILIKE ${excludeCompany}`);
+      query = sql`
+        SELECT b.slug, b.brand_name, b.company_name, b.strength, b.dosage_form, b.average_rating, b.review_count
+        FROM brands b
+        WHERE ${sql.join(conditions, sql` AND `)}
+        ORDER BY b.average_rating DESC NULLS LAST
+        LIMIT 50
+      `;
+    }
+
+    const result = await db.execute(query);
     return (result.rows as any[]).map(d => ({
       slug: String(d.slug || ''),
       brandName: String(d.brand_name || ''),
       company: d.company_name ? String(d.company_name) : null,
+      strength: d.strength ? String(d.strength) : null,
+      dosageForm: d.dosage_form ? String(d.dosage_form) : null,
       averageRating: Number(d.average_rating) || 0,
       reviewCount: Number(d.review_count) || 0,
     }));
   } catch (e) {
     console.error(`Error loading alternate brands for ${genericName}:`, e);
-    return [];
-  }
-}
-
-export async function getVariations(brandName: string, currentSlug: string): Promise<AlternateBrandResult[]> {
-  try {
-    const result = await db.execute(sql`
-      SELECT b.slug, b.brand_name, b.company_name, b.average_rating, b.review_count,
-             b.strength, b.dosage_form
-      FROM brands b
-      WHERE b.brand_name = ${brandName}
-        AND b.slug != ${currentSlug}
-      LIMIT 10
-    `);
-    return (result.rows as any[]).map(d => ({
-      slug: String(d.slug || ''),
-      brandName: String(d.strength || ''),
-      company: d.dosage_form ? String(d.dosage_form) : null,
-      averageRating: Number(d.average_rating) || 0,
-      reviewCount: Number(d.review_count) || 0,
-    }));
-  } catch (e) {
-    console.error(`Error loading variations for ${brandName}:`, e);
     return [];
   }
 }

@@ -41,6 +41,21 @@ function GenericsContent() {
   const searchCache = useRef<Map<string, { name: string; slug: string; brandCount: number; medicineType: string | null; therapeuticClass: string | null }[]>>(new Map());
   const firstLoad = useRef(true);
 
+  // Close suggestions on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent | TouchEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    document.addEventListener('touchstart', handler, { passive: true });
+    return () => {
+      document.removeEventListener('mousedown', handler);
+      document.removeEventListener('touchstart', handler);
+    };
+  }, []);
+
   // Animate totalResults count — smooth spin-up on every filter change
   useEffect(() => {
     const from = countAnimRef.current;
@@ -353,7 +368,7 @@ function GenericsContent() {
 
             {/* A-Z Browse */}
             <div className="mb-6">
-              <AZBrowse showTabs={false} />
+              <AZBrowse showTabs={false} simple />
             </div>
 
             {/* Results */}

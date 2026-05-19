@@ -118,6 +118,27 @@ export const drugService = {
   },
 
   /**
+   * Get classes with brand count, generic count, and rating
+   */
+  getClasses: async (params?: { page?: number; limit?: number; search?: string; drug_class?: string; dosage_form?: string; medicine_type?: string; letter?: string }) => {
+    const q = new URLSearchParams();
+    if (params?.page) q.set("page", String(params.page));
+    if (params?.limit) q.set("limit", String(params.limit));
+    if (params?.search) q.set("search", params.search);
+    if (params?.drug_class) q.set("drug_class", params.drug_class);
+    if (params?.dosage_form) q.set("dosage_form", params.dosage_form);
+    if (params?.medicine_type) q.set("medicine_type", params.medicine_type);
+    if (params?.letter) q.set("letter", params.letter);
+
+    try {
+      return await apiFetch<{ classes: { name: string; brandCount: number; genericCount: number; avgRating: number }[]; total: number; page: number; limit: number; totalPages: number }>(`/classes?${q}`);
+    } catch (error) {
+      console.error("Failed to fetch classes:", error);
+      return { classes: [], total: 0, page: 1, limit: 30, totalPages: 0 };
+    }
+  },
+
+  /**
    * Get all drug classes
    */
   getDrugClasses: async (): Promise<DrugClass[]> => {
@@ -133,9 +154,11 @@ export const drugService = {
   /**
    * Get all dosage forms with counts
    */
-  getDosageForms: async (): Promise<{ name: string; count: number }[]> => {
+  getDosageForms: async (params?: { medicine_type?: string }): Promise<{ name: string; count: number }[]> => {
+    const q = new URLSearchParams();
+    if (params?.medicine_type) q.set("medicine_type", params.medicine_type);
     try {
-      return await apiFetch<{ name: string; count: number }[]>("/dosage-forms");
+      return await apiFetch<{ name: string; count: number }[]>(`/dosage-forms?${q}`);
     } catch (error) {
       const counts: Record<string, number> = {};
       drugsData.drugs.forEach((d: any) => {

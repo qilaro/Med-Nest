@@ -26,7 +26,7 @@ export function AiAssistantCTA() {
           Our AI assistant, powered by Google Gemini, can help answer your medication questions 24/7.
         </p>
         <Link 
-          href="#" 
+          href="/ai-assistant" 
           className="inline-flex items-center gap-2 bg-white font-semibold px-8 py-4 rounded-xl transition-all duration-150 hover:opacity-90 hover:scale-105 text-lg shadow-sm border border-white/50" 
           style={{ color: 'var(--primary)' }}
         >

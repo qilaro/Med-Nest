@@ -7,12 +7,12 @@ import { getDosageIcon } from "@/components/dosage-icons";
 interface SearchSuggestionsProps {
   suggestions: DrugSummary[];
   isVisible: boolean;
-  onSelect: (drug: DrugSummary) => void;
   isFeatured?: boolean;
   query?: string;
   isLoading?: boolean;
   total?: number;
   onViewAll?: () => void;
+  onSelect?: (drug: DrugSummary) => void;
 }
 
 const TYPE_COLORS: Record<string, string> = {
@@ -50,15 +50,22 @@ const HighlightText = ({ text, query }: { text: string; query?: string }) => {
   );
 };
 
+function getSuggestionHref(drug: DrugSummary): string {
+  const slug = drug.slug || drug.brandName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  if (drug.type === 'generic') return `/generics/${slug}`;
+  if (drug.type === 'class') return `/class?name=${encodeURIComponent(drug.brandName)}`;
+  return `/drugs/${slug}`;
+}
+
 export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
   suggestions,
   isVisible,
-  onSelect,
   isFeatured = false,
   query = "",
   isLoading = false,
   total,
   onViewAll,
+  onSelect,
 }) => {
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const listRef = useRef<HTMLDivElement>(null);
@@ -112,7 +119,8 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
         const idx = highlightedRef.current;
         if (keyboardNavRef.current && idx >= 0 && suggestions[idx]) {
           e.preventDefault();
-          onSelect(suggestions[idx]);
+          if (onSelect) onSelect(suggestions[idx]);
+          else window.location.href = getSuggestionHref(suggestions[idx]);
         }
       }
     };
@@ -152,14 +160,19 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
       )}
 
       {/* Suggestions */}
-      {suggestions.map((drug, index) => (
-        <button
-          type="button"
+      {suggestions.map((drug, index) => {
+        const href = getSuggestionHref(drug);
+        return (
+        <a
+          href={onSelect ? "#" : href}
           key={`${drug.type}-${drug.slug || drug.brandName}-${index}`}
           data-index={index}
-          onClick={() => onSelect(drug)}
           onMouseEnter={() => setHighlightedIndex(index)}
-          className={`w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-5 py-2 sm:py-3 transition-colors text-left cursor-pointer border-b border-gray-100 last:border-0 ${
+          onMouseDown={(e) => {
+            if (onSelect) { e.preventDefault(); onSelect(drug); }
+            else window.location.href = href;
+          }}
+          className={`w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-5 py-2 sm:py-3 transition-colors text-left border-b border-gray-100 last:border-0 cursor-pointer no-underline ${
             highlightedIndex === index ? 'bg-teal-200 shadow-sm' : 'hover:bg-teal-100'
           }`}
         >
@@ -198,8 +211,9 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
               ))}
             </div>
           </div>
-        </button>
-      ))}
+        </a>
+      );
+      })}
 
       {total !== undefined && total > suggestions.length && (
         <div className="px-4 py-2.5 bg-gray-50 border-t border-gray-100">

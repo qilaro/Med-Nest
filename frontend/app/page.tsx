@@ -122,15 +122,6 @@ export default function Home() {
     }
   };
 
-  const handleSuggestionSelect = (drug: DrugSummary) => {
-    fetch('/api/search/log', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: drug.brandName }) }).catch(() => {});
-    setQuery(drug.brandName);
-    setShowSuggestions(false);
-    if (drug.type === 'generic') router.push(`/generics/${drug.slug}`);
-    else if (drug.type === 'class') router.push(`/class?name=${encodeURIComponent(drug.brandName)}`);
-    else router.push(`/drugs/${drug.slug}`);
-  };
-
   const handleFocus = async () => {
     interactedRef.current = true;
     if (window.innerWidth < 1024) {
@@ -199,7 +190,7 @@ export default function Home() {
                         }
                       }}
                       onFocus={handleFocus}
-                      onBlur={() => { if (!query.trim()) setShowSuggestions(false); }}
+                      onBlur={(e) => { if (!query.trim() && !searchRef.current?.contains(e.relatedTarget as Node)) setShowSuggestions(false); }}
                       placeholder="Search your drugs here" 
                       className="pl-12 h-12 sm:h-14 text-sm sm:text-base border-none shadow-none focus-visible:ring-0 rounded-full bg-transparent" 
                     />
@@ -212,7 +203,6 @@ export default function Home() {
                 <SearchSuggestions 
                   suggestions={suggestions} 
                   isVisible={showSuggestions} 
-                  onSelect={handleSuggestionSelect} 
                   isFeatured={query.trim().length === 0}
                   query={query}
                   isLoading={isSearching}

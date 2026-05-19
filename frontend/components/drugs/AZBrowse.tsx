@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSearchParams, usePathname } from "next/navigation";
 
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-const TABS = ["Browse Trade", "Browse Generics", "Browse Class", "Dosage Form"];
+const TABS = ["Browse Trade", "Browse Generics", "Browse Class", "Companies"];
 const TYPE_ITEMS = [
   { name: "Pharmaceutical", type: "allopathic" },
   { name: "Herbal", type: "herbal" },
@@ -17,10 +17,10 @@ const BASE_PATHS: Record<string, string> = {
   "Browse Trade": "/drugs",
   "Browse Generics": "/generics",
   "Browse Class": "/class",
-  "Dosage Form": "/dosage-forms",
+  "Companies": "/companies",
 };
 
-function AZBrowseContent({ showTabs = true }: { showTabs?: boolean }) {
+function AZBrowseContent({ showTabs = true, simple }: { showTabs?: boolean; simple?: boolean }) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const letterBase = pathname === '/' ? '/drugs' : pathname;
@@ -50,24 +50,24 @@ function AZBrowseContent({ showTabs = true }: { showTabs?: boolean }) {
             <div key={tab} className="relative">
               <button
                 onClick={() => setOpenDropdown(openDropdown === tab ? null : tab)}
-                className={`w-full sm:w-auto px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg font-medium text-xs sm:text-sm whitespace-nowrap transition-colors cursor-pointer shadow-lg inline-flex items-center gap-1 justify-center ${
+                className={`relative w-full sm:w-auto px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg font-semibold text-xs sm:text-sm whitespace-nowrap transition-all duration-200 cursor-pointer shadow-md inline-flex items-center gap-1.5 justify-center overflow-hidden ${
                   openDropdown === tab
-                    ? "bg-[#0D261E] text-white"
-                    : "bg-white text-blue-600 hover:bg-gray-100 border border-sky-200"
+                    ? "bg-[#0D261E] text-white shadow-lg"
+                    : "bg-white text-teal-700 border-2 border-teal-200 hover:border-teal-400 hover:shadow-[0_4px_14px_-4px_rgba(13,38,30,0.2)] hover:-translate-y-0.5 before:absolute before:inset-y-1.5 before:left-0 before:w-0.5 before:rounded-r before:bg-teal-500 before:opacity-0 before:transition-all before:duration-200 hover:before:opacity-100 before:scale-y-0 hover:before:scale-y-100"
                 }`}
               >
                 {tab}
                 <svg className={`transition-transform ${openDropdown === tab ? 'rotate-180' : ''}`} width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
               </button>
               {openDropdown === tab && (
-                <div className="absolute top-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50 left-1/2 -translate-x-1/2">
-                  {TYPE_ITEMS.map((item) => {
+                <div className="absolute top-full mt-1.5 bg-white rounded-xl shadow-[0_8px_30px_-8px_rgba(0,0,0,0.2)] border border-teal-100 py-1 z-50 left-1/2 -translate-x-1/2 min-w-[140px] overflow-hidden">
+                  {TYPE_ITEMS.map((item, idx) => {
                     const base = BASE_PATHS[tab];
                     return (
                       <Link
                         key={item.name}
                         href={item.type ? `${base}?type=${item.type}` : base}
-                        className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-700 whitespace-nowrap"
+                        className="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-teal-50 hover:text-teal-700 hover:pl-5 transition-all whitespace-nowrap border-b border-gray-50 last:border-0"
                         onClick={() => setOpenDropdown(null)}
                       >
                         {item.name}
@@ -84,7 +84,7 @@ function AZBrowseContent({ showTabs = true }: { showTabs?: boolean }) {
 
       {/* A-Z Grid */}
       <div className="bg-teal-50/50 p-3 sm:p-4 rounded-xl border border-teal-100 shadow-sm">
-        {expandedLetter ? (
+        {!simple && expandedLetter ? (
           <div>
             <button
               onClick={() => setExpandedLetter(null)}
@@ -111,19 +111,35 @@ function AZBrowseContent({ showTabs = true }: { showTabs?: boolean }) {
           </div>
         ) : (
         <div className="grid grid-cols-[repeat(9,1fr)] sm:grid-cols-[repeat(auto-fill,minmax(50px,1fr))] gap-1.5 sm:gap-2">
-          {LETTERS.map((letter) => (
-            <button
-              key={letter}
-              onClick={() => setExpandedLetter(letter)}
-              className={`flex items-center justify-center h-9 sm:h-12 rounded-lg font-semibold text-xs sm:text-sm border transition-all cursor-pointer ${
-                currentLetter?.startsWith(letter)
-                  ? "bg-primary text-white border-primary shadow-md"
-                  : "bg-white text-teal-700 border-teal-200 hover:bg-teal-100 hover:border-teal-400 hover:text-teal-900"
-              }`}
-            >
-              {letter}
-            </button>
-          ))}
+          {LETTERS.map((letter) => {
+            const href = simple ? `${letterBase}?letter=${letter}` : undefined;
+            const isActive = simple ? currentLetter === letter : currentLetter?.startsWith(letter);
+            return simple ? (
+              <Link
+                key={letter}
+                href={href!}
+                className={`flex items-center justify-center h-9 sm:h-12 rounded-lg font-semibold text-xs sm:text-sm border transition-all cursor-pointer ${
+                  isActive
+                    ? "bg-primary text-white border-primary shadow-md"
+                    : "bg-white text-teal-700 border-teal-200 hover:bg-teal-100 hover:border-teal-400 hover:text-teal-900"
+                }`}
+              >
+                {letter}
+              </Link>
+            ) : (
+              <button
+                key={letter}
+                onClick={() => setExpandedLetter(letter)}
+                className={`flex items-center justify-center h-9 sm:h-12 rounded-lg font-semibold text-xs sm:text-sm border transition-all cursor-pointer ${
+                  isActive
+                    ? "bg-primary text-white border-primary shadow-md"
+                    : "bg-white text-teal-700 border-teal-200 hover:bg-teal-100 hover:border-teal-400 hover:text-teal-900"
+                }`}
+              >
+                {letter}
+              </button>
+            );
+          })}
           <Link
             href={`${letterBase}?letter=0-9`}
             className={`flex items-center justify-center h-9 sm:h-12 rounded-lg font-semibold text-xs sm:text-sm border transition-all cursor-pointer ${
@@ -141,10 +157,10 @@ function AZBrowseContent({ showTabs = true }: { showTabs?: boolean }) {
   );
 }
 
-export default function AZBrowse({ showTabs }: { showTabs?: boolean }) {
+export default function AZBrowse({ showTabs, simple }: { showTabs?: boolean; simple?: boolean }) {
   return (
     <Suspense fallback={<div className="h-40 w-full animate-pulse bg-gray-100 rounded-2xl" />}>
-      <AZBrowseContent showTabs={showTabs} />
+      <AZBrowseContent showTabs={showTabs} simple={simple} />
     </Suspense>
   );
 }

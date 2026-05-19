@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -8,13 +8,15 @@ const ALL_ITEMS: { group: string; items: { name: string; href: string; icon: str
   { group: 'Browse', items: [
     { name: 'Home', href: '/', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
     { name: 'Drugs Directory', href: '/drugs', icon: 'M10.5 20.5 20.5 10.5a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z M8.5 8.5 15.5 15.5' },
-    { name: 'Interactions', href: '#', icon: 'M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z' },
-    { name: 'Compare', href: '#', icon: 'M3 3h7v9H3z M14 3h7v5h-7z M14 12h7v9h-7z M3 16h7v5H3z' },
+    { name: 'Conditions', href: '/indications', icon: 'M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2 M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v0a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2zm0 0 M9 12h6 M9 16h6' },
+    { name: 'Dosage Forms', href: '/dosage-forms', icon: 'M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2 M8 2h8v4H8z M12 11v4 M10 13h4' },
+                { name: 'Interactions', href: '/interactions', icon: 'M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z' },
+                { name: 'Compare', href: '/compare', icon: 'M3 3h7v9H3z M14 3h7v5h-7z M14 12h7v9h-7z M3 16h7v5H3z' },
     { name: 'Indications', href: '/indications', icon: 'M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2 M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v0a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2zm0 0 M9 12h6 M9 16h6' },
   ]},
   { group: 'Tools', items: [
-    { name: 'AI Assistant', href: '#', icon: 'M12 8V4H8 M4 8h16v12H4z M2 14h2 M20 14h2 M15 13v2 M9 13v2' },
-    { name: 'Health News', href: '#', icon: 'M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z M14 2v4a2 2 0 0 0 2 2h4 M10 9H8 M16 13H8 M16 17H8' },
+                { name: 'AI Assistant', href: '/ai-assistant', icon: 'M12 8V4H8 M4 8h16v12H4z M2 14h2 M20 14h2 M15 13v2 M9 13v2' },
+    { name: 'Health News', href: '/news', icon: 'M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z M14 2v4a2 2 0 0 0 2 2h4 M10 9H8 M16 13H8 M16 17H8' },
     { name: 'Bookmarks', href: '#', icon: 'm19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z' },
   ]},
 ];
@@ -30,6 +32,8 @@ const Header = () => {
   const [navExpanded, setNavExpanded] = useState(false);
   const [ripple, setRipple] = useState(false);
   const [ballHidden, setBallHidden] = useState(false);
+  const [showMore, setShowMore] = useState(false);
+  const moreRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
 
   // Lock body scroll when menu is open
@@ -37,6 +41,18 @@ const Header = () => {
     document.body.style.overflow = menuOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
   }, [menuOpen]);
+
+  // Close More dropdown on outside click
+  useEffect(() => {
+    if (!showMore) return;
+    const handler = (e: MouseEvent) => {
+      if (moreRef.current && !moreRef.current.contains(e.target as Node)) {
+        setShowMore(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [showMore]);
 
   const handleExpand = () => {
     setMenuOpen(false);
@@ -94,13 +110,19 @@ const Header = () => {
             <nav className="hidden lg:flex items-center gap-1 ml-12 flex-1">
               {[
                 { name: 'Drugs A-Z', href: '/drugs', icon: 'img' },
-                { name: 'Interactions', href: '#', icon: 'M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z' },
-                { name: 'Compare', href: '#', icon: 'M3 3h7v9H3z M14 3h7v5h-7z M14 12h7v9h-7z M3 16h7v5H3z' },
-                { name: 'AI Assistant', href: '#', icon: 'M12 8V4H8 M4 8h16v12H4z M2 14h2 M20 14h2 M15 13v2 M9 13v2' },
-                { name: 'News', href: '#', icon: 'M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z M14 2v4a2 2 0 0 0 2 2h4 M10 9H8 M16 13H8 M16 17H8' },
-                { name: 'Bookmarks', href: '#', icon: 'm19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z' },
+                { name: 'Conditions', href: '/indications', icon: 'M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2 M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v0a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2zm0 0 M9 12h6 M9 16h6' },
+    { name: 'Interactions', href: '/interactions', icon: 'M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z' },
+    { name: 'Compare', href: '/compare', icon: 'M3 3h7v9H3z M14 3h7v5h-7z M14 12h7v9h-7z M3 16h7v5H3z' },
+    { name: 'AI Assistant', href: '/ai-assistant', icon: 'M12 8V4H8 M4 8h16v12H4z M2 14h2 M20 14h2 M15 13v2 M9 13v2' },
+                { name: 'News', href: '/news', icon: 'M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z M14 2v4a2 2 0 0 0 2 2h4 M10 9H8 M16 13H8 M16 17H8' },
               ].map((item) => (
-                <Link key={item.name} className="flex items-center gap-1.5 px-3 py-2 text-sm text-gray-600 hover:text-primary rounded-lg hover:bg-red-50 transition-colors font-medium" href={item.href}>
+                <Link key={item.name}
+                  className={`flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                    item.name === 'AI Assistant'
+                      ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white hover:from-purple-600 hover:to-purple-700 shadow-sm'
+                      : 'text-gray-600 hover:text-primary hover:bg-red-50'
+                  }`}
+                  href={item.href}>
                   {item.icon === 'img' ? (
                     <img src="/icons/medicine-9.svg" alt="" className="h-4 w-4" />
                   ) : (
@@ -109,6 +131,24 @@ const Header = () => {
                   {item.name}
                 </Link>
               ))}
+              {/* More dropdown */}
+              <div className="relative" ref={moreRef}>
+                <button
+                  onClick={() => setShowMore(!showMore)}
+                  className="flex items-center gap-1.5 px-3 py-2 text-sm text-gray-600 hover:text-primary rounded-lg hover:bg-red-50 transition-colors font-medium cursor-pointer"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+                  More
+                </button>
+                {showMore && (
+                  <div className="absolute top-full right-0 mt-1 bg-white rounded-xl shadow-lg border border-gray-200 py-1 z-50 min-w-[160px] overflow-hidden">
+                    <Link href="#" className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-700 transition-colors" onClick={() => setShowMore(false)}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+                      Bookmarks
+                    </Link>
+                  </div>
+                )}
+              </div>
             </nav>
 
             {/* Desktop auth */}
@@ -233,14 +273,14 @@ const Header = () => {
                           href={item.href}
                           onClick={() => setMenuOpen(false)}
                           style={{ animationDelay: `${delay * 35}ms` }}
-                          className="group flex items-center gap-4 px-3 py-3.5 rounded-xl transition-all duration-200 hover:bg-teal-50 hover:pl-4 animate-stagger-in"
+                          className={`group flex items-center gap-4 px-3 py-3.5 rounded-xl transition-all duration-200 animate-stagger-in ${item.name === 'AI Assistant' ? 'bg-purple-50 border border-purple-100 hover:bg-purple-100' : 'hover:bg-teal-50 hover:pl-4'}`}
                         >
-                          <span className="w-10 h-10 rounded-xl bg-gray-50 group-hover:bg-white group-hover:shadow-sm border border-gray-100 group-hover:border-teal-200 flex items-center justify-center text-gray-500 group-hover:text-teal-600 transition-all duration-200 shrink-0">
+                          <span className={`w-10 h-10 rounded-xl border flex items-center justify-center transition-all duration-200 shrink-0 ${item.name === 'AI Assistant' ? 'bg-purple-100 border-purple-200 text-purple-600 group-hover:bg-purple-200' : 'bg-gray-50 group-hover:bg-white group-hover:shadow-sm border-gray-100 group-hover:border-teal-200 text-gray-500 group-hover:text-teal-600'}`}>
                             <TabIcon d={item.icon} className="h-5 w-5" />
                           </span>
                           <div className="flex flex-col">
-                            <span className="text-sm font-semibold text-gray-800 group-hover:text-teal-700 transition-colors">{item.name}</span>
-                            <span className="text-[11px] text-gray-400 group-hover:text-teal-400 transition-colors">
+                            <span className={`text-sm font-semibold transition-colors ${item.name === 'AI Assistant' ? 'text-purple-800 group-hover:text-purple-900' : 'text-gray-800 group-hover:text-teal-700'}`}>{item.name}</span>
+                            <span className={`text-[11px] transition-colors ${item.name === 'AI Assistant' ? 'text-purple-500 group-hover:text-purple-600' : 'text-gray-400 group-hover:text-teal-400'}`}>
                               {item.href === '#' ? 'Coming soon' : 'Explore now'}
                             </span>
                           </div>
