@@ -134,25 +134,6 @@ export default function AiAssistantPage() {
             </div>
           </div>
 
-          {/* Search bar */}
-          <div className="mb-10">
-            <div className="flex items-stretch bg-white rounded-full border-2 border-purple-200 focus-within:border-purple-400 focus-within:shadow-[0_0_0_4px_rgba(147,51,234,0.15)] transition-all duration-200 overflow-hidden max-w-2xl mx-auto">
-              <div className="relative flex items-center flex-1 min-w-0">
-                <svg className="absolute left-5 h-5 w-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-                <input
-                  type="text"
-                  placeholder="Ask anything about your medication..."
-                  className="w-full bg-transparent border-0 pl-12 pr-4 py-3.5 text-[15px] outline-none text-gray-800 placeholder:text-purple-300"
-                />
-              </div>
-              <button type="button" className="shrink-0 px-6 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold text-[14px] transition-all cursor-pointer flex items-center gap-2">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-                Ask
-              </button>
-            </div>
-            <p className="text-[12px] text-purple-400 text-center mt-2">Try: &ldquo;What is Napa used for?&rdquo; or &ldquo;Side effects of Metformin&rdquo;</p>
-          </div>
-
           {/* Early access CTA */}
           <div className="text-center p-8 rounded-xl bg-gradient-to-br from-purple-600 to-purple-800 shadow-xl">
             <h2 className="text-[22px] sm:text-[26px] font-bold text-white mb-2">Be the First to Experience It</h2>
