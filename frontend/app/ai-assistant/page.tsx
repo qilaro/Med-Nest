@@ -39,9 +39,9 @@ export default function AiAssistantPage() {
                   className="w-full bg-transparent border-0 pl-8 sm:pl-12 pr-2 sm:pr-4 py-3.5 sm:py-4 text-[14px] sm:text-[16px] outline-none text-gray-800 placeholder:text-gray-500 placeholder:truncate"
                 />
               </div>
-              <button type="button" className="shrink-0 px-4 sm:px-7 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold text-[13px] sm:text-[14px] transition-all cursor-pointer flex items-center gap-1 sm:gap-2">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-                <span className="hidden sm:inline">Ask</span>
+              <button type="button" className="shrink-0 px-5 sm:px-7 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold text-[14px] transition-all cursor-pointer flex items-center gap-1.5 sm:gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                Ask
               </button>
             </div>
             <p className="text-[12px] sm:text-[13px] text-gray-600 font-medium text-center mt-3">Try: &ldquo;What is Napa used for?&rdquo; or &ldquo;Metformin side effects&rdquo;</p>
