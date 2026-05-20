@@ -11,26 +11,27 @@ export default function AiAssistantPage() {
   return (
     <div className="bg-gradient-to-b from-[#e8dff5] via-[#f0e8fa] to-[#f5f0fa] min-h-screen">
       <div className="max-w-[1024px] mx-auto px-3 sm:px-0 py-6">
-        <div className="bg-white rounded-2xl border border-purple-200 shadow-[8px_16px_40px_rgba(0,0,0,0.12),0_20px_60px_-12px_rgba(147,51,234,0.15)] p-6 sm:p-8">
+        <div className="bg-white rounded-2xl border border-purple-200 shadow-[8px_16px_40px_rgba(0,0,0,0.12),0_20px_60px_-12px_rgba(147,51,234,0.15)] overflow-hidden p-5 sm:p-8">
+          <div className="h-1 bg-gradient-to-r from-purple-400 to-purple-600 -mx-5 sm:-mx-8 -mt-5 sm:-mt-8 mb-6 sm:mb-8" />
 
           {/* Hero */}
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-700 shadow-lg mb-4">
+          <div className="text-center mb-10 sm:mb-12">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-700 shadow-[0_0_35px_-8px_rgba(147,51,234,0.35)] mb-4">
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 8V4H8"/><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/>
               </svg>
             </div>
-            <h1 className="text-[32px] sm:text-[40px] font-bold text-gray-900 leading-tight mb-3">
+            <h1 className="text-[26px] sm:text-[40px] font-bold text-gray-900 leading-tight mb-2">
               AI Health Assistant
             </h1>
-            <p className="text-[16px] sm:text-[18px] text-gray-600 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-[15px] sm:text-[18px] text-gray-600 max-w-2xl mx-auto leading-relaxed">
               Your intelligent healthcare companion — powered by advanced artificial intelligence, designed specifically for Bangladesh.
             </p>
           </div>
 
           {/* Search bar — top, like any AI model */}
           <div className="mb-10">
-            <div className="flex items-stretch bg-white rounded-full border-2 border-purple-200 focus-within:border-purple-400 focus-within:shadow-[0_0_0_4px_rgba(147,51,234,0.15)] focus-within:ring-2 focus-within:ring-purple-200 transition-all duration-200 overflow-hidden max-w-xl sm:max-w-2xl mx-auto">
+            <div className="flex items-stretch bg-white rounded-full border-2 border-purple-200 focus-within:border-purple-400 focus-within:shadow-[0_0_0_4px_rgba(147,51,234,0.15),0_0_20px_-8px_rgba(147,51,234,0.25)] focus-within:ring-2 focus-within:ring-purple-200 transition-all duration-200 overflow-hidden max-w-xl sm:max-w-2xl mx-auto">
               <div className="relative flex items-center flex-1 min-w-0">
                 <svg className="absolute left-3 sm:left-5 h-4 w-4 sm:h-5 sm:w-5 text-purple-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                 <input
@@ -57,7 +58,7 @@ export default function AiAssistantPage() {
           </div>
 
           {/* Features grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-10">
             {[
               {
                 icon: <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2 M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v0a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2zm0 0"/>, // clipboard
@@ -90,7 +91,7 @@ export default function AiAssistantPage() {
                 desc: "Available anytime, anywhere in Bangladesh. Ask questions in Bengali or English — our AI understands both languages fluently."
               },
             ].map((feature, i) => (
-              <div key={i} className="p-5 rounded-xl bg-white border border-purple-100 hover:border-purple-300 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 group">
+              <div key={i} className="p-5 rounded-xl bg-white border border-purple-100 hover:border-purple-300 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 group border-l-4 border-l-transparent hover:border-l-purple-400">
                 <div className="w-10 h-10 rounded-xl bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-600 mb-3 group-hover:bg-purple-100 group-hover:scale-105 transition-all">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{feature.icon}</svg>
                 </div>
