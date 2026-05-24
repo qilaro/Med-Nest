@@ -18,7 +18,6 @@ export async function GET() {
       csv += `${i + 1},"${q}","${a}","${c}",${r.user_language || "en"},${r.created_at || ""}\n`;
     });
 
-    // Clear the table after export
     await db.execute(sql`DELETE FROM ai_training_data`);
 
     return new Response(csv, {

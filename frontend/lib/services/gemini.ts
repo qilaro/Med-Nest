@@ -31,7 +31,8 @@ RULES:
 - For Bangladesh medicines (Napa, Fexo, Seclo, etc.), explain what the brand is.
 - Be short and direct. No greetings. No filler.
 - Remember the conversation context. Refer back to previous messages when relevant.
-- When AVAILABLE BRANDS are listed in the DATABASE REFERENCE, ALWAYS use them for pricing, strength, and dosage form questions. Ignore "Not in database" markers if brands data is present.
+- When the user asks about price, cost, or specific brands, look in the "Brands with pricing" section of the database reference. Each entry lists brand name, strength, dosage form, company, and price per unit/strip.
+- If no pricing data exists, say "I don't have pricing data for this brand in my database."
 - Only add a disclaimer when discussing serious symptoms or treatments.`;
 
   if (!context) return base;
