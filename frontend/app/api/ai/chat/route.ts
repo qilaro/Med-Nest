@@ -69,6 +69,30 @@ export async function POST(req: NextRequest) {
       const d = drugs[0];
       const brands = d.matched_brands ? ` The user's search term matches the brand(s): ${d.matched_brands}.` : "";
       context = `GENERIC NAME: ${d.name}.${brands}\nTherapeutic Class: ${d.therapeutic_class || "Not classified"}\nUses: ${d.indications || "Not in database"}\nSide Effects: ${d.side_effects || "Not in database"}\nDosage: ${d.dosage || "Not in database"}\nWarnings: ${d.warnings || "Not in database"}`;
+
+      // Fetch brands with pricing for this generic
+      try {
+        const brandRows = await db.execute(sql`
+          SELECT brand_name, strength, dosage_form, company_name,
+                 price_unit, price_strip, pack_size
+          FROM brands
+          WHERE generic_id = ${d.id}::uuid
+            AND is_discontinued = false
+          ORDER BY brand_name
+          LIMIT 30
+        `);
+        if (brandRows.rows.length > 0) {
+          context += "\n\nAVAILABLE BRANDS:\n";
+          const lines = (brandRows.rows as any[]).map((b, i) => {
+            let line = `${i + 1}. ${b.brand_name} | ${b.strength || "N/A"} | ${b.dosage_form || "N/A"} | ${b.company_name || ""}`;
+            if (b.price_unit) line += ` | ৳${parseFloat(b.price_unit).toFixed(2)}/unit`;
+            if (b.price_strip) line += ` | ৳${parseFloat(b.price_strip).toFixed(2)}/strip`;
+            if (b.pack_size) line += ` | ${b.pack_size}`;
+            return line;
+          });
+          context += lines.join("\n");
+        }
+      } catch {}
     }
 
     // Create SSE stream
@@ -85,6 +109,7 @@ export async function POST(req: NextRequest) {
           }
         } catch (e: any) {
           hasError = true;
+          console.error("Groq API error:", e.message);
           let fallback = "";
           if (e.message?.includes("429")) {
             fallback = "You've reached your Daily Quota limit. Please wait a few hours and try again. 🙏";
@@ -100,6 +125,15 @@ export async function POST(req: NextRequest) {
         // Log to training data
         if (!hasError && fullAnswer) {
           try {
+            // Keep table under 500 rows
+            await db.execute(sql`
+              DELETE FROM ai_training_data
+              WHERE id IN (
+                SELECT id FROM ai_training_data
+                ORDER BY created_at ASC
+                LIMIT GREATEST(0, (SELECT COUNT(*) FROM ai_training_data) - 500)
+              )
+            `);
             await db.execute(sql`
               INSERT INTO ai_training_data (question, gemini_answer, drug_context, user_language)
               VALUES (${trimmed}, ${fullAnswer}, ${context || null}, 'en')
