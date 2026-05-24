@@ -18,29 +18,30 @@ export async function POST(req: NextRequest) {
     let drugs: any[] = [];
     const stopWords = new Set(["what","is","the","for","a","an","in","to","of","and","or","on","at","by","with","how","why","does","do","can","i","my","me","are","be","it","that","this","was","were","will","would","could","should","has","have","had","not","no","but","if","so","about","up","out","all","also","than","then","very","just","its","each","which","who","whom","when","where","side","effects","dose","dosage","uses","use","used","using","treatment","treat","info","information","tell","know","need","want","get","give","take","taking"]);
     const keywords = trimmed.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(w => w.length > 1 && !stopWords.has(w));
+    const isPriceQuery = keywords.includes("price") || keywords.includes("cost");
 
     // Keyword search
     try {
       if (keywords.length > 0) {
-        const genNameConds = keywords.map(w => sql`g.name ILIKE ${'%' + w + '%'}`);
-        const indConds = keywords.map(w => sql`g.indications ILIKE ${'%' + w + '%'}`);
-        const brandConds = keywords.map(w => sql`b.brand_name ILIKE ${'%' + w + '%'}`);
-        const kw = await db.execute(sql`
-          SELECT g.id, g.name, g.slug, g.therapeutic_class,
-            g.indications, g.side_effects, g.warnings,
-            g.dosage, g.interactions, g.half_life, g.pregnancy_category,
-            (SELECT STRING_AGG(DISTINCT b2.brand_name, ', ') FROM brands b2 WHERE b2.generic_id = g.id AND (${sql.join(keywords.map(w => sql`b2.brand_name ILIKE ${'%' + w + '%'}`), sql` OR `)})) as matched_brands
-          FROM generics g
-          LEFT JOIN brands b ON b.generic_id = g.id
-          WHERE (${sql.join([...genNameConds, ...indConds, ...brandConds], sql` OR `)})
-            AND g.id IS NOT NULL
-          GROUP BY g.id, g.name, g.slug, g.therapeutic_class, g.indications, g.side_effects, g.warnings, g.dosage, g.interactions, g.half_life, g.pregnancy_category
-          ORDER BY GREATEST(${sql.join(keywords.map(w => sql`(CASE WHEN EXISTS (SELECT 1 FROM brands b3 WHERE b3.generic_id = g.id AND LOWER(b3.brand_name) = LOWER(${w})) THEN 2 ELSE 0 END)`), sql` + `)}) DESC,
-            (CASE WHEN g.indications IS NOT NULL AND g.indications != '' THEN 1 ELSE 0 END) DESC,
-            (SELECT COUNT(*) FROM brands WHERE generic_id = g.id) DESC
-          LIMIT 1
-        `);
-        if (kw.rows.length > 0) drugs = kw.rows as any[];
+        // Skip generic price/search words when looking for drug names
+        const searchWords = isPriceQuery
+          ? keywords.filter((k: string) => !["price","cost","rate","cheap","expensive","how","much","total","per"].includes(k))
+          : keywords;
+        if (searchWords.length > 0) {
+          const genNameConds = searchWords.map(w => sql`g.name ILIKE ${'%' + w + '%'}`);
+          const brandConds = searchWords.map(w => sql`b.brand_name ILIKE ${'%' + w + '%'}`);
+          const kw = await db.execute(sql`
+            SELECT g.id, g.name, g.slug, g.therapeutic_class
+            FROM generics g
+            LEFT JOIN brands b ON b.generic_id = g.id
+            WHERE (${sql.join([...genNameConds, ...brandConds], sql` OR `)})
+              AND g.id IS NOT NULL
+            GROUP BY g.id, g.name, g.slug, g.therapeutic_class
+            ORDER BY (SELECT COUNT(*) FROM brands WHERE generic_id = g.id AND is_discontinued = false) DESC
+            LIMIT 1
+          `);
+          if (kw.rows.length > 0) drugs = kw.rows as any[];
+        }
       }
     } catch {}
 
@@ -68,52 +69,71 @@ export async function POST(req: NextRequest) {
     let context = "";
     if (drugs.length > 0) {
       const d = drugs[0];
-      const brands = d.matched_brands ? ` Matches brand(s): ${d.matched_brands}.` : "";
+      try {
+        let brandRows = await db.execute(sql`
+          SELECT brand_name, strength, dosage_form, company_name,
+                 price_unit, price_strip, pack_size
+          FROM brands
+          WHERE generic_id = ${d.id}::uuid
+            AND is_discontinued = false
+        `);
+        const brands = brandRows.rows as any[];
 
-      context = `Drug: ${d.name}.${brands}`;
-
-      // Fetch brands with pricing for this generic
-      if (d.id) {
-        try {
-          const genericWords = new Set(["price","cost","mg","tablet","capsule","dose","dosage","side","effects","info","information","tell","know","want","get","use","treatment","injection","drop","syrup","suspension","bottle","pack","strip","unit"]);
-          const brandKeyword = keywords.find((k: string) => k.length > 2 && !genericWords.has(k));
-          const brandMatchCond = brandKeyword
-            ? sql`ORDER BY CASE WHEN LOWER(brand_name) LIKE ${'%' + brandKeyword + '%'} THEN 0 ELSE 1 END, brand_name ASC`
-            : sql`ORDER BY brand_name ASC`;
-
-          const brandRows = await db.execute(sql`
-            SELECT brand_name, strength, dosage_form, company_name,
-                   price_unit, price_strip, pack_size
-            FROM brands
-            WHERE generic_id = ${d.id}::uuid
-              AND is_discontinued = false
-            ${brandMatchCond}
-            LIMIT 40
-          `);
-          if (brandRows.rows.length > 0) {
-            context += "\n\nBrands with pricing:\n";
-            const lines = (brandRows.rows as any[]).map((b, i) => {
-              let line = `${i + 1}. ${b.brand_name} | ${b.strength || "?"} | ${b.dosage_form || "?"} | ${b.company_name || ""}`;
-              if (b.price_unit) line += ` | ৳${parseFloat(b.price_unit).toFixed(2)} per unit`;
-              if (b.price_strip) line += ` | ৳${parseFloat(b.price_strip).toFixed(2)} per strip`;
-              if (b.pack_size) line += ` | Pack: ${b.pack_size}`;
-              return line;
-            });
-            context += lines.join("\n");
+        // PRICE QUERY: concise table, no generic info
+        if (isPriceQuery && brands.length > 0) {
+          context = `PRICING DATA: ${d.name}\n`;
+          context += "Brand | Strength | Form | Company | Unit Price | Strip Price | Pack\n";
+          context += brands.map((b: any) => {
+            const unit = b.price_unit ? `৳${parseFloat(b.price_unit).toFixed(2)}` : "-";
+            const strip = b.price_strip ? `৳${parseFloat(b.price_strip).toFixed(2)}` : "-";
+            return `${b.brand_name} | ${b.strength || "-"} | ${b.dosage_form || "-"} | ${b.company_name || "-"} | ${unit} | ${strip} | ${b.pack_size || "-"}`;
+          }).join("\n");
+          // Filter to only matching brands if user asked for a specific one
+          const brandKeyword = keywords.find((k: string) => k.length > 2 && !["price","cost","mg","tablet","capsule","dose","dosage","how","much","per","rate","cheap","expensive","total"].includes(k) && brands.some((b: any) => b.brand_name.toLowerCase().includes(k)));
+          if (brandKeyword) {
+            const filtered = brands.filter((b: any) => b.brand_name.toLowerCase().includes(brandKeyword));
+            if (filtered.length > 0) {
+              // Put the matching brands at top
+              const others = brands.filter((b: any) => !b.brand_name.toLowerCase().includes(brandKeyword));
+              context += "\n\nMATCHED BRANDS (user asked about " + brandKeyword + "):\n";
+              context += "Brand | Strength | Form | Unit Price | Strip Price | Pack\n";
+              const matchedLines = filtered.map((b: any) => {
+                const unit = b.price_unit ? `৳${parseFloat(b.price_unit).toFixed(2)}` : "-";
+                const strip = b.price_strip ? `৳${parseFloat(b.price_strip).toFixed(2)}` : "-";
+                return `${b.brand_name} | ${b.strength || "-"} | ${b.dosage_form || "-"} | ${unit} | ${strip} | ${b.pack_size || "-"}`;
+              });
+              context += matchedLines.join("\n");
+            }
           }
-        } catch (e) {
-          console.error("Brands query error:", e);
         }
-      }
+        // GENERAL QUERY: existing approach
+        else {
+          const matchedBrands = brands.filter((b: any) => keywords.some((k: string) => b.brand_name.toLowerCase().includes(k)));
+          const brandNames = matchedBrands.length > 0
+            ? matchedBrands.map((b: any) => b.brand_name).filter((v: string, i: number, a: string[]) => a.indexOf(v) === i).join(", ")
+            : brands.slice(0, 5).map((b: any) => b.brand_name).filter((v: string, i: number, a: string[]) => a.indexOf(v) === i).join(", ");
+          context = `Drug: ${d.name}. Available brands: ${brandNames}`;
 
-      // Generic medical info (if available)
-      const parts: string[] = [];
-      if (d.therapeutic_class) parts.push(`Class: ${d.therapeutic_class}`);
-      if (d.indications) parts.push(`Uses: ${d.indications}`);
-      if (d.side_effects) parts.push(`Side effects: ${d.side_effects}`);
-      if (d.dosage) parts.push(`Dosage: ${d.dosage}`);
-      if (d.warnings) parts.push(`Warnings: ${d.warnings}`);
-      if (parts.length > 0) context += "\n\n" + parts.join("\n");
+          // Medical info
+          const parts: string[] = [];
+          if (d.therapeutic_class) parts.push(`Class: ${d.therapeutic_class}`);
+          if (d.indications) parts.push(`Uses: ${d.indications}`);
+          if (d.side_effects) parts.push(`Side effects: ${d.side_effects}`);
+          if (d.dosage) parts.push(`Dosage: ${d.dosage}`);
+          if (d.warnings) parts.push(`Warnings: ${d.warnings}`);
+          if (parts.length > 0) context += "\n\n" + parts.join("\n");
+
+          if (brands.length > 0) {
+            context += "\n\nAvailable brands:\n";
+            context += brands.slice(0, 20).map((b: any) =>
+              `${b.brand_name} | ${b.strength || "?"} | ${b.dosage_form || "?"}${b.price_unit ? " | ৳" + parseFloat(b.price_unit).toFixed(2) : ""}`
+            ).join("\n");
+          }
+        }
+      } catch (e) {
+        console.error("Brands query error:", e);
+        context = `Drug: ${d.name}`;
+      }
     }
 
     // Create SSE stream
