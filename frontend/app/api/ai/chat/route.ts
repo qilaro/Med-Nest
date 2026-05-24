@@ -16,17 +16,17 @@ export async function POST(req: NextRequest) {
 
     const trimmed = message.trim().slice(0, 500);
     let drugs: any[] = [];
+    const stopWords = new Set(["what","is","the","for","a","an","in","to","of","and","or","on","at","by","with","how","why","does","do","can","i","my","me","are","be","it","that","this","was","were","will","would","could","should","has","have","had","not","no","but","if","so","about","up","out","all","also","than","then","very","just","its","each","which","who","whom","when","where","side","effects","dose","dosage","uses","use","used","using","treatment","treat","info","information","tell","know","need","want","get","give","take","taking"]);
+    const keywords = trimmed.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(w => w.length > 1 && !stopWords.has(w));
 
     // Keyword search
     try {
-      const stopWords = new Set(["what","is","the","for","a","an","in","to","of","and","or","on","at","by","with","how","why","does","do","can","i","my","me","are","be","it","that","this","was","were","will","would","could","should","has","have","had","not","no","but","if","so","about","up","out","all","also","than","then","very","just","its","each","which","who","whom","when","where","side","effects","dose","dosage","uses","use","used","using","treatment","treat","info","information","tell","know","need","want","get","give","take","taking"]);
-      const keywords = trimmed.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(w => w.length > 1 && !stopWords.has(w));
       if (keywords.length > 0) {
         const genNameConds = keywords.map(w => sql`g.name ILIKE ${'%' + w + '%'}`);
         const indConds = keywords.map(w => sql`g.indications ILIKE ${'%' + w + '%'}`);
         const brandConds = keywords.map(w => sql`b.brand_name ILIKE ${'%' + w + '%'}`);
         const kw = await db.execute(sql`
-          SELECT g.name, g.slug, g.therapeutic_class,
+          SELECT g.id, g.name, g.slug, g.therapeutic_class,
             g.indications, g.side_effects, g.warnings,
             g.dosage, g.interactions, g.half_life, g.pregnancy_category,
             (SELECT STRING_AGG(DISTINCT b2.brand_name, ', ') FROM brands b2 WHERE b2.generic_id = g.id AND (${sql.join(keywords.map(w => sql`b2.brand_name ILIKE ${'%' + w + '%'}`), sql` OR `)})) as matched_brands
@@ -50,8 +50,9 @@ export async function POST(req: NextRequest) {
         const queryVector = await generateEmbedding(trimmed);
         const vectorStr = `[${queryVector.join(",")}]`;
         const vecResults = await db.execute(sql`
-          SELECT name, slug, therapeutic_class, indications, side_effects, warnings,
-                 dosage, interactions, half_life, pregnancy_category
+          SELECT id, name, slug, therapeutic_class, indications, side_effects, warnings,
+                 dosage, interactions, half_life, pregnancy_category,
+                 embedding <=> ${vectorStr}::vector AS distance
           FROM generics
           WHERE embedding IS NOT NULL
           ORDER BY embedding <=> ${vectorStr}::vector
@@ -72,28 +73,39 @@ export async function POST(req: NextRequest) {
       context = `Drug: ${d.name}.${brands}`;
 
       // Fetch brands with pricing for this generic
-      try {
-        const brandRows = await db.execute(sql`
-          SELECT brand_name, strength, dosage_form, company_name,
-                 price_unit, price_strip, pack_size
-          FROM brands
-          WHERE generic_id = ${d.id}::uuid
-            AND is_discontinued = false
-          ORDER BY brand_name
-          LIMIT 30
-        `);
-        if (brandRows.rows.length > 0) {
-          context += "\n\nBrands with pricing:\n";
-          const lines = (brandRows.rows as any[]).map((b, i) => {
-            let line = `${i + 1}. ${b.brand_name} | ${b.strength || "?"} | ${b.dosage_form || "?"} | ${b.company_name || ""}`;
-            if (b.price_unit) line += ` | ৳${parseFloat(b.price_unit).toFixed(2)} per unit`;
-            if (b.price_strip) line += ` | ৳${parseFloat(b.price_strip).toFixed(2)} per strip`;
-            if (b.pack_size) line += ` | Pack: ${b.pack_size}`;
-            return line;
-          });
-          context += lines.join("\n");
+      if (d.id) {
+        try {
+          const brandKeywords = keywords.filter((k: string) => k.length > 2 && !stopWords.has(k));
+          const brandMatchCond = brandKeywords.length > 0
+            ? sql`ORDER BY 
+                CASE WHEN LOWER(brand_name) LIKE ${'%' + brandKeywords[0] + '%'} THEN 0 ELSE 1 END,
+                brand_name ASC`
+            : sql`ORDER BY brand_name ASC`;
+
+          const brandRows = await db.execute(sql`
+            SELECT brand_name, strength, dosage_form, company_name,
+                   price_unit, price_strip, pack_size
+            FROM brands
+            WHERE generic_id = ${d.id}::uuid
+              AND is_discontinued = false
+            ${brandMatchCond}
+            LIMIT 40
+          `);
+          if (brandRows.rows.length > 0) {
+            context += "\n\nBrands with pricing:\n";
+            const lines = (brandRows.rows as any[]).map((b, i) => {
+              let line = `${i + 1}. ${b.brand_name} | ${b.strength || "?"} | ${b.dosage_form || "?"} | ${b.company_name || ""}`;
+              if (b.price_unit) line += ` | ৳${parseFloat(b.price_unit).toFixed(2)} per unit`;
+              if (b.price_strip) line += ` | ৳${parseFloat(b.price_strip).toFixed(2)} per strip`;
+              if (b.pack_size) line += ` | Pack: ${b.pack_size}`;
+              return line;
+            });
+            context += lines.join("\n");
+          }
+        } catch (e) {
+          console.error("Brands query error:", e);
         }
-      } catch {}
+      }
 
       // Generic medical info (if available)
       const parts: string[] = [];
