@@ -1,154 +1,207 @@
-import React from "react";
-import { Metadata } from "next";
-import Link from "next/link";
+"use client";
 
-export const metadata: Metadata = {
-  title: "AI Health Assistant - Coming Soon | Med-Nest Bangladesh",
-  description: "Med-Nest is building a specialized AI healthcare assistant for Bangladesh. Get personalized medication guidance, drug interaction analysis, and health advice powered by advanced AI.",
-};
+import { useState, useRef } from "react";
+
+interface Message {
+  role: "user" | "assistant";
+  text: string;
+}
+
+const suggestions = [
+  "What is Napa used for?",
+  "Side effects of Metformin",
+  "What are symptoms of diabetes?",
+  "Can I take Fexo and Napa together?",
+];
 
 export default function AiAssistantPage() {
-  return (
-    <div className="bg-gradient-to-b from-[#e8dff5] via-[#f0e8fa] to-[#f5f0fa] min-h-screen">
-      <div className="max-w-[1024px] mx-auto px-3 sm:px-0 py-6">
-        <div className="bg-white rounded-2xl border border-purple-200 shadow-[8px_16px_40px_rgba(0,0,0,0.12),0_20px_60px_-12px_rgba(147,51,234,0.15)] p-6 sm:p-8">
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [streaming, setStreaming] = useState("");
+  const endRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-          {/* Hero */}
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-700 shadow-lg mb-4">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 8V4H8"/><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/>
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const q = input.trim();
+    if (!q || loading) return;
+    setInput("");
+    setMessages(prev => [...prev, { role: "user", text: q }]);
+    setLoading(true);
+    setStreaming("");
+
+    try {
+      const history = messages.map(m => ({ role: m.role, content: m.text }));
+
+      const res = await fetch("/api/ai/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: q, history }),
+      });
+
+      if (!res.ok) {
+        setMessages(prev => [...prev, { role: "assistant", text: "Something went wrong. Please try again." }]);
+        setLoading(false);
+        return;
+      }
+
+      const reader = res.body?.getReader();
+      if (!reader) return;
+      const decoder = new TextDecoder();
+      let buf = "", full = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buf += decoder.decode(value, { stream: true });
+        const lines = buf.split("\n");
+        buf = lines.pop() || "";
+        for (const line of lines) {
+          if (line.startsWith("data: [DONE]")) break;
+          if (!line.startsWith("data: ")) continue;
+          try {
+            const json = JSON.parse(line.slice(6));
+            if (json.token) { full += json.token; setStreaming(full); }
+          } catch {}
+        }
+      }
+
+      if (full) setMessages(prev => [...prev, { role: "assistant", text: full }]);
+    } catch {
+      setMessages(prev => [...prev, { role: "assistant", text: "Something went wrong." }]);
+    } finally {
+      setLoading(false);
+      setStreaming("");
+      inputRef.current?.focus();
+    }
+  };
+
+  const handleSuggestion = (text: string) => {
+    setInput(text);
+    inputRef.current?.focus();
+  };
+
+  return (
+    <div className="min-h-dvh flex flex-col" style={{ background: "linear-gradient(180deg, #f5f0ff 0%, #faf7ff 40%, #ffffff 100%)" }}>
+      <div className="w-full max-w-[700px] mx-auto flex flex-col flex-1 px-4">
+
+        {/* Zero state */}
+        {messages.length === 0 && (
+          <div className="flex-1 flex flex-col items-center justify-center">
+            <div className="w-14 h-14 rounded-2xl bg-purple-500 flex items-center justify-center mb-4 shadow-lg shadow-purple-200">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
               </svg>
             </div>
-            <h1 className="text-[32px] sm:text-[40px] font-bold text-gray-900 leading-tight mb-3">
-              AI Health Assistant
-            </h1>
-            <p className="text-[16px] sm:text-[18px] text-gray-600 max-w-2xl mx-auto leading-relaxed">
-              Your intelligent healthcare companion — powered by advanced artificial intelligence, designed specifically for Bangladesh.
-            </p>
-          </div>
+            <h1 className="text-xl text-gray-800 font-semibold mb-1.5">How can I help you today?</h1>
+            <p className="text-[13px] text-gray-400 mb-6">Ask about medications, side effects, or drug information</p>
 
-          {/* Search bar — top, like any AI model */}
-          <div className="mb-10">
-            <div className="flex items-stretch bg-white rounded-full border-2 border-purple-200 focus-within:border-purple-400 focus-within:shadow-[0_0_0_4px_rgba(147,51,234,0.15)] focus-within:ring-2 focus-within:ring-purple-200 transition-all duration-200 overflow-hidden max-w-xl sm:max-w-2xl mx-auto">
-              <div className="relative flex items-center flex-1 min-w-0">
-                <svg className="absolute left-3 sm:left-5 h-4 w-4 sm:h-5 sm:w-5 text-purple-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <div className="grid grid-cols-2 gap-2.5 max-w-md w-full mb-6">
+              {suggestions.map((s, i) => (
+                <button
+                  key={i}
+                  onClick={() => handleSuggestion(s)}
+                  className="text-[13px] px-4 py-3 rounded-xl bg-white border border-gray-200 text-gray-600 hover:border-purple-300 hover:text-purple-700 hover:bg-purple-50 transition-all cursor-pointer text-left shadow-sm"
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+
+            <form onSubmit={handleSubmit} className="w-full max-w-md">
+                <div className="flex items-center bg-white border-2 border-purple-200 rounded-2xl focus-within:border-purple-400 focus-within:ring-4 focus-within:ring-purple-100 transition-all overflow-hidden shadow-lg shadow-purple-100">
                 <input
-                  type="text"
-                  placeholder="Ask about your medication..."
-                  className="w-full bg-transparent border-0 pl-8 sm:pl-12 pr-2 sm:pr-4 py-3.5 sm:py-4 text-[14px] sm:text-[16px] outline-none text-gray-800 placeholder:text-gray-500 placeholder:truncate"
+                  ref={inputRef}
+                  type="text" value={input} onChange={e => setInput(e.target.value)}
+                  placeholder="Ask about a medication..."
+                  className="flex-1 bg-transparent border-0 py-4 px-5 text-[15px] outline-none text-gray-800 placeholder:text-gray-400"
+                  disabled={loading}
                 />
+                <button type="submit" disabled={loading}
+                  className="shrink-0 w-10 h-10 rounded-xl bg-purple-500 hover:bg-purple-600 disabled:opacity-30 transition-all flex items-center justify-center cursor-pointer mr-2">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+                  </svg>
+                </button>
               </div>
-              <button type="button" className="shrink-0 px-5 sm:px-7 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold text-[14px] transition-all cursor-pointer flex items-center gap-1.5 sm:gap-2">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-                Ask
+              <p className="text-[12px] text-gray-400 text-center mt-3">Med-Nest AI can make mistakes. Consult a Health Care Professional.</p>
+            </form>
+          </div>
+        )}
+
+        {/* Chat mode */}
+        {messages.length > 0 && (
+          <>
+            {/* Header */}
+            <div className="shrink-0 flex items-center gap-2 py-3">
+              <button onClick={() => setMessages([])} className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M19 12H5"/><path d="m12 19-7-7 7-7"/>
+                </svg>
               </button>
+              <span className="text-[14px] font-medium text-gray-700">Med-Nest AI</span>
             </div>
-            <p className="text-[12px] sm:text-[13px] text-gray-600 font-medium text-center mt-3">Try: &ldquo;What is Napa used for?&rdquo; or &ldquo;Metformin side effects&rdquo;</p>
-          </div>
 
-          {/* Status banner */}
-          <div className="mb-10 p-5 rounded-xl bg-purple-50 border border-purple-200 text-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-100 text-purple-700 text-[11px] font-bold uppercase tracking-wider mb-3">
-              <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
-              Coming Soon
-            </div>
-            <p className="text-[15px] text-purple-800 font-medium">We&apos;re building a specialized AI model for Bangladesh healthcare.</p>
-          </div>
-
-          {/* Features grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
-            {[
-              {
-                icon: <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2 M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v0a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2zm0 0"/>, // clipboard
-                title: "Smart Drug Information",
-                desc: "Ask about any medication in natural language. Get instant, accurate information about uses, dosages, side effects, and interactions."
-              },
-              {
-                icon: <g><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></g>, // search
-                title: "Symptom Checker",
-                desc: "Describe your symptoms and our AI will suggest possible conditions and recommend appropriate medications available in Bangladesh."
-              },
-              {
-                icon: <path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>, // zap
-                title: "Interaction Analysis",
-                desc: "Check multiple medications at once for potential interactions. Our AI cross-references drug data to flag risky combinations."
-              },
-              {
-                icon: <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>, // shield
-                title: "Personalized Health Insights",
-                desc: "Get medication recommendations tailored to your health profile, allergies, and existing conditions — all stored privately and securely."
-              },
-              {
-                icon: <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>, // cloud
-                title: "Bangladesh-Specific Data",
-                desc: "Trained on Bangladesh drug databases, DGDA regulations, and local medical practices. Knows about every brand available in the country."
-              },
-              {
-                icon: <g><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></g>, // user
-                title: "24/7 Health Companion",
-                desc: "Available anytime, anywhere in Bangladesh. Ask questions in Bengali or English — our AI understands both languages fluently."
-              },
-            ].map((feature, i) => (
-              <div key={i} className="p-5 rounded-xl bg-white border border-purple-100 hover:border-purple-300 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 group">
-                <div className="w-10 h-10 rounded-xl bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-600 mb-3 group-hover:bg-purple-100 group-hover:scale-105 transition-all">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{feature.icon}</svg>
-                </div>
-                <h3 className="text-[15px] font-bold text-gray-900 mb-1.5">{feature.title}</h3>
-                <p className="text-[13px] text-gray-500 leading-relaxed">{feature.desc}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* Technology roadmap */}
-          <div className="mb-10 p-6 rounded-xl bg-gradient-to-br from-purple-50 to-purple-100/50 border border-purple-200">
-            <h2 className="text-[18px] font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-purple-600"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-              Our AI Roadmap
-            </h2>
-            <div className="space-y-4">
-              {[
-                { phase: "Phase 1", title: "Medical Knowledge Base", desc: "Complete ingestion of Bangladesh drug database, medical guidelines, and pharmaceutical data.", done: true },
-                { phase: "Phase 2", title: "Natural Language Interface", desc: "Bengali and English conversational AI for drug information, dosage queries, and interaction checks.", done: false },
-                { phase: "Phase 3", title: "Personalized Health Model", desc: "Patient-specific recommendations based on medical history, allergies, and concurrent medications.", done: false },
-                { phase: "Phase 4", title: "Clinical Decision Support", desc: "AI-powered diagnostic suggestions and treatment pathway recommendations for healthcare providers.", done: false },
-              ].map((phase, i) => (
-                <div key={i} className="flex items-start gap-3">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${phase.done ? "bg-purple-600 text-white" : "bg-purple-100 text-purple-400"}`}>
-                    {phase.done ? (
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                    ) : (
-                      <span className="text-[12px] font-bold">{i + 1}</span>
-                    )}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className={`text-[10px] font-bold uppercase tracking-wider ${phase.done ? "text-purple-600" : "text-purple-400"}`}>{phase.phase}</span>
-                      {phase.done && <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">Complete</span>}
-                    </div>
-                    <h3 className="text-[14px] font-bold text-gray-800">{phase.title}</h3>
-                    <p className="text-[13px] text-gray-500">{phase.desc}</p>
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto py-2 space-y-4 scroll-container" style={{ scrollBehavior: "smooth", WebkitOverflowScrolling: "touch" }}>
+              {messages.map((msg, i) => (
+                <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                  <div className={`max-w-[85%] ${
+                    msg.role === "user"
+                      ? "bg-purple-500 text-white rounded-2xl rounded-tr-sm px-4 py-2.5"
+                      : "text-gray-700"
+                  }`}>
+                    <p className="text-[14px] leading-relaxed whitespace-pre-wrap">{msg.text}</p>
                   </div>
                 </div>
               ))}
+
+              {/* Streaming */}
+              {(loading || streaming) && (
+                <div className="flex justify-start">
+                  <div className="max-w-[85%]">
+                    {streaming ? (
+                      <p className="text-[14px] leading-relaxed whitespace-pre-wrap text-gray-500">
+                        {streaming}
+                        <span className="inline-block w-1.5 h-4 bg-purple-400 ml-0.5 animate-pulse rounded-sm align-middle" />
+                      </p>
+                    ) : (
+                      <div className="flex gap-1.5 pt-1">
+                        <div className="w-1.5 h-1.5 rounded-full bg-gray-300 animate-bounce" style={{ animationDelay: "0ms" }} />
+                        <div className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: "200ms" }} />
+                        <div className="w-1.5 h-1.5 rounded-full bg-gray-500 animate-bounce" style={{ animationDelay: "400ms" }} />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              <div ref={endRef} />
             </div>
-          </div>
 
-          {/* Early access CTA */}
-          <div className="text-center p-8 rounded-xl bg-gradient-to-br from-purple-600 to-purple-800 shadow-xl">
-            <h2 className="text-[22px] sm:text-[26px] font-bold text-white mb-2">Be the First to Experience It</h2>
-            <p className="text-[14px] text-purple-200 mb-6 max-w-lg mx-auto">Join our early access list and get notified when the AI Health Assistant launches.</p>
-            <div className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-white/20 text-white text-[14px] font-semibold mx-auto">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-              Early access signup opening soon
+            {/* Chat input */}
+            <div className="shrink-0 py-3 mb-32 lg:mb-64">
+              <form onSubmit={handleSubmit}>
+              <div className="flex items-center bg-white border-2 border-purple-200 rounded-2xl focus-within:border-purple-400 focus-within:ring-4 focus-within:ring-purple-100 transition-all overflow-hidden shadow-lg shadow-purple-100">
+                  <input
+                    ref={inputRef} type="text" value={input} onChange={e => setInput(e.target.value)}
+                    placeholder="Ask about a medication..."
+                    className="flex-1 bg-transparent border-0 py-4 px-5 text-[15px] outline-none text-gray-800 placeholder:text-gray-400"
+                    disabled={loading}
+                  />
+                  <button type="submit" disabled={loading}
+                    className="shrink-0 w-10 h-10 rounded-xl bg-purple-500 hover:bg-purple-600 disabled:opacity-30 transition-all flex items-center justify-center cursor-pointer mr-2">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+                    </svg>
+                  </button>
+                </div>
+              </form>
+              <p className="text-[11px] text-gray-400 text-center mt-2.5">Med-Nest AI can make mistakes. Consult a Health Care Professional.</p>
             </div>
-          </div>
-
-          <div className="mt-8 pt-6 border-t border-gray-100 text-center">
-            <p className="text-[12px] text-gray-400">This feature is under development. The AI Health Assistant is not a substitute for professional medical advice.</p>
-          </div>
-
-        </div>
+          </>
+        )}
       </div>
     </div>
   );

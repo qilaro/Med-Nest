@@ -176,7 +176,66 @@ main {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-/* GPU-accelerated animations */
+/* ─── Neural Expressive Aurora Animations ─── */
+@keyframes aurora-drift-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.18; }
+  25% { transform: translate(6%, -10%) scale(1.1); opacity: 0.22; }
+  50% { transform: translate(-4%, 6%) scale(0.93); opacity: 0.16; }
+  75% { transform: translate(8%, 4%) scale(1.06); opacity: 0.2; }
+}
+@keyframes aurora-drift-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.14; }
+  33% { transform: translate(-8%, 7%) scale(1.08); opacity: 0.18; }
+  66% { transform: translate(5%, -5%) scale(0.95); opacity: 0.12; }
+}
+@keyframes aurora-drift-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.12; }
+  50% { transform: translate(10%, 5%) scale(1.12); opacity: 0.17; }
+}
+@keyframes aurora-drift-4 {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.1; }
+  50% { transform: translate(-7%, -8%) scale(0.88); opacity: 0.15; }
+}
+.aurora-blob-1 { animation: aurora-drift-1 18s ease-in-out infinite; }
+.aurora-blob-2 { animation: aurora-drift-2 22s ease-in-out infinite; }
+.aurora-blob-3 { animation: aurora-drift-3 15s ease-in-out infinite; }
+.aurora-blob-4 { animation: aurora-drift-4 20s ease-in-out infinite; }
+
+/* ─── Spark Icon Glow ─── */
+@keyframes spark-glow {
+  0%, 100% { filter: brightness(1) drop-shadow(0 0 8px rgba(192,132,252,0.3)); }
+  50% { filter: brightness(1.15) drop-shadow(0 0 20px rgba(192,132,252,0.5)); }
+}
+.animate-spark-glow { animation: spark-glow 3s ease-in-out infinite; }
+
+/* ─── Pill input focus glow ─── */
+@keyframes pill-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(192,132,252,0.3); }
+  50% { box-shadow: 0 0 0 6px rgba(192,132,252,0.08); }
+}
+
+/* ─── Suggestion fade-in ─── */
+@keyframes suggestion-fade {
+  from { opacity: 0; transform: translateY(-4px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.animate-suggestion { animation: suggestion-fade 0.2s ease-out; }
+
+/* ─── Typing indicator ─── */
+@keyframes typing-dot {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.3; }
+  40% { transform: scale(1); opacity: 1; }
+}
+.typing-dot { animation: typing-dot 1.2s ease-in-out infinite; }
+
+/* ─── Message slide in ─── */
+@keyframes msg-slide {
+  from { opacity: 0; transform: translateY(12px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.animate-msg-slide { animation: msg-slide 0.25s ease-out; }
+
+/* ─── GPU-accelerated animations ─── */
 .gpu {
   transform: translateZ(0);
   backface-visibility: hidden;
@@ -187,6 +246,16 @@ main {
 .content-below {
   content-visibility: auto;
   contain-intrinsic-size: 500px;
+}
+
+/* Hero animated gradient */
+@keyframes hero-gradient {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.animate-hero-gradient {
+  background-size: 200% 200%;
+  animation: hero-gradient 8s ease infinite;
 }
 
 /* Ensure fixed nav doesn't jump on mobile Safari */

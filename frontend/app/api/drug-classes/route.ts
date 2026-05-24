@@ -6,12 +6,12 @@ export async function GET() {
   try {
     const result = await db.execute(sql`
       SELECT 
-        b.therapeutic_class as name,
-        COUNT(*)::int as count
-      FROM brands b
-      WHERE b.therapeutic_class IS NOT NULL
-      GROUP BY b.therapeutic_class
-      ORDER BY b.therapeutic_class ASC
+        g.therapeutic_class as name,
+        COUNT(DISTINCT g.id)::int as count
+      FROM generics g
+      WHERE g.therapeutic_class IS NOT NULL AND g.therapeutic_class != ''
+      GROUP BY g.therapeutic_class
+      ORDER BY g.therapeutic_class ASC
     `);
 
     return NextResponse.json(result.rows, { headers: { 'Cache-Control': 'public, s-maxage=600, stale-while-revalidate=300' } });

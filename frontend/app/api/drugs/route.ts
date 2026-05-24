@@ -13,22 +13,24 @@ export async function GET(request: Request) {
   const offset = (page - 1) * limit;
 
   try {
-    const cacheKey = `drugs:${searchParams.toString()}`;
+    const cacheKey = `drugs-v3:${searchParams.toString()}`;
 
     const responseData = await withCache(cacheKey, 300, async () => {
       let query = sql`
         SELECT 
           b.id::text as id, b.slug, b.brand_name as "brandName", b.generic_name as "genericName",
-          b.dosage_form as "dosageForm", b.strength, b.therapeutic_class as "drugClass",
+          b.dosage_form as "dosageForm", b.strength, g.therapeutic_class as "drugClass",
           b.company_name as "companyName", b.company_name as "company", b.price_unit as price,
           b.image_url as "imageUrl", b.average_rating::float as "averageRating",
           b.review_count as "reviewCount", b.medicine_type as "medicineType",
           false as "brandVerified", false as "priceVerified", false as "genericVerified",
           'brand' as type, COUNT(*) OVER() as total_count
-        FROM brands b WHERE 1=1
+        FROM brands b
+        LEFT JOIN generics g ON b.generic_id = g.id
+        WHERE 1=1
       `;
 
-      if (drugClass) query = sql`${query}${sql` AND b.therapeutic_class ILIKE ${drugClass}`}`;
+      if (drugClass) query = sql`${query}${sql` AND g.therapeutic_class ILIKE ${drugClass}`}`;
       if (medicineType) query = sql`${query}${sql` AND b.medicine_type ILIKE ${medicineType}`}`;
       if (letter === '0-9') query = sql`${query}${sql` AND b.brand_name ~ '^[0-9]'`}`;
       else if (letter) query = sql`${query}${sql` AND b.brand_name ILIKE ${letter + '%'}`}`;

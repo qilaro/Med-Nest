@@ -8,8 +8,8 @@ import { cn } from "@/lib/utils"
 const features = [
   {
     title: "Drug Directory",
-    description: "Browse 20,000+ prescription & OTC drugs with complete medical information.",
-    href: "#",
+    description: "Browse 71,000+ prescription & OTC drugs with complete medical information available in Bangladesh.",
+    href: "/drugs",
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
         <path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"></path>
@@ -19,8 +19,8 @@ const features = [
   },
   {
     title: "Interaction Checker",
-    description: "Check for dangerous drug-drug and drug-food interactions instantly.",
-    href: "#",
+    description: "Check for dangerous drug-drug and drug-food interactions instantly. Review your medications for safety.",
+    href: "/interactions",
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
         <path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"></path>
@@ -29,8 +29,8 @@ const features = [
   },
   {
     title: "Drug Comparison",
-    description: "Compare up to 4 medications side-by-side for informed decisions.",
-    href: "#",
+    description: "Compare medications side-by-side — pricing, ratings, side effects, interactions, and more.",
+    href: "/compare",
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
         <circle cx="18" cy="18" r="3"></circle>
@@ -41,9 +41,9 @@ const features = [
     ),
   },
   {
-    title: "AI Chat",
-    description: "Get quick medication guidance from Med-Nest AI any time you need support.",
-    href: "#",
+    title: "AI Assistant",
+    description: "Get smart medication guidance from Med-Nest AI. Ask anything about your medicines in Bengali or English.",
+    href: "/ai-assistant",
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
         <path d="M12 8V4H8"></path>
@@ -57,8 +57,8 @@ const features = [
   },
   {
     title: "Health News",
-    description: "Stay updated with reliable medicine and wellness stories from experts.",
-    href: "#",
+    description: "Stay updated with the latest medical breakthroughs, drug approvals, and health news from trusted sources.",
+    href: "/news",
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
         <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path>
@@ -66,6 +66,52 @@ const features = [
         <path d="M10 9H8"></path>
         <path d="M16 13H8"></path>
         <path d="M16 17H8"></path>
+      </svg>
+    ),
+  },
+  {
+    title: "Conditions",
+    description: "Browse treatment options for 60+ health conditions. Find medications by disease or symptom.",
+    href: "/indications",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+        <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2 M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v0a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2zm0 0"></path>
+      </svg>
+    ),
+  },
+  {
+    title: "Companies",
+    description: "Explore 298+ pharmaceutical companies in Bangladesh with DGDA license information.",
+    href: "/companies",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+        <circle cx="9" cy="7" r="4"></circle>
+        <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+      </svg>
+    ),
+  },
+  {
+    title: "Generic Ingredients",
+    description: "Browse 4,900+ generic drug ingredients and their brand name equivalents available in Bangladesh.",
+    href: "/generics",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+        <circle cx="12" cy="12" r="10"></circle>
+        <path d="M12 6v12"></path>
+        <path d="M6 12h12"></path>
+      </svg>
+    ),
+  },
+  {
+    title: "Dosage Forms",
+    description: "Browse medications by dosage form — tablets, capsules, syrups, injections, creams, and more.",
+    href: "/dosage-forms",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+        <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
       </svg>
     ),
   },
@@ -99,78 +145,60 @@ export function FeaturesCarousel() {
   )
 
   return (
-    <section className="py-6 sm:py-12 px-4 sm:px-0">
-      <div 
-        className="py-8 sm:py-16 relative overflow-hidden mx-auto" 
-        onKeyDownCapture={handleKeyDown}
-        tabIndex={0}
-        style={{ 
-          backgroundColor: '#E4F1F0', 
-          borderRadius: 'clamp(1.5rem, 4vw, 3rem)', 
-          maxWidth: "1024px", 
-          boxShadow: '0 8px 30px -12px rgba(0, 0, 0, 0.25)',
-          outline: 'none'
-        }}
-      >
-        {/* Gradient Top Line */}
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, transparent 0%, #3b82f6 50%, transparent 100%)' }}></div>
-        
-        <h2 className="text-center font-bold text-navy leading-tight font-serif text-2xl sm:text-4xl mb-6 sm:mb-8" style={{ color: '#0D261E' }}>
-          Your Nest
-        </h2>
+    <section className="py-6 sm:py-8">
+      <div className="mx-auto max-w-[1024px] px-3 sm:px-0">
+        <div className="bg-white rounded-2xl border border-sky-200 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.25)] p-4 sm:p-6">
+          <div className="h-1 w-14 bg-gradient-to-r from-teal-400 to-teal-600 rounded-full mb-3 mx-auto" />
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-5 text-center">
+            Your Nest
+          </h2>
 
-        {/* 1:1 Flex Structure from Reference for exact "Teal Arrow Gap" */}
-        <div className="flex items-center gap-2 sm:gap-4 px-2 sm:px-8">
-          {/* Custom Arrow - Matching Reference CSS */}
-          <button 
-            onClick={scrollPrev}
-            className="flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-full border border-[#cfe1dc] bg-[#eef4f2] text-[#527a6d] hover:bg-[#e4f1f0] hover:text-[#0a5c55] transition-all cursor-pointer shadow-sm z-20"
-            aria-label="Previous feature"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 sm:h-5 sm:w-5"><path d="m15 18-6-6 6-6"></path></svg>
-          </button>
+          <div className="flex items-center gap-2 sm:gap-3" onKeyDownCapture={handleKeyDown} tabIndex={0} style={{ outline: 'none' }}>
+            <button 
+              onClick={scrollPrev}
+              className="flex h-7 w-7 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 hover:bg-teal-50 hover:text-teal-600 hover:border-teal-300 transition-all cursor-pointer shadow-sm z-20"
+              aria-label="Previous feature"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5 sm:h-4 sm:w-4"><path d="m15 18-6-6 6-6"></path></svg>
+            </button>
 
-          {/* Viewport - flex: 1 */}
-          <div className="flex-1 min-w-0 overflow-hidden" ref={emblaRef}>
-            {/* Track - flex gap: 2rem */}
-            <div className="flex gap-4 sm:gap-8">
-              {features.map((feature, index) => (
-                <div 
-                  key={index} 
-                  className="min-w-0 shrink-0 grow-0 basis-full md:basis-[calc((100%-2rem)/2)] lg:basis-[calc((100%-4rem)/3)]"
-                >
-                  <Link 
-                    href={feature.href}
-                    className="block bg-white border border-gray-200 transition-all duration-150 hover:border-primary group h-full rounded-xl sm:rounded-2xl p-4 sm:p-10 min-h-[12rem] sm:min-h-[16rem] flex flex-col"
-                    style={{ boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)' }}
+            <div className="flex-1 min-w-0 overflow-hidden" ref={emblaRef}>
+              <div className="flex gap-3 sm:gap-4">
+                {features.map((feature, index) => (
+                  <div 
+                    key={index} 
+                    className="min-w-0 shrink-0 grow-0 basis-full md:basis-[calc((100%-1.5rem)/2)] lg:basis-[calc((100%-3rem)/3)]"
                   >
-                    {/* Truth Design: Wide Pill Bar with Expansive Shadow */}
-                    <div className="flex justify-center mb-4 sm:mb-6 shrink-0">
-                      <div className="w-[160px] sm:w-[260px] h-[32px] sm:h-[40px] rounded-full bg-white flex items-center justify-center shadow-[0_12px_25px_rgba(0,0,0,0.12)] border border-gray-100/50 relative overflow-hidden">
-                        <div className="relative z-10 group-hover:scale-110 transition-transform duration-300 text-primary">
-                          {feature.icon}
+                    <Link 
+                      href={feature.href}
+                      className="block bg-gradient-to-br from-gray-50 to-white border border-gray-200 hover:border-teal-300 hover:shadow-[0_8px_20px_-8px_rgba(0,0,0,0.1)] transition-all duration-300 group h-full rounded-xl sm:rounded-2xl p-3 sm:p-5 min-h-[9rem] sm:min-h-[12rem] flex flex-col hover:-translate-y-0.5"
+                    >
+                      <div className="flex justify-center mb-2 sm:mb-3 shrink-0">
+                        <div className="w-[120px] sm:w-[200px] h-[26px] sm:h-[34px] rounded-full bg-white flex items-center justify-center shadow-[0_6px_15px_rgba(0,0,0,0.07)] border border-gray-100 relative overflow-hidden">
+                          <div className="relative z-10 group-hover:scale-110 transition-transform duration-300 text-teal-600">
+                            {feature.icon}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    
-                    <h3 className="font-bold text-navy mb-2 sm:mb-3 leading-tight font-serif text-base sm:text-2xl">{feature.title}</h3>
-                    <p className="text-gray-600 leading-relaxed text-xs sm:text-lg">
-                      {feature.description}
-                    </p>
-                  </Link>
-                </div>
-              ))}
+                      
+                      <h3 className="font-bold text-gray-900 mb-1 sm:mb-2 leading-tight text-sm sm:text-lg">{feature.title}</h3>
+                      <p className="text-gray-600 leading-relaxed text-xs sm:text-sm">
+                        {feature.description}
+                      </p>
+                    </Link>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
 
-          {/* Custom Arrow - Right */}
-          <button 
-            onClick={scrollNext}
-            className="flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-full border border-[#cfe1dc] bg-[#eef4f2] text-[#527a6d] hover:bg-[#e4f1f0] hover:text-[#0a5c55] transition-all cursor-pointer shadow-sm z-20"
-            aria-label="Next feature"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 sm:h-5 sm:w-5"><path d="m9 18 6-6-6-6"></path></svg>
-          </button>
+            <button 
+              onClick={scrollNext}
+              className="flex h-7 w-7 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 hover:bg-teal-50 hover:text-teal-600 hover:border-teal-300 transition-all cursor-pointer shadow-sm z-20"
+              aria-label="Next feature"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5 sm:h-4 sm:w-4"><path d="m9 18 6-6-6-6"></path></svg>
+            </button>
+          </div>
         </div>
       </div>
     </section>

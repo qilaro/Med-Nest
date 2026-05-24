@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { sql } from "drizzle-orm";
@@ -11,22 +12,23 @@ interface PageProps {
 async function getCompanyData(slug: string) {
   const name = slug.replace(/-/g, " ").replace(/\s+/g, " ").trim();
 
-  const [info, brandStats] = await Promise.all([
-    db.execute(sql`
-      SELECT * FROM companies WHERE slug ILIKE ${slug} OR name ILIKE ${name}
-      LIMIT 1
-    `),
-    db.execute(sql`
-      SELECT
-        COUNT(DISTINCT b.id)::int as brand_count,
-        COUNT(DISTINCT b.generic_name)::int as generic_count,
-        COUNT(DISTINCT b.therapeutic_class)::int as class_count,
-        COUNT(DISTINCT b.dosage_form)::int as form_count,
-        ROUND(AVG(b.average_rating)::numeric, 1)::float as avg_rating
-      FROM brands b
-      WHERE b.company_name ILIKE ${name}
-    `),
-  ]);
+  const info = await db.execute(sql`
+    SELECT * FROM companies WHERE slug ILIKE ${slug} OR name ILIKE ${name}
+    LIMIT 1
+  `);
+
+  const companyId = info.rows[0]?.id as string | undefined;
+
+  const brandStats = await db.execute(sql`
+    SELECT
+      COUNT(DISTINCT b.id)::int as brand_count,
+      COUNT(DISTINCT b.generic_name)::int as generic_count,
+      COUNT(DISTINCT b.therapeutic_class)::int as class_count,
+      COUNT(DISTINCT b.dosage_form)::int as form_count,
+      ROUND(AVG(b.average_rating)::numeric, 1)::float as avg_rating
+    FROM brands b
+    ${companyId ? sql`WHERE b.company_id = ${companyId}` : sql`WHERE b.company_name ILIKE ${name}`}
+  `);
 
   if (!info.rows[0] && brandStats.rows[0]?.brand_count === 0) return null;
 
@@ -107,7 +109,7 @@ export default async function CompanyDetailPage({ params }: PageProps) {
               <div className="flex flex-col items-center gap-2 shrink-0">
                 <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg border border-white/20">
                   {company.logo_url ? (
-                    <img src={company.logo_url} alt={displayName} className="w-full h-full object-contain p-2" />
+                    <Image src={company.logo_url} alt={displayName} width={96} height={96} className="w-full h-full object-contain p-2" unoptimized />
                   ) : (
                     <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-white/80">
                       <path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/>

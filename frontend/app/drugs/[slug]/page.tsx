@@ -3,7 +3,7 @@ import { getDrugDetail, getAlternateBrands } from "@/lib/services/detailService"
 import { Metadata } from "next";
 import { getDosageIcon } from "@/components/dosage-icons";
 import Link from "next/link";
-import { slugify } from "@/lib/utils/slugify";
+
 import CollapsibleSection from "@/components/drugs/CollapsibleSection";
 import PrintButton from "@/components/drugs/PrintButton";
 
@@ -42,6 +42,32 @@ export default async function DrugDetailPage({ params }: PageProps) {
   const unitPrice = parseFloat(String(drug.price).replace(/[^0-9.]/g, "")) || 0;
   const companySlug = drug.company?.toLowerCase().replace(/\s+/g, "-") || "";
 
+  const LIQUID_FORMS = ["syrup", "suspension", "solution", "shampoo", "lotion", "cream", "ointment", "gel", "drop", "drops", "spray", "inhaler", "sachet", "injection", "infusion"];
+  const isLiquid = LIQUID_FORMS.some(f => drug.dosageForm.toLowerCase().includes(f));
+
+  const stripMatch = drug.packSize?.match(/^(\d+)'s\s+/);
+  const stripSize = stripMatch ? parseInt(stripMatch[1]) : 0;
+  const stripPrice = drug.priceStrip ? parseFloat(String(drug.priceStrip).replace(/[^0-9.]/g, "")) : (stripSize > 0 ? unitPrice * stripSize : 0);
+  const hasStrip = stripSize > 0 && stripPrice > 0;
+  const boxPriceDb = drug.priceBox ? parseFloat(String(drug.priceBox).replace(/[^0-9.]/g, "")) : 0;
+  const boxSize = hasStrip ? (boxPriceDb > 0 ? Math.round(boxPriceDb / stripPrice) : stripSize * 10) : 0;
+  const boxPrice = boxSize > 0 ? (boxPriceDb > 0 ? boxPriceDb : stripPrice * 10) : 0;
+
+  const unitLabel = 'Unit';
+
+  const routeMap: Record<string, string> = {
+    suppository: 'Rectal', injection: 'Parenteral', 'iv injection': 'Parenteral',
+    'im injection': 'Parenteral', 'sc injection': 'Parenteral', infusion: 'Parenteral',
+    'eye drop': 'Ophthalmic', 'ophthalmic solution': 'Ophthalmic', 'ophthalmic ointment': 'Ophthalmic',
+    'ear drop': 'Otic', 'nasal spray': 'Nasal', 'nasal drop': 'Nasal',
+    cream: 'Topical', ointment: 'Topical', gel: 'Topical', lotion: 'Topical', shampoo: 'Topical', soap: 'Topical',
+    inhaler: 'Inhalation', inhalation: 'Inhalation', spray: 'Topical',
+    syrup: 'Oral', suspension: 'Oral', solution: 'Oral', tablet: 'Oral', capsule: 'Oral',
+    drop: 'Topical', drops: 'Topical', sachet: 'Oral', powder: 'Oral',
+  };
+  const formLower = drug.dosageForm.toLowerCase();
+  const route = Object.entries(routeMap).find(([key]) => formLower.includes(key))?.[1] || 'Non Oral';
+
   return (
     <div className="bg-gradient-to-b from-[#c5e0db] via-[#d5e9e7] to-[#e5f2ef] min-h-screen">
       <div className="max-w-[1024px] mx-auto px-3 sm:px-0 py-6">
@@ -70,13 +96,22 @@ export default async function DrugDetailPage({ params }: PageProps) {
                   </div>
                   <span className="text-[10px] font-bold text-teal-700 uppercase tracking-wider leading-tight">{drug.dosageForm}</span>
                 </div>
+                {drug.medicineType && drug.medicineType !== 'Allopathic' && (
+                  <span className={`text-[9px] font-bold text-white px-2 py-0.5 rounded-full ${
+                    drug.medicineType === 'Homeopathic' ? 'bg-violet-500' :
+                    drug.medicineType === 'Ayurvedic' ? 'bg-amber-500' :
+                    drug.medicineType === 'Herbal' ? 'bg-emerald-500' :
+                    drug.medicineType === 'Unani' ? 'bg-rose-500' :
+                    drug.medicineType === 'Supplement' ? 'bg-orange-500' : 'bg-gray-500'
+                  }`}>{drug.medicineType}</span>
+                )}
                 {drug.pronunciation && <span className="text-[14px] text-gray-400 italic w-full">({drug.pronunciation})</span>}
               </div>
               {/* Generic + Route */}
               <div className="flex items-center gap-2 mt-1">
                 <Link href={`/drugs?search=${encodeURIComponent(drug.genericName)}`} className="text-[16px] font-semibold text-teal-600 hover:underline truncate max-w-[200px] sm:max-w-[300px] inline-block align-bottom" title={drug.genericName}>{drug.genericName}</Link>
                 <span className="text-gray-300">|</span>
-                <span className="text-[15px] text-gray-500">Oral</span>
+                <span className="text-[15px] text-gray-500">{route}</span>
               </div>
               {/* Drug Class + Company + Ratings — all inline pills */}
               <div className="flex flex-wrap items-center gap-2 mt-2">
@@ -95,27 +130,53 @@ export default async function DrugDetailPage({ params }: PageProps) {
 
               {/* Pricing — directly below company/pills */}
               {unitPrice > 0 && (
-                <div className="mt-2 flex items-center gap-3">
-                  <div className="inline-flex items-center gap-3 bg-teal-50 border border-teal-200 rounded-lg px-3 py-1.5">
-                    <div className="text-center">
-                      <div className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">Unit</div>
-                      <div className="text-[17px] font-black text-gray-900 leading-none">৳{unitPrice.toFixed(2)}</div>
-                    </div>
-                    <div className="w-px h-7 bg-teal-200" />
-                    <div className="text-center">
-                      <div className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">Strip (10)</div>
-                      <div className="text-[17px] font-black text-teal-700 leading-none">৳{(unitPrice * 10).toFixed(2)}</div>
-                    </div>
-                    <div className="w-px h-7 bg-teal-200" />
-                    <div className="text-center">
-                      <div className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">Box (100)</div>
-                      <div className="text-[14px] font-bold text-gray-500 leading-none">৳{(unitPrice * 100).toFixed(2)}</div>
-                    </div>
+                <div className="mt-2 flex items-center gap-2 sm:gap-3">
+                  <div className="inline-flex items-center gap-2 sm:gap-3 bg-teal-50 border border-teal-200 rounded-lg px-2 sm:px-3 py-1.5">
+                    {isLiquid && (drug.extra as any)?.prices?.length > 0 ? (
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        {(drug.extra as any).prices.map((p: {size: string; price: number}, i: number) => (
+                          <div key={i} className="flex items-center gap-2 sm:gap-3">
+                            {i > 0 && <div className="w-px h-6 sm:h-7 bg-teal-200" />}
+                            <div className="text-center">
+                              <div className="text-[7px] sm:text-[8px] font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">{p.size}</div>
+                              <div className="text-[13px] sm:text-[17px] font-black text-gray-900 leading-none">৳{p.price.toFixed(2)}</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : isLiquid ? (
+                      <div className="text-center">
+                        <div className="text-[7px] sm:text-[8px] font-bold text-gray-500 uppercase tracking-widest">{drug.packSize || drug.dosageForm}</div>
+                        <div className="text-[13px] sm:text-[17px] font-black text-gray-900 leading-none">৳{unitPrice.toFixed(2)}</div>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="text-center">
+                          <div className="text-[10px] sm:text-[12px] font-bold text-gray-500 uppercase tracking-widest">{unitLabel}</div>
+                          <div className="text-[15px] sm:text-[20px] font-black text-gray-900 leading-none">৳{unitPrice.toFixed(2)}</div>
+                        </div>
+                        {hasStrip && (
+                          <>
+                            <div className="w-px h-6 sm:h-7 bg-teal-200" />
+                            <div className="text-center min-w-[70px] sm:min-w-[85px]">
+                              <div className="text-[10px] sm:text-[12px] font-bold text-teal-700 uppercase tracking-widest">Strip ({stripSize})</div>
+                              <div className="text-[15px] sm:text-[20px] font-black text-teal-700 leading-none">৳{stripPrice.toFixed(2)}</div>
+                            </div>
+                          </>
+                        )}
+                        {boxSize > 0 && boxPrice < 50000 && (
+                          <>
+                            <div className="w-px h-6 sm:h-7 bg-teal-200" />
+                            <div className="text-center min-w-[70px] sm:min-w-[85px]">
+                              <div className="text-[10px] sm:text-[12px] font-bold text-emerald-700 uppercase tracking-widest">Box ({boxSize})</div>
+                              <div className="text-[13px] sm:text-[17px] font-black text-emerald-700 leading-none">৳{boxPrice.toFixed(2)}</div>
+                            </div>
+                          </>
+                        )}
+                      </>
+                    )}
                   </div>
                   <PrintButton />
-                  {drug.darNumber && (
-                    <span className="inline-block ml-3 text-[11px] text-gray-400 font-medium">DAR: {drug.darNumber}</span>
-                  )}
                 </div>
               )}
             </div>
@@ -135,7 +196,8 @@ export default async function DrugDetailPage({ params }: PageProps) {
 
           <hr className="my-4 border-gray-100" />
 
-          {/* ===== ALTERNATE BRANDS + ALTERNATE VERSIONS (stacked) + DRUG STATUS (side) ===== */}
+          {/* ===== ALTERNATE BRANDS + ALTERNATE VERSIONS + DRUG STATUS (side-by-side) ===== */}
+          {(alternateBrands.length > 0 || alternateVersions.length > 0) && (
           <div className="flex flex-col lg:flex-row gap-6 mb-6 pb-6 border-b border-gray-100">
             <div className="flex-1 min-w-0 space-y-2">
               {/* Alternate Brands — different companies, same generic */}
@@ -159,7 +221,7 @@ export default async function DrugDetailPage({ params }: PageProps) {
                           </div>
                           {brand.dosageForm && (() => {
                             const f = brand.dosageForm.toLowerCase();
-                            const label = f.includes("tablet") ? "Tab" : f.includes("capsule") ? "Cap" : f.includes("syrup") ? "Syr" : f.includes("suspension") ? "Susp" : f.includes("drop") ? "Drop" : f.includes("injection") || f.includes("infusion") ? "Inj" : f.includes("sachet") ? "Sach" : f.includes("cream") || f.includes("ointment") ? "Crm" : f.includes("spray") ? "Spr" : f.includes("powder") ? "Pwd" : f.includes("suppository") ? "Sup" : f.split(" ")[0];
+                            const label = f.includes("tablet") ? "Tab" : f.includes("capsule") ? "Cap" : f.includes("syrup") ? "Syr" : f.includes("suspension") ? "Susp" : f.includes("drop") ? "Drop" : f.includes("injection") ? "Inj" : f.includes("infusion") ? "IV Inf" : f.includes("sachet") ? "Sach" : f.includes("shampoo") ? "Shampoo" : f.includes("lotion") ? "Ltn" : f.includes("cream") || f.includes("ointment") ? "Crm" : f.includes("spray") ? "Spr" : f.includes("powder") ? "Pwd" : f.includes("suppository") ? "Sup" : f.split(" ")[0];
                             return <span className="text-[7px] font-bold text-amber-600 uppercase tracking-wider text-center leading-tight">{label}</span>;
                           })()}
                         </div>
@@ -201,7 +263,7 @@ export default async function DrugDetailPage({ params }: PageProps) {
                           </div>
                           {brand.dosageForm && (() => {
                             const f = brand.dosageForm.toLowerCase();
-                            const label = f.includes("tablet") ? "Tab" : f.includes("capsule") ? "Cap" : f.includes("syrup") ? "Syr" : f.includes("suspension") ? "Susp" : f.includes("drop") ? "Drop" : f.includes("injection") || f.includes("infusion") ? "Inj" : f.includes("sachet") ? "Sach" : f.includes("cream") || f.includes("ointment") ? "Crm" : f.includes("spray") ? "Spr" : f.includes("powder") ? "Pwd" : f.includes("suppository") ? "Sup" : f.split(" ")[0];
+                            const label = f.includes("tablet") ? "Tab" : f.includes("capsule") ? "Cap" : f.includes("syrup") ? "Syr" : f.includes("suspension") ? "Susp" : f.includes("drop") ? "Drop" : f.includes("injection") ? "Inj" : f.includes("infusion") ? "IV Inf" : f.includes("sachet") ? "Sach" : f.includes("shampoo") ? "Shampoo" : f.includes("lotion") ? "Ltn" : f.includes("cream") || f.includes("ointment") ? "Crm" : f.includes("spray") ? "Spr" : f.includes("powder") ? "Pwd" : f.includes("suppository") ? "Sup" : f.split(" ")[0];
                             return <span className="text-[7px] font-bold text-teal-600 uppercase tracking-wider text-center leading-tight">{label}</span>;
                           })()}
                         </div>
@@ -243,35 +305,30 @@ export default async function DrugDetailPage({ params }: PageProps) {
                   <span className="w-7 h-7 rounded-lg bg-teal-100 flex items-center justify-center text-teal-600 shrink-0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
                   <div><div className="text-[13px] font-bold text-gray-900">Prescription Required</div><div className="text-[11px] text-gray-500">Rx medication</div></div>
                 </div>
-                {drug.pregnancyCategory && drug.pregnancyCategory !== "Information not available." && (
+                {drug.pregnancyCategory && drug.pregnancyCategory !== "Information not available." && drug.pregnancyCategory !== "N/A" && (
                   <div className="flex items-center gap-2 py-1 border-b border-gray-100">
                     <span className="w-7 h-7 rounded-lg bg-amber-100 flex items-center justify-center text-amber-600 shrink-0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
                     <div><div className="text-[13px] font-bold text-gray-900">Pregnancy Category {drug.pregnancyCategory}</div><div className="text-[11px] text-gray-500">Pregnancy &amp; Lactation</div></div>
                   </div>
                 )}
-                {drug.darNumber && (
+                {drug.darNumber && drug.darNumber !== "N/A" && (
                   <div className="flex items-center gap-2 py-1 border-b border-gray-100">
                     <span className="w-7 h-7 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 shrink-0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
                     <div><div className="text-[13px] font-bold text-gray-900">DAR: {drug.darNumber}</div><div className="text-[11px] text-gray-500">Authorization No.</div></div>
                   </div>
                 )}
-                {drug.csaSchedule && drug.csaSchedule !== "Information not available." && (
+                {drug.csaSchedule && drug.csaSchedule !== "Information not available." && drug.csaSchedule !== "N/A" && (
                   <div className="flex items-center gap-2 py-1 border-b border-gray-100">
                     <span className="w-7 h-7 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600 shrink-0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></span>
                     <div><div className="text-[13px] font-bold text-gray-900">{drug.csaSchedule}</div><div className="text-[11px] text-gray-500">CSA Schedule</div></div>
                   </div>
                 )}
-                {drug.halfLife && drug.halfLife !== "Information not available." && (
+                {drug.halfLife && drug.halfLife !== "Information not available." && drug.halfLife !== "Not applicable" && (
                   <div className="flex items-center gap-3 py-2">
                     <span className="w-7 h-7 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 shrink-0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
                     <div><div className="text-[13px] font-bold text-gray-900">{drug.halfLife}</div><div className="text-[11px] text-gray-500">Half-Life</div></div>
                   </div>
                 )}
-                {/* DAR Number — always show */}
-                <div className="flex items-center gap-2 py-1 border-b border-gray-100">
-                  <span className="w-7 h-7 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 shrink-0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
-                  <div><div className="text-[13px] font-bold text-gray-900">{drug.darNumber || "N/A"}</div><div className="text-[11px] text-gray-500">DAR Authorization</div></div>
-                </div>
               </div>
               {/* User Reviews & Ratings — inside status card, green bar style */}
               <div className="border-t border-gray-100">
@@ -287,6 +344,7 @@ export default async function DrugDetailPage({ params }: PageProps) {
             </div>
             </div>
           </div>
+          )}
 
           {/* ===== IN-PAGE NAV ===== */}
           <div className="-mx-7 sm:-mx-9 px-7 sm:px-9 py-2 border-b border-gray-100/50">
@@ -390,25 +448,25 @@ export default async function DrugDetailPage({ params }: PageProps) {
             <section id="section-before-taking" className="scroll-mt-24 target:bg-teal-50/60 target:rounded-lg transition-all duration-300">
               <CollapsibleSection title="Before Taking">
                 <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
-                  {drug.pregnancyCategory && drug.pregnancyCategory !== "Information not available." && (
+                  {drug.pregnancyCategory && drug.pregnancyCategory !== "Information not available." && drug.pregnancyCategory !== "N/A" && (
                     <div className="rounded-lg bg-amber-50 border border-amber-100 p-3">
                       <div className="text-[11px] font-bold text-amber-700 uppercase tracking-wider mb-0.5">Pregnancy</div>
                       <div className="text-[16px] font-bold text-gray-900">Category {drug.pregnancyCategory}</div>
                     </div>
                   )}
-                  {drug.csaSchedule && drug.csaSchedule !== "Information not available." && (
+                  {drug.csaSchedule && drug.csaSchedule !== "Information not available." && drug.csaSchedule !== "N/A" && (
                     <div className="rounded-lg bg-purple-50 border border-purple-100 p-3">
                       <div className="text-[11px] font-bold text-purple-700 uppercase tracking-wider mb-0.5">CSA Schedule</div>
                       <div className="text-[16px] font-bold text-gray-900">{drug.csaSchedule}</div>
                     </div>
                   )}
-                  {drug.halfLife && drug.halfLife !== "Information not available." && (
+                  {drug.halfLife && drug.halfLife !== "Information not available." && drug.halfLife !== "Not applicable" && (
                     <div className="rounded-lg bg-blue-50 border border-blue-100 p-3">
                       <div className="text-[11px] font-bold text-blue-700 uppercase tracking-wider mb-0.5">Half-Life</div>
                       <div className="text-[16px] font-bold text-gray-900">{drug.halfLife}</div>
                     </div>
                   )}
-                  {drug.darNumber && (
+                  {drug.darNumber && drug.darNumber !== "N/A" && (
                     <div className="rounded-lg bg-teal-50 border border-teal-100 p-3">
                       <div className="text-[11px] font-bold text-teal-700 uppercase tracking-wider mb-0.5">DGDA DAR</div>
                       <div className="text-[16px] font-bold text-gray-900">{drug.darNumber}</div>

@@ -29,6 +29,12 @@ const getDosageLabel = (form: string) => {
   if (f.includes("drop")) return "Drop";
   if (f.includes("injection")) return "Inj";
   if (f.includes("sachet")) return "Sach";
+  if (f.includes("shampoo")) return "Shampoo";
+  if (f.includes("lotion")) return "Ltn";
+  if (f.includes("cream")) return "Crm";
+  if (f.includes("ointment")) return "Oint";
+  if (f.includes("spray")) return "Spr";
+  if (f.includes("powder")) return "Pwd";
   return f.split(' ')[0];
 };
 
@@ -115,6 +121,7 @@ export default function DrugCard({ drug }: DrugCardProps) {
               {drug.price && (
                 <span className="text-sm font-bold text-gray-800 bg-gray-100 px-2 py-0.5 rounded-md border border-gray-200" title={(drug as any).packSize ? `৳ ${drug.price.replace(/[^0-9.]/g, '')} / ${(drug as any).packSize}` : `৳ ${drug.price.replace(/[^0-9.]/g, '')} per unit`}>
                   <span className="text-teal-600">৳</span> {drug.price.replace(/[^0-9.]/g, '')}
+                  <span className="text-[9px] text-gray-400 font-normal ml-0.5">/{((drug as any).packSize ? (drug as any).packSize.replace(/'\s*strip/i,'').trim() : 'unit')}</span>
                 </span>
               )}
               {drug.averageRating !== undefined && (
