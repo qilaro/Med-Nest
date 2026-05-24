@@ -1,5 +1,5 @@
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
-const GROQ_API_KEY = process.env.GROQ_API_KEY || "";
+const GROQ_API_KEY = process.env.GROQ_API_KEY || process.env.Groq_API_Key || "";
 const EMBEDDING_MODEL = "gemini-embedding-001";
 const CHAT_MODEL = "llama-3.3-70b-versatile";
 const GROQ_BASE = "https://api.groq.com/openai/v1";
