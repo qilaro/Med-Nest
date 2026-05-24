@@ -82,28 +82,29 @@ export async function POST(req: NextRequest) {
         // PRICE QUERY: concise table, no generic info
         if (isPriceQuery && brands.length > 0) {
           context = `PRICING DATA: ${d.name}\n`;
-          context += "Brand | Strength | Form | Company | Unit Price | Strip Price | Pack\n";
-          context += brands.map((b: any) => {
-            const unit = b.price_unit ? `৳${parseFloat(b.price_unit).toFixed(2)}` : "-";
-            const strip = b.price_strip ? `৳${parseFloat(b.price_strip).toFixed(2)}` : "-";
-            return `${b.brand_name} | ${b.strength || "-"} | ${b.dosage_form || "-"} | ${b.company_name || "-"} | ${unit} | ${strip} | ${b.pack_size || "-"}`;
-          }).join("\n");
-          // Filter to only matching brands if user asked for a specific one
+
+          // Find if user asked about a specific brand
           const brandKeyword = keywords.find((k: string) => k.length > 2 && !["price","cost","mg","tablet","capsule","dose","dosage","how","much","per","rate","cheap","expensive","total"].includes(k) && brands.some((b: any) => b.brand_name.toLowerCase().includes(k)));
+
           if (brandKeyword) {
             const filtered = brands.filter((b: any) => b.brand_name.toLowerCase().includes(brandKeyword));
             if (filtered.length > 0) {
-              // Put the matching brands at top
-              const others = brands.filter((b: any) => !b.brand_name.toLowerCase().includes(brandKeyword));
-              context += "\n\nMATCHED BRANDS (user asked about " + brandKeyword + "):\n";
+              context += `MATCHED BRANDS (${brandKeyword}):\n`;
               context += "Brand | Strength | Form | Unit Price | Strip Price | Pack\n";
-              const matchedLines = filtered.map((b: any) => {
+              context += filtered.map((b: any) => {
                 const unit = b.price_unit ? `৳${parseFloat(b.price_unit).toFixed(2)}` : "-";
                 const strip = b.price_strip ? `৳${parseFloat(b.price_strip).toFixed(2)}` : "-";
                 return `${b.brand_name} | ${b.strength || "-"} | ${b.dosage_form || "-"} | ${unit} | ${strip} | ${b.pack_size || "-"}`;
-              });
-              context += matchedLines.join("\n");
+              }).join("\n");
             }
+          } else {
+            // No specific brand - show first 30 brands
+            context += "Brand | Strength | Form | Unit Price | Strip Price | Pack\n";
+            context += brands.slice(0, 30).map((b: any) => {
+              const unit = b.price_unit ? `৳${parseFloat(b.price_unit).toFixed(2)}` : "-";
+              const strip = b.price_strip ? `৳${parseFloat(b.price_strip).toFixed(2)}` : "-";
+              return `${b.brand_name} | ${b.strength || "-"} | ${b.dosage_form || "-"} | ${unit} | ${strip} | ${b.pack_size || "-"}`;
+            }).join("\n");
           }
         }
         // GENERAL QUERY: existing approach
