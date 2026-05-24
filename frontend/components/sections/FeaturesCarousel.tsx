@@ -98,9 +98,9 @@ const features = [
     href: "/generics",
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
-        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-        <circle cx="8.5" cy="8.5" r="1.5"></circle>
-        <polyline points="21 15 16 10 5 21"></polyline>
+        <circle cx="12" cy="12" r="10"></circle>
+        <path d="M12 6v12"></path>
+        <path d="M6 12h12"></path>
       </svg>
     ),
   },
@@ -145,77 +145,60 @@ export function FeaturesCarousel() {
   )
 
   return (
-    <section className="py-6 sm:py-12 px-4 sm:px-0">
-      <div 
-        className="py-8 sm:py-16 relative overflow-hidden mx-auto" 
-        onKeyDownCapture={handleKeyDown}
-        tabIndex={0}
-        style={{ 
-          backgroundColor: '#E4F1F0', 
-          borderRadius: 'clamp(1.5rem, 4vw, 3rem)', 
-          maxWidth: "1024px", 
-          boxShadow: '0 8px 30px -12px rgba(0, 0, 0, 0.25)',
-          outline: 'none'
-        }}
-      >
-        {/* Gradient Top Line */}
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, transparent 0%, #3b82f6 50%, transparent 100%)' }}></div>
-        
-        <h2 className="text-center font-bold text-navy leading-tight font-serif text-2xl sm:text-4xl mb-6 sm:mb-8" style={{ color: '#0D261E' }}>
-          Your Nest
-        </h2>
+    <section className="py-6 sm:py-8">
+      <div className="mx-auto max-w-[1024px] px-3 sm:px-0">
+        <div className="bg-white rounded-2xl border border-sky-200 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.25)] p-4 sm:p-6">
+          <div className="h-1 w-14 bg-gradient-to-r from-teal-400 to-teal-600 rounded-full mb-3 mx-auto" />
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-5 text-center">
+            Your Nest
+          </h2>
 
-        {/* 1:1 Flex Structure from Reference for exact "Teal Arrow Gap" */}
-        <div className="flex items-center gap-2 sm:gap-4 px-2 sm:px-8">
-          {/* Custom Arrow - Matching Reference CSS */}
-          <button 
-            onClick={scrollPrev}
-            className="flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-full border border-[#cfe1dc] bg-[#eef4f2] text-[#527a6d] hover:bg-[#e4f1f0] hover:text-[#0a5c55] transition-all cursor-pointer shadow-sm z-20"
-            aria-label="Previous feature"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 sm:h-5 sm:w-5"><path d="m15 18-6-6 6-6"></path></svg>
-          </button>
+          <div className="flex items-center gap-2 sm:gap-3" onKeyDownCapture={handleKeyDown} tabIndex={0} style={{ outline: 'none' }}>
+            <button 
+              onClick={scrollPrev}
+              className="flex h-7 w-7 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 hover:bg-teal-50 hover:text-teal-600 hover:border-teal-300 transition-all cursor-pointer shadow-sm z-20"
+              aria-label="Previous feature"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5 sm:h-4 sm:w-4"><path d="m15 18-6-6 6-6"></path></svg>
+            </button>
 
-          {/* Viewport - flex: 1 */}
-          <div className="flex-1 min-w-0 overflow-hidden" ref={emblaRef}>
-            {/* Track - flex gap: 2rem */}
-            <div className="flex gap-5 sm:gap-8">
-              {features.map((feature, index) => (
-                <div 
-                  key={index} 
-                  className="min-w-0 shrink-0 grow-0 basis-full md:basis-[calc((100%-2.5rem)/2)] lg:basis-[calc((100%-5rem)/3)]"
-                >
-                  <Link 
-                    href={feature.href}
-                    className="block bg-white border border-gray-200 hover:border-teal-300 hover:shadow-md transition-all duration-200 group h-full rounded-xl sm:rounded-2xl p-4 sm:p-8 min-h-[12rem] sm:min-h-[16rem] flex flex-col"
+            <div className="flex-1 min-w-0 overflow-hidden" ref={emblaRef}>
+              <div className="flex gap-3 sm:gap-4">
+                {features.map((feature, index) => (
+                  <div 
+                    key={index} 
+                    className="min-w-0 shrink-0 grow-0 basis-full md:basis-[calc((100%-1.5rem)/2)] lg:basis-[calc((100%-3rem)/3)]"
                   >
-                    {/* Truth Design: Wide Pill Bar with Expansive Shadow */}
-                    <div className="flex justify-center mb-4 sm:mb-6 shrink-0">
-                      <div className="w-[160px] sm:w-[260px] h-[32px] sm:h-[40px] rounded-full bg-white flex items-center justify-center shadow-[0_12px_25px_rgba(0,0,0,0.12)] border border-gray-100/50 relative overflow-hidden">
-                        <div className="relative z-10 group-hover:scale-110 transition-transform duration-300 text-primary">
-                          {feature.icon}
+                    <Link 
+                      href={feature.href}
+                      className="block bg-gradient-to-br from-gray-50 to-white border border-gray-200 hover:border-teal-300 hover:shadow-[0_8px_20px_-8px_rgba(0,0,0,0.1)] transition-all duration-300 group h-full rounded-xl sm:rounded-2xl p-3 sm:p-5 min-h-[9rem] sm:min-h-[12rem] flex flex-col hover:-translate-y-0.5"
+                    >
+                      <div className="flex justify-center mb-2 sm:mb-3 shrink-0">
+                        <div className="w-[120px] sm:w-[200px] h-[26px] sm:h-[34px] rounded-full bg-white flex items-center justify-center shadow-[0_6px_15px_rgba(0,0,0,0.07)] border border-gray-100 relative overflow-hidden">
+                          <div className="relative z-10 group-hover:scale-110 transition-transform duration-300 text-teal-600">
+                            {feature.icon}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    
-                    <h3 className="font-bold text-navy mb-2 sm:mb-3 leading-tight font-serif text-base sm:text-2xl">{feature.title}</h3>
-                    <p className="text-gray-600 leading-relaxed text-xs sm:text-lg">
-                      {feature.description}
-                    </p>
-                  </Link>
-                </div>
-              ))}
+                      
+                      <h3 className="font-bold text-gray-900 mb-1 sm:mb-2 leading-tight text-sm sm:text-lg">{feature.title}</h3>
+                      <p className="text-gray-600 leading-relaxed text-xs sm:text-sm">
+                        {feature.description}
+                      </p>
+                    </Link>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
 
-          {/* Custom Arrow - Right */}
-          <button 
-            onClick={scrollNext}
-            className="flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-full border border-[#cfe1dc] bg-[#eef4f2] text-[#527a6d] hover:bg-[#e4f1f0] hover:text-[#0a5c55] transition-all cursor-pointer shadow-sm z-20"
-            aria-label="Next feature"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 sm:h-5 sm:w-5"><path d="m9 18 6-6-6-6"></path></svg>
-          </button>
+            <button 
+              onClick={scrollNext}
+              className="flex h-7 w-7 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 hover:bg-teal-50 hover:text-teal-600 hover:border-teal-300 transition-all cursor-pointer shadow-sm z-20"
+              aria-label="Next feature"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5 sm:h-4 sm:w-4"><path d="m9 18 6-6-6-6"></path></svg>
+            </button>
+          </div>
         </div>
       </div>
     </section>

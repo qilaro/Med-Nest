@@ -1,5 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
+
+export const viewport: Viewport = {
+  interactiveWidget: "resizes-content",
+};
 import EmergencyBanner from "@/components/layout/EmergencyBanner";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -32,7 +36,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-      <html lang="en" className={cn("h-full antialiased", "font-sans", notoSans.variable, playfairDisplayHeading.variable)}>
+      <html lang="en" data-scroll-behavior="smooth" className={cn("h-full antialiased", "font-sans", notoSans.variable, playfairDisplayHeading.variable)}>
         <body className="min-h-full flex flex-col font-serif relative" suppressHydrationWarning>
           <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
             '@context': 'https://schema.org',

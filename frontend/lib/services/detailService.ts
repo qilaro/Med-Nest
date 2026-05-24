@@ -41,6 +41,7 @@ export interface DrugDetailResult {
   slug: string;
   brandName: string;
   genericName: string;
+  medicineType: string | null;
   pronunciation: string | null;
   dosageForm: string;
   strength: string;
@@ -76,6 +77,7 @@ export interface DrugDetailResult {
   commonQuestions: Array<{question: string; answer: string}>;
   patientTips: string[];
   type: string;
+  extra: Record<string, unknown>;
 }
 
 export async function getDrugDetail(slug: string): Promise<DrugDetailResult | null> {
@@ -96,6 +98,8 @@ export async function getDrugDetail(slug: string): Promise<DrugDetailResult | nu
         b.price_strip,
         b.price_box,
         b.pack_size as pack_size,
+        b.medicine_type as medicine_type,
+        b.extra as extra,
         b.image_url as image_url,
         b.average_rating,
         b.review_count,
@@ -132,6 +136,7 @@ export async function getDrugDetail(slug: string): Promise<DrugDetailResult | nu
         slug: String(d.slug || ''),
         brandName: String(d.brand_name || ''),
         genericName: String(d.generic_name || ''),
+        medicineType: d.medicine_type ? String(d.medicine_type) : null,
         dosageForm: String(d.dosage_form || ''),
         strength: String(d.strength || ''),
         drugClass: d.therapeutic_class ? String(d.therapeutic_class) : null,
@@ -143,13 +148,14 @@ export async function getDrugDetail(slug: string): Promise<DrugDetailResult | nu
         priceStrip: d.price_strip ? String(d.price_strip) : null,
         priceBox: d.price_box ? String(d.price_box) : null,
         packSize: d.pack_size ? String(d.pack_size) : null,
+        extra: d.extra && typeof d.extra === 'object' ? d.extra as Record<string, unknown> : {},
         imageUrl: d.image_url ? String(d.image_url) : null,
         averageRating: Number(d.average_rating) || 0,
         reviewCount: Number(d.review_count) || 0,
         indications: String(d.indications || "Information not available."),
         sideEffects: String(d.side_effects || "Information not available."),
         interactions: String(d.interactions || "Information not available."),
-        dosage: String(d.dosage || "As directed by physician."),
+        dosage: String(d.dosage || "Information not available."),
         contraindications: String(d.contraindications || "Information not available."),
         precautions: String(d.precautions || "Information not available."),
         pregnancyLactation: String(d.pregnancy_lactation || "Information not available."),

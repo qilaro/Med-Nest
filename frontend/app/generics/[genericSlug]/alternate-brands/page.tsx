@@ -1,8 +1,9 @@
-import { drugService } from "@/lib/services/drugService";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import DrugCard from "@/components/drugs/DrugCard";
 import { Card, CardContent } from "@/components/ui/card";
+import { db } from "@/lib/db";
+import { sql } from "drizzle-orm";
 
 interface PageProps {
   params: Promise<{ genericSlug: string }>;
@@ -11,7 +12,10 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { genericSlug } = await params;
-  const name = genericSlug.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
+  const result = await db.execute(sql`
+    SELECT name FROM generics WHERE slug = ${genericSlug} LIMIT 1
+  `);
+  const name = result.rows[0]?.name || genericSlug.replace(/-/g, ' ');
   return {
     title: `${name} Brand Names in Bangladesh | Alternate Brands`,
   };
@@ -20,16 +24,24 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function GenericBrandsPage({ params, searchParams }: PageProps) {
   const { genericSlug } = await params;
   
-  const allDrugs = await drugService.getDrugs({ limit: 1000 });
+  // Get generic by slug
+  const genResult = await db.execute(sql`
+    SELECT id, name FROM generics WHERE slug = ${genericSlug} LIMIT 1
+  `);
+  if (genResult.rows.length === 0) notFound();
+  const genericId = (genResult.rows[0] as any).id;
+  const genericName = (genResult.rows[0] as any).name;
   
-  // Find all drugs matching the generic (slug-based match)
-  const brands = allDrugs.drugs.filter(
-    d => d.genericName.toLowerCase().replace(/\s+/g, '-') === genericSlug
-  );
-
-  if (brands.length === 0) notFound();
-
-  const genericName = brands[0].genericName;
+  // Get all brands for this generic
+  const brandResult = await db.execute(sql`
+    SELECT b.brand_name as name, b.slug, b.strength, b.dosage_form as "dosageForm",
+           b.price_unit as price, b.pack_size as "packSize",
+           b.generic_name as "genericName", b.company_name as company,
+           b.is_otc as "isOTC", b.medicine_type as "medicineType"
+    FROM brands b WHERE b.generic_id = ${genericId}
+    ORDER BY b.brand_name
+  `);
+  const brands = brandResult.rows as any[];
   const companies = Array.from(new Set(brands.map(b => b.company))).sort();
   const forms = Array.from(new Set(brands.map(b => b.dosageForm))).sort();
 

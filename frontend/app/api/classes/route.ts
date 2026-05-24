@@ -14,40 +14,41 @@ export async function GET(request: Request) {
   const letter = searchParams.get('letter') || '';
 
   try {
-    const cacheKey = `classes:${searchParams.toString()}`;
+    const cacheKey = `classes-v2:${searchParams.toString()}`;
 
     const responseData = await withCache(cacheKey, 300, async () => {
       let query = sql`
         SELECT 
-          b.therapeutic_class as name,
-          COUNT(*)::int as brand_count,
-          COUNT(DISTINCT b.generic_name)::int as generic_count,
-          ROUND(AVG(b.average_rating)::numeric, 1)::float as avg_rating,
+          g.therapeutic_class as name,
+          COUNT(DISTINCT b.id)::int as brand_count,
+          COUNT(DISTINCT g.name)::int as generic_count,
+          ROUND(COALESCE(AVG(b.average_rating), 0)::numeric, 1)::float as avg_rating,
           COUNT(*) OVER() as total_count
-        FROM brands b
-        WHERE b.therapeutic_class IS NOT NULL AND b.therapeutic_class != ''
+        FROM generics g
+        LEFT JOIN brands b ON b.generic_id = g.id
+        WHERE g.therapeutic_class IS NOT NULL AND g.therapeutic_class != ''
       `;
 
       if (searchQuery) {
         const like = '%' + searchQuery + '%';
-        query = sql`${query}${sql` AND b.therapeutic_class ILIKE ${like}`}`;
+        query = sql`${query}${sql` AND g.therapeutic_class ILIKE ${like}`}`;
       }
       if (drugClass) {
-        query = sql`${query}${sql` AND b.therapeutic_class ILIKE ${drugClass}`}`;
+        query = sql`${query}${sql` AND g.therapeutic_class ILIKE ${drugClass}`}`;
       }
       if (medicineType) {
-        query = sql`${query}${sql` AND b.medicine_type ILIKE ${medicineType}`}`;
+        query = sql`${query}${sql` AND g.medicine_type ILIKE ${medicineType}`}`;
       }
       if (letter) {
         if (letter === '0-9') {
-          query = sql`${query}${sql` AND b.therapeutic_class ~ '^[0-9]'`}`;
+          query = sql`${query}${sql` AND g.therapeutic_class ~ '^[0-9]'`}`;
         } else {
-          query = sql`${query}${sql` AND b.therapeutic_class ILIKE ${letter + '%'}`}`;
+          query = sql`${query}${sql` AND g.therapeutic_class ILIKE ${letter + '%'}`}`;
         }
       }
 
       query = sql`${query}${sql`
-        GROUP BY b.therapeutic_class
+        GROUP BY g.therapeutic_class
         ORDER BY brand_count DESC
         LIMIT ${limit} OFFSET ${offset}
       `}`;

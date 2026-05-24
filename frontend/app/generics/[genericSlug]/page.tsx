@@ -10,10 +10,23 @@ interface PageProps {
 }
 
 async function getGeneric(slug: string) {
-  const name = decodeURIComponent(slug)
-    .replace(/[+]/g, " ").replace(/-/g, " ").replace(/\s+/g, " ").trim();
+  // First try exact slug match
+  let result = await db.execute(sql`
+    SELECT g.id, g.name, g.pronunciation, g.therapeutic_class, g.indications, g.side_effects,
+           g.warnings, g.precautions, g.contraindications, g.pregnancy_lactation,
+           g.dosage, g.interactions, g.pregnancy_category, g.csa_schedule, g.half_life,
+           g.storage_conditions, g.overdose_effects, g.special_populations, g.what_is,
+           (SELECT COUNT(*) FROM brands WHERE generic_id = g.id)::int as brand_count
+    FROM generics g WHERE g.slug = ${slug} LIMIT 1
+  `);
+  if (result.rows[0]) return result.rows[0] as any;
 
-  const result = await db.execute(sql`
+  // Fallback: decode slug and strip trailing unique number suffix
+  let name = decodeURIComponent(slug)
+    .replace(/[+]/g, " ").replace(/-/g, " ").replace(/\s+/g, " ").trim()
+    .replace(/\s*\d+$/, ''); // Remove trailing numbers from unique slug suffixes
+
+  result = await db.execute(sql`
     SELECT g.id, g.name, g.pronunciation, g.therapeutic_class, g.indications, g.side_effects,
            g.warnings, g.precautions, g.contraindications, g.pregnancy_lactation,
            g.dosage, g.interactions, g.pregnancy_category, g.csa_schedule, g.half_life,

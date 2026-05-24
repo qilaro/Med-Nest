@@ -28,7 +28,7 @@ export async function GET(request: Request) {
       brandCount: Number(r.brand_count) || 0,
       medicineType: r.medicine_type ? String(r.medicine_type) : null,
       therapeuticClass: r.therapeutic_class ? String(r.therapeutic_class) : null,
-    })));
+    }), { headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=30' } }));
   } catch (error) {
     console.error('Search error:', error);
     return NextResponse.json({ error: 'Search failed' }, { status: 500 });

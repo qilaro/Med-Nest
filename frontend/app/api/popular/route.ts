@@ -21,7 +21,7 @@ export async function GET() {
         AND price_unit > 0
         AND brand_name IS NOT NULL
         AND slug IS NOT NULL
-      ORDER BY price_unit DESC NULLS LAST, brand_name ASC
+      ORDER BY average_rating DESC NULLS LAST, brand_name ASC
       LIMIT 8
     `);
     return NextResponse.json(

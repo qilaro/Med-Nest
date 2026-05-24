@@ -189,6 +189,9 @@ export const brands = pgTable('brands', {
   packImages: jsonb('pack_images'),
   monographUrl: text('monograph_url'),
 
+  // Extensibility
+  extra: jsonb('extra').default('{}'),
+
   // Metadata
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
@@ -255,6 +258,19 @@ export const drugInteractions = pgTable('drug_interactions', {
   description: text('description').notNull(),
   mechanism: text('mechanism'),
   management: text('management'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+/**
+ * AI_TRAINING_DATA TABLE
+ * Collects real Q&A pairs from users for future fine-tuning
+ */
+export const aiTrainingData = pgTable('ai_training_data', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  question: text('question').notNull(),
+  geminiAnswer: text('gemini_answer').notNull(),
+  drugContext: text('drug_context'),
+  userLanguage: varchar('user_language', { length: 10 }).default('en'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
