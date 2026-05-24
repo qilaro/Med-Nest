@@ -67,8 +67,9 @@ export async function POST(req: NextRequest) {
     let context = "";
     if (drugs.length > 0) {
       const d = drugs[0];
-      const brands = d.matched_brands ? ` The user's search term matches the brand(s): ${d.matched_brands}.` : "";
-      context = `GENERIC NAME: ${d.name}.${brands}\nTherapeutic Class: ${d.therapeutic_class || "Not classified"}\nUses: ${d.indications || "Not in database"}\nSide Effects: ${d.side_effects || "Not in database"}\nDosage: ${d.dosage || "Not in database"}\nWarnings: ${d.warnings || "Not in database"}`;
+      const brands = d.matched_brands ? ` Matches brand(s): ${d.matched_brands}.` : "";
+
+      context = `Drug: ${d.name}.${brands}`;
 
       // Fetch brands with pricing for this generic
       try {
@@ -82,17 +83,26 @@ export async function POST(req: NextRequest) {
           LIMIT 30
         `);
         if (brandRows.rows.length > 0) {
-          context += "\n\nAVAILABLE BRANDS:\n";
+          context += "\n\nBrands with pricing:\n";
           const lines = (brandRows.rows as any[]).map((b, i) => {
-            let line = `${i + 1}. ${b.brand_name} | ${b.strength || "N/A"} | ${b.dosage_form || "N/A"} | ${b.company_name || ""}`;
-            if (b.price_unit) line += ` | ৳${parseFloat(b.price_unit).toFixed(2)}/unit`;
-            if (b.price_strip) line += ` | ৳${parseFloat(b.price_strip).toFixed(2)}/strip`;
-            if (b.pack_size) line += ` | ${b.pack_size}`;
+            let line = `${i + 1}. ${b.brand_name} | ${b.strength || "?"} | ${b.dosage_form || "?"} | ${b.company_name || ""}`;
+            if (b.price_unit) line += ` | ৳${parseFloat(b.price_unit).toFixed(2)} per unit`;
+            if (b.price_strip) line += ` | ৳${parseFloat(b.price_strip).toFixed(2)} per strip`;
+            if (b.pack_size) line += ` | Pack: ${b.pack_size}`;
             return line;
           });
           context += lines.join("\n");
         }
       } catch {}
+
+      // Generic medical info (if available)
+      const parts: string[] = [];
+      if (d.therapeutic_class) parts.push(`Class: ${d.therapeutic_class}`);
+      if (d.indications) parts.push(`Uses: ${d.indications}`);
+      if (d.side_effects) parts.push(`Side effects: ${d.side_effects}`);
+      if (d.dosage) parts.push(`Dosage: ${d.dosage}`);
+      if (d.warnings) parts.push(`Warnings: ${d.warnings}`);
+      if (parts.length > 0) context += "\n\n" + parts.join("\n");
     }
 
     // Create SSE stream
