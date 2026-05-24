@@ -75,11 +75,10 @@ export async function POST(req: NextRequest) {
       // Fetch brands with pricing for this generic
       if (d.id) {
         try {
-          const brandKeywords = keywords.filter((k: string) => k.length > 2 && !stopWords.has(k));
-          const brandMatchCond = brandKeywords.length > 0
-            ? sql`ORDER BY 
-                CASE WHEN LOWER(brand_name) LIKE ${'%' + brandKeywords[0] + '%'} THEN 0 ELSE 1 END,
-                brand_name ASC`
+          const genericWords = new Set(["price","cost","mg","tablet","capsule","dose","dosage","side","effects","info","information","tell","know","want","get","use","treatment","injection","drop","syrup","suspension","bottle","pack","strip","unit"]);
+          const brandKeyword = keywords.find((k: string) => k.length > 2 && !genericWords.has(k));
+          const brandMatchCond = brandKeyword
+            ? sql`ORDER BY CASE WHEN LOWER(brand_name) LIKE ${'%' + brandKeyword + '%'} THEN 0 ELSE 1 END, brand_name ASC`
             : sql`ORDER BY brand_name ASC`;
 
           const brandRows = await db.execute(sql`
