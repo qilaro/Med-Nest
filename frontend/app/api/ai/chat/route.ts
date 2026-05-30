@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
       if (keywords.length > 0) {
         // Skip generic price/search words when looking for drug names
         const searchWords = isPriceQuery
-          ? keywords.filter((k: string) => !["price","cost","rate","cheap","expensive","how","much","total","per"].includes(k))
+          ? keywords.filter((k: string) => !["price","cost","rate","cheap","expensive","how","much","total","per","tablet","capsule","mg","ml","drop","drops","syrup","injection","bottle","strip","pack","unit","dose","dosage","mgml","mcg","tab","cap","suspension","solution","infusion","powder","cream","ointment","gel","spray","lotion"].includes(k) && !/^\d/.test(k))
           : keywords;
         if (searchWords.length > 0) {
           const genNameConds = searchWords.map(w => sql`g.name ILIKE ${'%' + w + '%'}`);
