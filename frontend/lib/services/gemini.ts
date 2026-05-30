@@ -22,55 +22,35 @@ export async function generateEmbedding(text: string): Promise<number[]> {
   return data.embedding?.values || [];
 }
 
-function makeSystemPrompt(context: string): string {
-  const base = `You are a health assistant.
-
-RULES:
-- Answer ONLY health, medical, biology, diet, nutrition, food, workout, wellness questions.
-- For any other question, say: "I can only help with health and medical questions."
-- For Bangladesh medicines (Napa, Fexo, Seclo, etc.), explain what the brand is.
-- Be short and direct. No greetings. No filler.
-- Remember the conversation context. Refer back to previous messages when relevant.
-- If the database reference starts with "PRICING DATA:", you MUST answer with the exact price information from the table. Use the MATCHED BRANDS section if present. Give the price in BDT (৳).
-- If the database reference doesn't contain the answer, say "I couldn't find that in my database."
-- Only add a disclaimer when discussing serious symptoms or treatments.`;
-
-  if (!context) return base;
-
-  return `${base}
-
-DATABASE REFERENCE:
-${context}`;
-}
-
 export type ChatMessage = { role: "user" | "assistant"; content: string };
 
-export async function chatWithContext(
-  history: ChatMessage[],
-  context: string,
-  sources: { name: string; slug: string }[]
-): Promise<string> {
-  const systemPrompt = makeSystemPrompt(context);
-
+async function groqChat(messages: { role: string; content: string }[], stream = false) {
   const res = await fetch(`${GROQ_BASE}/chat/completions`, {
     method: "POST",
     headers: { "Authorization": `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
     body: JSON.stringify({
       model: CHAT_MODEL,
-      messages: [
-        { role: "system", content: systemPrompt },
-        ...history,
-      ],
+      messages,
       temperature: 0.1,
       max_tokens: 500,
+      stream,
     }),
   });
-
   if (!res.ok) {
     if (res.status === 429) throw new Error("429");
     throw new Error(`Groq API error: ${res.status}`);
   }
+  return res;
+}
 
+export async function chatWithContext(
+  history: ChatMessage[],
+  context: string,
+  _sources: { name: string; slug: string }[],
+  isPriceQuery = false
+): Promise<string> {
+  const systemPrompt = makeSystemPrompt(context, isPriceQuery);
+  const res = await groqChat([{ role: "system", content: systemPrompt }, ...history]);
   const data = await res.json();
   return data.choices?.[0]?.message?.content || "I couldn't generate a response.";
 }
@@ -78,29 +58,11 @@ export async function chatWithContext(
 export async function* chatWithContextStream(
   history: ChatMessage[],
   context: string,
-  sources: { name: string; slug: string }[]
+  _sources: { name: string; slug: string }[],
+  isPriceQuery = false
 ): AsyncGenerator<string> {
-  const systemPrompt = makeSystemPrompt(context);
-
-  const res = await fetch(`${GROQ_BASE}/chat/completions`, {
-    method: "POST",
-    headers: { "Authorization": `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: CHAT_MODEL,
-      messages: [
-        { role: "system", content: systemPrompt },
-        ...history,
-      ],
-      temperature: 0.1,
-      max_tokens: 500,
-      stream: true,
-    }),
-  });
-
-  if (!res.ok) {
-    if (res.status === 429) throw new Error("429");
-    throw new Error(`Groq API error: ${res.status}`);
-  }
+  const systemPrompt = makeSystemPrompt(context, isPriceQuery);
+  const res = await groqChat([{ role: "system", content: systemPrompt }, ...history], true);
 
   const reader = res.body?.getReader();
   if (!reader) throw new Error("No response body");
@@ -126,4 +88,27 @@ export async function* chatWithContextStream(
       }
     }
   }
+}
+
+function makeSystemPrompt(context: string, isPriceQuery: boolean): string {
+  if (isPriceQuery && context) {
+    return context;
+  }
+
+  const base = `You are a health assistant.
+
+RULES:
+- Answer ONLY health, medical, biology, diet, nutrition, food, workout, wellness questions.
+- For any other question, say: "I can only help with health and medical questions."
+- For Bangladesh medicines (Napa, Fexo, Seclo, etc.), explain what the brand is.
+- Be short and direct. No greetings. No filler.
+- Remember the conversation context. Refer back to previous messages when relevant.
+- Only add a disclaimer when discussing serious symptoms or treatments.`;
+
+  if (!context) return base;
+
+  return `${base}
+
+DATABASE REFERENCE:
+${context}`;
 }
