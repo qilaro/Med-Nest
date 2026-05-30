@@ -144,7 +144,7 @@ export async function POST(req: NextRequest) {
         let hasError = false;
 
         try {
-          const gen = chatWithContextStream(chatHistory, context, drugs);
+          const gen = chatWithContextStream(chatHistory, context, drugs, isPriceQuery);
           for await (const chunk of gen) {
             fullAnswer += chunk;
             controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify({ token: chunk })}\n\n`));
